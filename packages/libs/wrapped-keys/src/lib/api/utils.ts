@@ -57,19 +57,33 @@ export function getFirstSessionSig(pkpSessionSigs: SessionSigsMap): AuthSig {
  */
 export async function getVincentRegistryAccessControlCondition({
   agentWalletAddress,
+  agentWalletPkpTokenId,
 }: {
-  agentWalletAddress: string;
+  agentWalletAddress?: string;
+  agentWalletPkpTokenId?: string;
 }): Promise<AccsEVMParams> {
-  if (!ethers.utils.isAddress(agentWalletAddress)) {
-    throw new Error(`agentWalletAddress is not a valid Ethereum Address: ${agentWalletAddress}`);
+  let agentPkpTokenId = agentWalletPkpTokenId;
+
+  if (agentWalletAddress) {
+    if (!ethers.utils.isAddress(agentWalletAddress)) {
+      throw new Error(`agentWalletAddress is not a valid Ethereum Address: ${agentWalletAddress}`);
+    }
+
+    agentPkpTokenId = (
+      await getPkpTokenId({
+        pkpEthAddress: agentWalletAddress,
+        signer: ethers.Wallet.createRandom().connect(
+          new ethers.providers.StaticJsonRpcProvider(LIT_RPC.CHRONICLE_YELLOWSTONE),
+        ),
+      })
+    ).toString();
   }
 
-  const agentPkpTokenId = await getPkpTokenId({
-    pkpEthAddress: agentWalletAddress,
-    signer: ethers.Wallet.createRandom().connect(
-      new ethers.providers.StaticJsonRpcProvider(LIT_RPC.CHRONICLE_YELLOWSTONE),
-    ),
-  });
+  if (!agentPkpTokenId) {
+    throw new Error(
+      'The agent wallet address or PKP token ID is required to create an access control conditions',
+    );
+  }
 
   const functionAbi = {
     type: 'function',
@@ -102,7 +116,7 @@ export async function getVincentRegistryAccessControlCondition({
     functionAbi,
     chain: CHAIN_YELLOWSTONE,
     functionName: 'isDelegateePermitted',
-    functionParams: [':userAddress', agentPkpTokenId.toString(), ':currentActionIpfsId'],
+    functionParams: [':userAddress', agentPkpTokenId, ':currentActionIpfsId'],
     returnValueTest: {
       key: 'isPermitted',
       comparator: '=',
