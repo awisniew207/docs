@@ -1,11 +1,8 @@
 import {
   createVincentAbility,
   supportedPoliciesForAbility,
+  getSolanaKeyPairFromWrappedKey,
 } from '@lit-protocol/vincent-ability-sdk';
-import { Keypair } from '@solana/web3.js';
-
-import { api } from '@lit-protocol/vincent-wrapped-keys';
-const { getVincentRegistryAccessControlCondition } = api;
 
 import {
   executeFailSchema,
@@ -14,18 +11,6 @@ import {
   abilityParamsSchema,
 } from './schemas';
 import { signSolanaTransaction, deserializeTransaction } from './lit-action-helpers';
-
-declare const Lit: {
-  Actions: {
-    decryptAndCombine: (params: {
-      accessControlConditions: any[];
-      ciphertext: string;
-      dataToEncryptHash: string;
-      authSig: any;
-      chain: string;
-    }) => Promise<string>;
-  };
-};
 
 export const vincentAbility = createVincentAbility({
   packageName: '@lit-protocol/vincent-ability-sol-transaction-signer' as const,
@@ -56,34 +41,16 @@ export const vincentAbility = createVincentAbility({
   execute: async ({ abilityParams }, { succeed, fail, delegation: { delegatorPkpInfo } }) => {
     const { serializedTransaction, ciphertext, dataToEncryptHash, versionedTransaction } =
       abilityParams;
-    const { ethAddress } = delegatorPkpInfo;
+    const { tokenId } = delegatorPkpInfo;
 
     try {
-      const accessControlConditions = [
-        await getVincentRegistryAccessControlCondition({
-          agentWalletAddress: ethAddress,
-        }),
-      ];
-
-      const decryptedPrivateKey = await Lit.Actions.decryptAndCombine({
-        accessControlConditions,
+      const solanaKeypair = await getSolanaKeyPairFromWrappedKey({
+        agentWalletPkpTokenId: tokenId,
         ciphertext,
         dataToEncryptHash,
-        chain: 'ethereum',
-        authSig: null,
       });
 
-      const VINCENT_PREFIX = 'vincent_';
-      if (!decryptedPrivateKey.startsWith(VINCENT_PREFIX)) {
-        throw new Error(
-          `PKey was not encrypted with salt; all wrapped keys must be prefixed with '${VINCENT_PREFIX}'`,
-        );
-      }
-
-      const noSaltPrivateKey = decryptedPrivateKey.slice(VINCENT_PREFIX.length);
-      const solanaKeypair = Keypair.fromSecretKey(Buffer.from(noSaltPrivateKey, 'hex'));
       const transaction = deserializeTransaction(serializedTransaction, versionedTransaction);
-
       signSolanaTransaction({
         solanaKeypair,
         transaction,

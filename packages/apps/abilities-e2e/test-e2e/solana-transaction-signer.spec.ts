@@ -1,11 +1,4 @@
 import { formatEther } from 'viem';
-import { bundledVincentAbility as erc20BundledAbility } from '@lit-protocol/vincent-ability-erc20-approval';
-
-import {
-  bundledVincentAbility as uniswapBundledAbility,
-  type PrepareSignedUniswapQuote,
-  getSignedUniswapQuote,
-} from '@lit-protocol/vincent-ability-uniswap-swap';
 import { bundledVincentAbility as solTransactionSignerBundledAbility } from '@lit-protocol/vincent-ability-sol-transaction-signer';
 
 import {
@@ -14,11 +7,7 @@ import {
 } from '@lit-protocol/vincent-app-sdk/abilityClient';
 import { ethers } from 'ethers';
 import type { PermissionData } from '@lit-protocol/vincent-contracts-sdk';
-import {
-  getClient,
-  getPkpTokenId,
-  VINCENT_DIAMOND_CONTRACT_ADDRESS_PROD,
-} from '@lit-protocol/vincent-contracts-sdk';
+import { getClient } from '@lit-protocol/vincent-contracts-sdk';
 import { LitNodeClient } from '@lit-protocol/lit-node-client';
 import {
   Keypair,
@@ -31,14 +20,6 @@ import {
 } from '@solana/web3.js';
 
 import {
-  createSiweMessage,
-  generateAuthSig,
-  LitAccessControlConditionResource,
-} from '@lit-protocol/auth-helpers';
-
-import {
-  BASE_PUBLIC_CLIENT,
-  BASE_RPC_URL,
   checkShouldMintAndFundPkp,
   DATIL_PUBLIC_CLIENT,
   getTestConfig,
@@ -61,7 +42,7 @@ import * as util from 'node:util';
 import { privateKeyToAccount } from 'viem/accounts';
 
 import { checkShouldMintCapacityCredit } from './helpers/check-mint-capcity-credit';
-import { LIT_ABILITY, LIT_NETWORK } from '@lit-protocol/constants';
+import { LIT_NETWORK } from '@lit-protocol/constants';
 
 import { api } from '@lit-protocol/vincent-wrapped-keys';
 const { getVincentRegistryAccessControlCondition } = api;
