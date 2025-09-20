@@ -57,8 +57,12 @@ export const vincentAbility = createVincentAbility({
         versionedTransaction,
       });
 
+      const signedSerializedTransaction = versionedTransaction
+        ? Buffer.from(transaction.serialize()).toString('base64')
+        : transaction.serialize().toString('base64');
+
       return succeed({
-        signedTransaction: transaction.serialize().toString('base64'),
+        signedTransaction: signedSerializedTransaction,
       });
     } catch (error) {
       return fail({

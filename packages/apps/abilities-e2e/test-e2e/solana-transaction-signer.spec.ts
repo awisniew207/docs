@@ -12,6 +12,8 @@ import { LitNodeClient } from '@lit-protocol/lit-node-client';
 import {
   Keypair,
   Transaction,
+  VersionedTransaction,
+  TransactionMessage,
   SystemProgram,
   PublicKey,
   LAMPORTS_PER_SOL,
@@ -167,6 +169,31 @@ const createSolanaTransferTransaction = async (
   return transaction;
 };
 
+const createSolanaVersionedTransferTransaction = async (
+  from: PublicKey,
+  to: PublicKey,
+  lamports: number,
+) => {
+  const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+  const { blockhash } = await connection.getLatestBlockhash();
+
+  const instructions = [
+    SystemProgram.transfer({
+      fromPubkey: from,
+      toPubkey: to,
+      lamports,
+    }),
+  ];
+
+  const messageV0 = new TransactionMessage({
+    payerKey: from,
+    recentBlockhash: blockhash,
+    instructions,
+  }).compileToV0Message();
+
+  return new VersionedTransaction(messageV0);
+};
+
 const submitAndVerifyTransaction = async (signedTransactionBase64: string, testName: string) => {
   const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
   const signedTxBuffer = Buffer.from(signedTransactionBase64, 'base64');
@@ -231,6 +258,7 @@ describe('Solana Transaction Signer Ability E2E Tests', () => {
   let DATA_TO_ENCRYPT_HASH: string;
   let EVM_CONTRACT_CONDITION: any;
   let SERIALIZED_TRANSACTION: string;
+  let VERSIONED_SERIALIZED_TRANSACTION: string;
 
   afterAll(async () => {
     console.log('Disconnecting from Lit node client...');
@@ -294,6 +322,16 @@ describe('Solana Transaction Signer Ability E2E Tests', () => {
     SERIALIZED_TRANSACTION = transaction
       .serialize({ requireAllSignatures: false })
       .toString('base64');
+
+    const versionedTransaction = await createSolanaVersionedTransferTransaction(
+      TEST_SOLANA_KEYPAIR.publicKey,
+      TEST_SOLANA_KEYPAIR.publicKey,
+      TX_SEND_AMOUNT,
+    );
+
+    VERSIONED_SERIALIZED_TRANSACTION = Buffer.from(versionedTransaction.serialize()).toString(
+      'base64',
+    );
 
     const { ciphertext, dataToEncryptHash } = await LIT_NODE_CLIENT.encrypt({
       evmContractConditions: [EVM_CONTRACT_CONDITION],
@@ -391,6 +429,62 @@ describe('Solana Transaction Signer Ability E2E Tests', () => {
     await submitAndVerifyTransaction(
       signedTransaction,
       'should run execute and return a signed transaction',
+    );
+  });
+
+  it('should run precheck and validate versioned transaction deserialization', async () => {
+    const client = getSolanaTransactionSignerAbilityClient();
+    const precheckResult = await client.precheck(
+      {
+        serializedTransaction: VERSIONED_SERIALIZED_TRANSACTION,
+        ciphertext: CIPHERTEXT,
+        dataToEncryptHash: DATA_TO_ENCRYPT_HASH,
+        versionedTransaction: true,
+      },
+      { delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress! },
+    );
+
+    console.log(
+      '[should run precheck and validate versioned transaction deserialization]',
+      util.inspect(precheckResult, { depth: 10 }),
+    );
+
+    expect(precheckResult.success).toBe(true);
+    if (!precheckResult.success) {
+      throw new Error(precheckResult.runtimeError);
+    }
+  });
+
+  it('should run execute and return a signed versioned transaction', async () => {
+    const client = getSolanaTransactionSignerAbilityClient();
+    const executeResult = await client.execute(
+      {
+        serializedTransaction: VERSIONED_SERIALIZED_TRANSACTION,
+        ciphertext: CIPHERTEXT,
+        dataToEncryptHash: DATA_TO_ENCRYPT_HASH,
+        versionedTransaction: true,
+      },
+      { delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress! },
+    );
+
+    console.log(
+      '[should run execute and return a signed versioned transaction]',
+      util.inspect(executeResult, { depth: 10 }),
+    );
+
+    expect(executeResult.success).toBe(true);
+    expect(executeResult.result).toBeDefined();
+
+    const signedTransaction = (executeResult.result! as { signedTransaction: string })
+      .signedTransaction;
+
+    // Validate it's a base64 encoded string using regex
+    const base64Regex = /^[A-Za-z0-9+/]+=*$/;
+    expect(signedTransaction).toMatch(base64Regex);
+
+    await submitAndVerifyTransaction(
+      signedTransaction,
+      'should run execute and return a signed versioned transaction',
     );
   });
 });
