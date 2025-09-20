@@ -106,7 +106,7 @@ export async function getVincentRegistryAccessControlCondition({
     functionAbi,
     chain: CHAIN_YELLOWSTONE,
     functionName: 'isDelegateePermitted',
-    functionParams: [':userAddress', agentPkpTokenId.toString(), ':currentActionIpfsCid'],
+    functionParams: [':userAddress', agentPkpTokenId.toString(), ':currentActionIpfsId'],
     returnValueTest: {
       key: 'isPermitted',
       comparator: '=',
