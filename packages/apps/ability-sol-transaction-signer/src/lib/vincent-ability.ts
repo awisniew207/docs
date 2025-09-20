@@ -69,12 +69,19 @@ export const vincentAbility = createVincentAbility({
         accessControlConditions,
         ciphertext,
         dataToEncryptHash,
-        authSig: null,
         chain: 'ethereum',
+        authSig: null,
       });
 
-      const solanaKeypair = Keypair.fromSecretKey(Buffer.from(decryptedPrivateKey, 'hex'));
+      const VINCENT_PREFIX = 'vincent_';
+      if (!decryptedPrivateKey.startsWith(VINCENT_PREFIX)) {
+        throw new Error(
+          `PKey was not encrypted with salt; all wrapped keys must be prefixed with '${VINCENT_PREFIX}'`,
+        );
+      }
 
+      const noSaltPrivateKey = decryptedPrivateKey.slice(VINCENT_PREFIX.length);
+      const solanaKeypair = Keypair.fromSecretKey(Buffer.from(noSaltPrivateKey, 'hex'));
       const transaction = deserializeTransaction(serializedTransaction, versionedTransaction);
 
       signSolanaTransaction({
