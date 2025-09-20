@@ -7,7 +7,6 @@ import {
   VINCENT_DIAMOND_CONTRACT_ADDRESS_PROD,
   getPkpTokenId,
 } from '@lit-protocol/vincent-contracts-sdk';
-import { COMBINED_ABI } from '@lit-protocol/vincent-contracts-sdk/src/constants';
 
 import type { KeyType, Network } from '../types';
 
@@ -49,7 +48,7 @@ export function getFirstSessionSig(pkpSessionSigs: SessionSigsMap): AuthSig {
 
 /**
  * Creates access control condition to validate Vincent delegatee authorization
- * via the Vincent registry contract's validateAbilityExecutionAndGetPolicies method
+ * via the Vincent registry contract's isDelegateePermitted method
  *
  * This function creates an ACC utilize the Vincent Delegatee's address derived from the inner Auth Sig of the provided Session Signatures,
  * the Agent Wallet's PKP token ID derived from the provided Agent Wallet's address, and the IPFS CID of the executing Lit Action.
@@ -72,39 +71,44 @@ export async function getVincentRegistryAccessControlCondition({
     ),
   });
 
-  let functionAbi: {
-    name: string;
-    type?: string;
-    stateMutability: string;
-    constant?: boolean;
-    inputs: {
-      name: string;
-      type: string;
-      internalType?: string;
-    }[];
-    outputs: {
-      name: string;
-      type: string;
-      internalType?: string;
-    }[];
+  const functionAbi = {
+    type: 'function',
+    name: 'isDelegateePermitted',
+    inputs: [
+      {
+        name: 'delegatee',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'pkpTokenId',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+      {
+        name: 'abilityIpfsCid',
+        type: 'string',
+        internalType: 'string',
+      },
+    ],
+    outputs: [
+      {
+        name: 'isPermitted',
+        type: 'bool',
+        internalType: 'bool',
+      },
+    ],
+    stateMutability: 'view',
   };
-  try {
-    const functionFragment = COMBINED_ABI.getFunction('validateAbilityExecutionAndGetPolicies');
-    functionAbi = JSON.parse(functionFragment.format('json'));
-  } catch (error) {
-    throw new Error(
-      `There was an error getting the validateAbilityExecutionAndGetPolicies function ABI: ${error instanceof Error ? error.message : String(error)}`,
-    );
-  }
 
   return {
     contractAddress: VINCENT_DIAMOND_CONTRACT_ADDRESS_PROD,
     functionAbi,
     chain: CHAIN_YELLOWSTONE,
-    functionName: 'validateAbilityExecutionAndGetPolicies',
+    functionName: 'isDelegateePermitted',
     functionParams: [':userAddress', agentPkpTokenId.toString(), ':currentActionIpfsCid'],
     returnValueTest: {
-      key: 'isValid',
+      key: 'isPermitted',
       comparator: '=',
       value: 'true',
     },
