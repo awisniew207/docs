@@ -194,6 +194,21 @@ export default function WalletConnectPage(params: {
             </Button>
           </div>
 
+          {/* Manual Withdraw Button */}
+          <div className="mt-4 text-center">
+            <Button
+              variant="ghost"
+              className="text-sm text-orange-500 hover:text-orange-600 transition-colors"
+              onClick={() => {
+                // This will be handled by parent component to switch tabs
+                const event = new CustomEvent('switchToManualWithdraw');
+                window.dispatchEvent(event);
+              }}
+            >
+              Issues with WalletConnect? Click here to manually withdraw.
+            </Button>
+          </div>
+
           {/* Session Proposal */}
           {pendingProposal && !loading && (
             <SessionProposal
