@@ -14,6 +14,10 @@ export const agentPkpsApi = createApi({
           const result = await getAgentPkps(userAddress);
           return { data: result };
         } catch (error) {
+          console.error('Failed to fetch agent PKPs:', error);
+          setTimeout(() => {
+            throw error;
+          }, 0);
           return {
             error: {
               status: 'FETCH_ERROR',
@@ -30,6 +34,10 @@ export const agentPkpsApi = createApi({
           const result = await getAgentPkps(userAddress);
           return { data: result.permitted };
         } catch (error) {
+          console.error('Failed to fetch permitted agent apps:', error);
+          setTimeout(() => {
+            throw error;
+          }, 0);
           return {
             error: {
               status: 'FETCH_ERROR',
@@ -47,6 +55,10 @@ export const agentPkpsApi = createApi({
           const result = await getAgentPkps(userAddress);
           return { data: result.unpermitted };
         } catch (error) {
+          console.error('Failed to fetch unpermitted agent apps:', error);
+          setTimeout(() => {
+            throw error;
+          }, 0);
           return {
             error: {
               status: 'FETCH_ERROR',
@@ -63,11 +75,11 @@ export const agentPkpsApi = createApi({
     invalidateAgentPkpsCache: builder.mutation<null, string | void>({
       queryFn: () => ({ data: null }),
       invalidatesTags: (_, __, userAddress) =>
-        userAddress 
+        userAddress
           ? [
               { type: 'AgentPkps', id: userAddress },
               { type: 'AgentPkps', id: `${userAddress}-permitted` },
-              { type: 'AgentPkps', id: `${userAddress}-unpermitted` }
+              { type: 'AgentPkps', id: `${userAddress}-unpermitted` },
             ]
           : [{ type: 'AgentPkps' }],
     }),
