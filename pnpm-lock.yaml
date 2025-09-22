@@ -1065,6 +1065,9 @@ importers:
       '@lit-protocol/vincent-wrapped-keys':
         specifier: workspace:*
         version: link:../wrapped-keys
+      '@solana/web3.js':
+        specifier: ^1.98.4
+        version: 1.98.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       ethers:
         specifier: 5.8.0
         version: 5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -1078,9 +1081,6 @@ importers:
         specifier: ^3.25.64
         version: 3.25.64
     devDependencies:
-      '@solana/web3.js':
-        specifier: ^1.98.4
-        version: 1.98.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@types/semver':
         specifier: ^7.7.0
         version: 7.7.1
@@ -1288,6 +1288,9 @@ importers:
       '@lit-protocol/constants':
         specifier: ^7.3.0
         version: 7.3.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@lit-protocol/types':
+        specifier: ^7.2.3
+        version: 7.3.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@lit-protocol/vincent-contracts-sdk':
         specifier: workspace:*
         version: link:../contracts-sdk
@@ -1301,9 +1304,6 @@ importers:
         specifier: ^2.8.1
         version: 2.8.1
     devDependencies:
-      '@lit-protocol/types':
-        specifier: ^7.2.3
-        version: 7.3.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@types/semver':
         specifier: ^7.7.0
         version: 7.7.1

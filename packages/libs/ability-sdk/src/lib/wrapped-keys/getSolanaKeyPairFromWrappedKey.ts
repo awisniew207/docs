@@ -39,7 +39,6 @@ export async function getSolanaKeyPairFromWrappedKey({
     }),
   ];
 
-  // Decrypt the private key using Lit Actions
   const decryptedPrivateKey = await Lit.Actions.decryptAndCombine({
     accessControlConditions,
     ciphertext,
@@ -48,7 +47,6 @@ export async function getSolanaKeyPairFromWrappedKey({
     authSig: null,
   });
 
-  // Validate the Vincent prefix
   const VINCENT_PREFIX = 'vincent_';
   if (!decryptedPrivateKey.startsWith(VINCENT_PREFIX)) {
     throw new Error(
@@ -56,7 +54,6 @@ export async function getSolanaKeyPairFromWrappedKey({
     );
   }
 
-  // Remove the prefix and create the keypair
   const noSaltPrivateKey = decryptedPrivateKey.slice(VINCENT_PREFIX.length);
   const solanaKeypair = Keypair.fromSecretKey(Buffer.from(noSaltPrivateKey, 'hex'));
 
