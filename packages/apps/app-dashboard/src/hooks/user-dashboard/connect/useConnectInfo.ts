@@ -1,3 +1,6 @@
+import { useMemo, useEffect, useState } from 'react';
+import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
+import * as Sentry from '@sentry/react';
 import {
   AppVersionAbility,
   AppVersion,
@@ -7,8 +10,6 @@ import {
   Ability,
   Policy,
 } from '@/types/developer-dashboard/appTypes';
-import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
-import { useMemo, useEffect, useState } from 'react';
 
 export type ConnectInfoMap = {
   app: App;
@@ -171,10 +172,7 @@ export const useConnectInfo = (
               .then((data) => [abilityKey, data] as const)
               .catch((error) => {
                 console.error(`Failed to fetch ability version ${packageName}@${version}:`, error);
-                // Report to Sentry without breaking the promise chain
-                setTimeout(() => {
-                  throw error;
-                }, 0);
+                Sentry.captureException(error);
                 return [abilityKey, null] as const;
               });
           },
@@ -189,10 +187,7 @@ export const useConnectInfo = (
             .then((data) => [packageName, data] as const)
             .catch((error) => {
               console.error(`Failed to fetch ability ${packageName}:`, error);
-              // Report to Sentry without breaking the promise chain
-              setTimeout(() => {
-                throw error;
-              }, 0);
+              Sentry.captureException(error);
               return [packageName, null] as const;
             });
         });
@@ -225,8 +220,10 @@ export const useConnectInfo = (
         setAbilityVersionsData(abilityVersions);
         setAbilitiesData(abilities);
 
+
         // Update errors if any abilities failed to load
         if (errors.length > 0) {
+          setFetchErrors((prev) => [...prev, ...errors]);
           setFetchErrors((prev) => [...prev, ...errors]);
         }
 
@@ -264,10 +261,7 @@ export const useConnectInfo = (
               .then((data) => [packageName, version, data] as const)
               .catch((error) => {
                 console.error(`Failed to fetch policy version ${packageName}@${version}:`, error);
-                // Report to Sentry without breaking the promise chain
-                setTimeout(() => {
-                  throw error;
-                }, 0);
+                Sentry.captureException(error);
                 return [packageName, version, null] as const;
               });
           },
@@ -282,10 +276,7 @@ export const useConnectInfo = (
             .then((data) => [packageName, data] as const)
             .catch((error) => {
               console.error(`Failed to fetch policy ${packageName}:`, error);
-              // Report to Sentry without breaking the promise chain
-              setTimeout(() => {
-                throw error;
-              }, 0);
+              Sentry.captureException(error);
               return [packageName, null] as const;
             });
         });
@@ -330,8 +321,10 @@ export const useConnectInfo = (
         setSupportedPoliciesData(supportedPoliciesData);
         setPoliciesData(policies);
 
+
         // Update errors if any policies failed to load
         if (errors.length > 0) {
+          setFetchErrors((prev) => [...prev, ...errors]);
           setFetchErrors((prev) => [...prev, ...errors]);
         }
 
