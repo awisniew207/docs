@@ -8,6 +8,20 @@ export const abilityParamsSchema = z.object({
     ),
   ciphertext: z.string().describe('The encrypted private key ciphertext for the Agent Wallet'),
   dataToEncryptHash: z.string().describe('SHA-256 hash of the encrypted data for verification'),
+  legacyTransactionOptions: z
+    .object({
+      requireAllSignatures: z
+        .boolean()
+        .describe(
+          'If true, serialization will fail unless all required signers have provided valid signatures. Set false to allow returning a partially signed transaction (useful for multisig or co-signing flows). Defaults to true.',
+        )
+        .default(true),
+      validateSignatures: z
+        .boolean()
+        .describe('If true, verify each signature before serialization. Defaults to false.')
+        .default(false),
+    })
+    .optional(),
 });
 
 export const precheckFailSchema = z.object({

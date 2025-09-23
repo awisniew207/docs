@@ -3,6 +3,7 @@ import {
   supportedPoliciesForAbility,
   getSolanaKeyPairFromWrappedKey,
 } from '@lit-protocol/vincent-ability-sdk';
+import type { Transaction, VersionedTransaction } from '@solana/web3.js';
 
 import {
   executeFailSchema,
@@ -39,7 +40,8 @@ export const vincentAbility = createVincentAbility({
   },
 
   execute: async ({ abilityParams }, { succeed, fail, delegation: { delegatorPkpInfo } }) => {
-    const { serializedTransaction, ciphertext, dataToEncryptHash } = abilityParams;
+    const { serializedTransaction, ciphertext, dataToEncryptHash, legacyTransactionOptions } =
+      abilityParams;
     const { tokenId } = delegatorPkpInfo;
 
     try {
@@ -57,9 +59,24 @@ export const vincentAbility = createVincentAbility({
         version,
       });
 
+      let signedSerializedTransaction: string;
+      if (version === 'legacy') {
+        const legacyTx = transaction as Transaction;
+        if (!legacyTx.feePayer) legacyTx.feePayer = solanaKeypair.publicKey;
+
+        signedSerializedTransaction = Buffer.from(
+          legacyTx.serialize({
+            requireAllSignatures: legacyTransactionOptions?.requireAllSignatures ?? true,
+            verifySignatures: legacyTransactionOptions?.validateSignatures ?? false,
+          }),
+        ).toString('base64');
+      } else {
+        const versionedTx = transaction as VersionedTransaction;
+        signedSerializedTransaction = Buffer.from(versionedTx.serialize()).toString('base64');
+      }
+
       return succeed({
-        // TODO Figure out serialize options like requireAllSignatures
-        signedTransaction: Buffer.from(transaction.serialize()).toString('base64'),
+        signedTransaction: signedSerializedTransaction,
       });
     } catch (error) {
       return fail({
