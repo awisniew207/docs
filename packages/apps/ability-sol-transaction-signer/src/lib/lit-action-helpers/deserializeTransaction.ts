@@ -5,7 +5,6 @@ export function deserializeTransaction(serializedTransaction: string): {
   version: TransactionVersion;
 } {
   const transactionBuffer = Buffer.from(serializedTransaction, 'base64');
-  console.log(`[deserializeTransaction] attempting to deserialize transaction`);
 
   try {
     const vtx = VersionedTransaction.deserialize(transactionBuffer);
