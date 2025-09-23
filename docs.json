@@ -3,46 +3,83 @@
   "theme": "mint",
   "name": "Mint Starter Kit",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#FF4205",
+    "light": "#FF6B35",
+    "dark": "#CC3300"
   },
   "favicon": "/favicon.svg",
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Getting Started",
             "pages": [
-              "index",
-              "quickstart",
-              "development"
+              "Getting-Started/Why-Vincent",
+              "Getting-Started/Concepts"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Users",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "Users/Introduction",
+              "Users/Onboarding"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Developers",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "Developers/Getting-Started"
             ]
           },
           {
-            "group": "AI tools",
+            "group": "App & Agent Developers",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "Developers/App-Agent-Developers/Getting-Started",
+              "Developers/App-Agent-Developers/Quick-Start",
+              "Developers/App-Agent-Developers/Creating-Apps",
+              "Developers/App-Agent-Developers/Executing-Abilities",
+              "Developers/App-Agent-Developers/Auth-Users",
+              "Developers/App-Agent-Developers/MCP",
+              "Developers/App-Agent-Developers/Upgrading-Apps"
+            ]
+          },
+          {
+            "group": "Ability Developers",
+            "pages": [
+              "Developers/Ability-Developers/Getting-Started",
+              "Developers/Ability-Developers/Quick-Start",
+              "Developers/Ability-Developers/Creating-Abilities"
+            ]
+          },
+          {
+            "group": "Policy Developers",
+            "pages": [
+              "Developers/Policy-Developers/Getting-Started",
+              "Developers/Policy-Developers/Quick-Start",
+              "Developers/Policy-Developers/Creating-Policies"
+            ]
+          },
+          {
+            "group": "Abilities",
+            "pages": [
+              "Developers/Abilities/Overview",
+              "Developers/Abilities/EvmTransactionSigner",
+              "Developers/Abilities/Erc20Transfer",
+              "Developers/Abilities/Erc20Approval",
+              "Developers/Abilities/UniswapSwap",
+              "Developers/Abilities/Aave",
+              "Developers/Abilities/Morpho",
+              "Developers/Abilities/Debridge"
+            ]
+          },
+          {
+            "group": "Policies",
+            "pages": [
+              "Developers/Policies/Overview",
+              "Developers/Policies/SpendingLimit",
+              "Developers/Policies/ContractWhitelist"
             ]
           }
         ]
@@ -55,15 +92,6 @@
             "pages": [
               "api-reference/introduction"
             ]
-          },
-          {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
-            ]
           }
         ]
       }
@@ -71,27 +99,22 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
           "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
+          "href": "https://spark.litprotocol.com/",
           "icon": "newspaper"
         }
       ]
     }
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/logo/light.png",
+    "dark": "/logo/dark.png"
   },
   "navbar": {
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "https://t.me/c/2038294753/1"
       }
     ],
     "primary": {
@@ -114,9 +137,10 @@
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "x": "https://x.com/LitProtocol",
+      "telegram": "https://t.me/c/2038294753/1",
+      "github": "https://github.com/LIT-Protocol/Vincent",
+      "linkedin": "https://linkedin.com/company/lit-protocol"
     }
   }
 }
