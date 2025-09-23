@@ -67,7 +67,7 @@ export const vincentAbility = createVincentAbility({
         signedSerializedTransaction = Buffer.from(
           legacyTx.serialize({
             requireAllSignatures: legacyTransactionOptions?.requireAllSignatures ?? true,
-            verifySignatures: legacyTransactionOptions?.validateSignatures ?? false,
+            verifySignatures: legacyTransactionOptions?.verifySignatures ?? false,
           }),
         ).toString('base64');
       } else {

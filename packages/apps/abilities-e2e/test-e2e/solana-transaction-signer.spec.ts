@@ -430,6 +430,97 @@ describe('Solana Transaction Signer Ability E2E Tests', () => {
     );
   });
 
+  it('should run execute with requireAllSignatures set to false', async () => {
+    const transaction = await createSolanaTransferTransaction(
+      TEST_SOLANA_KEYPAIR.publicKey,
+      TEST_SOLANA_KEYPAIR.publicKey,
+      TX_SEND_AMOUNT,
+    );
+    const serializedTransaction = transaction
+      .serialize({ requireAllSignatures: false })
+      .toString('base64');
+
+    const client = getSolanaTransactionSignerAbilityClient();
+    const executeResult = await client.execute(
+      {
+        serializedTransaction,
+        ciphertext: CIPHERTEXT,
+        dataToEncryptHash: DATA_TO_ENCRYPT_HASH,
+        legacyTransactionOptions: {
+          requireAllSignatures: false,
+          verifySignatures: false,
+        },
+      },
+      { delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress! },
+    );
+
+    console.log(
+      '[should run execute with requireAllSignatures set to false]',
+      util.inspect(executeResult, { depth: 10 }),
+    );
+
+    expect(executeResult.success).toBe(true);
+    expect(executeResult.result).toBeDefined();
+
+    const signedTransaction = (executeResult.result! as { signedTransaction: string })
+      .signedTransaction;
+
+    // Validate it's a base64 encoded string using regex
+    const base64Regex = /^[A-Za-z0-9+/]+=*$/;
+    expect(signedTransaction).toMatch(base64Regex);
+
+    // Note: This transaction should still be valid since it's fully signed
+    await submitAndVerifyTransaction(
+      signedTransaction,
+      'should run execute with requireAllSignatures set to false',
+    );
+  });
+
+  it('should run execute with validateSignatures set to true', async () => {
+    const transaction = await createSolanaTransferTransaction(
+      TEST_SOLANA_KEYPAIR.publicKey,
+      TEST_SOLANA_KEYPAIR.publicKey,
+      TX_SEND_AMOUNT,
+    );
+    const serializedTransaction = transaction
+      .serialize({ requireAllSignatures: false })
+      .toString('base64');
+
+    const client = getSolanaTransactionSignerAbilityClient();
+    const executeResult = await client.execute(
+      {
+        serializedTransaction,
+        ciphertext: CIPHERTEXT,
+        dataToEncryptHash: DATA_TO_ENCRYPT_HASH,
+        legacyTransactionOptions: {
+          requireAllSignatures: true,
+          verifySignatures: true,
+        },
+      },
+      { delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress! },
+    );
+
+    console.log(
+      '[should run execute with validateSignatures set to true]',
+      util.inspect(executeResult, { depth: 10 }),
+    );
+
+    expect(executeResult.success).toBe(true);
+    expect(executeResult.result).toBeDefined();
+
+    const signedTransaction = (executeResult.result! as { signedTransaction: string })
+      .signedTransaction;
+
+    // Validate it's a base64 encoded string using regex
+    const base64Regex = /^[A-Za-z0-9+/]+=*$/;
+    expect(signedTransaction).toMatch(base64Regex);
+
+    await submitAndVerifyTransaction(
+      signedTransaction,
+      'should run execute with validateSignatures set to true',
+    );
+  });
+
   it('should run precheck and validate versioned transaction deserialization', async () => {
     const client = getSolanaTransactionSignerAbilityClient();
     const precheckResult = await client.precheck(

@@ -14,12 +14,10 @@ export const abilityParamsSchema = z.object({
         .boolean()
         .describe(
           'If true, serialization will fail unless all required signers have provided valid signatures. Set false to allow returning a partially signed transaction (useful for multisig or co-signing flows). Defaults to true.',
-        )
-        .default(true),
-      validateSignatures: z
+        ),
+      verifySignatures: z
         .boolean()
-        .describe('If true, verify each signature before serialization. Defaults to false.')
-        .default(false),
+        .describe('If true, verify each signature before serialization. Defaults to false.'),
     })
     .optional(),
 });
