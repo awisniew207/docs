@@ -383,7 +383,6 @@ describe('Solana Transaction Signer Ability E2E Tests', () => {
         serializedTransaction: SERIALIZED_TRANSACTION,
         ciphertext: CIPHERTEXT,
         dataToEncryptHash: DATA_TO_ENCRYPT_HASH,
-        versionedTransaction: false,
       },
       { delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress! },
     );
@@ -406,7 +405,6 @@ describe('Solana Transaction Signer Ability E2E Tests', () => {
         serializedTransaction: SERIALIZED_TRANSACTION,
         ciphertext: CIPHERTEXT,
         dataToEncryptHash: DATA_TO_ENCRYPT_HASH,
-        versionedTransaction: false,
       },
       { delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress! },
     );
@@ -439,7 +437,6 @@ describe('Solana Transaction Signer Ability E2E Tests', () => {
         serializedTransaction: VERSIONED_SERIALIZED_TRANSACTION,
         ciphertext: CIPHERTEXT,
         dataToEncryptHash: DATA_TO_ENCRYPT_HASH,
-        versionedTransaction: true,
       },
       { delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress! },
     );
@@ -462,7 +459,6 @@ describe('Solana Transaction Signer Ability E2E Tests', () => {
         serializedTransaction: VERSIONED_SERIALIZED_TRANSACTION,
         ciphertext: CIPHERTEXT,
         dataToEncryptHash: DATA_TO_ENCRYPT_HASH,
-        versionedTransaction: true,
       },
       { delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress! },
     );

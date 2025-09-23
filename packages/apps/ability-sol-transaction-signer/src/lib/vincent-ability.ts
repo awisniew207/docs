@@ -25,10 +25,10 @@ export const vincentAbility = createVincentAbility({
   executeFailSchema,
 
   precheck: async ({ abilityParams }, { succeed, fail }) => {
-    const { serializedTransaction, versionedTransaction } = abilityParams;
+    const { serializedTransaction } = abilityParams;
 
     try {
-      deserializeTransaction(serializedTransaction, versionedTransaction);
+      deserializeTransaction(serializedTransaction);
 
       return succeed();
     } catch (error) {
@@ -39,8 +39,7 @@ export const vincentAbility = createVincentAbility({
   },
 
   execute: async ({ abilityParams }, { succeed, fail, delegation: { delegatorPkpInfo } }) => {
-    const { serializedTransaction, ciphertext, dataToEncryptHash, versionedTransaction } =
-      abilityParams;
+    const { serializedTransaction, ciphertext, dataToEncryptHash } = abilityParams;
     const { tokenId } = delegatorPkpInfo;
 
     try {
@@ -50,19 +49,17 @@ export const vincentAbility = createVincentAbility({
         dataToEncryptHash,
       });
 
-      const transaction = deserializeTransaction(serializedTransaction, versionedTransaction);
+      const { transaction, version } = deserializeTransaction(serializedTransaction);
+
       signSolanaTransaction({
         solanaKeypair,
         transaction,
-        versionedTransaction,
+        version,
       });
 
-      const signedSerializedTransaction = versionedTransaction
-        ? Buffer.from(transaction.serialize()).toString('base64')
-        : transaction.serialize().toString('base64');
-
       return succeed({
-        signedTransaction: signedSerializedTransaction,
+        // TODO Figure out serialize options like requireAllSignatures
+        signedTransaction: Buffer.from(transaction.serialize()).toString('base64'),
       });
     } catch (error) {
       return fail({
