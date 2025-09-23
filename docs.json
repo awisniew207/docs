@@ -11,75 +11,13 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Documentation",
+        "tab": "Concepts",
         "groups": [
           {
-            "group": "Getting Started",
+            "group": "Introduction",
             "pages": [
-              "Getting-Started/Why-Vincent",
-              "Getting-Started/Concepts"
-            ]
-          },
-          {
-            "group": "Users",
-            "pages": [
-              "Users/Introduction",
-              "Users/Onboarding"
-            ]
-          },
-          {
-            "group": "Developers",
-            "pages": [
-              "Developers/Getting-Started"
-            ]
-          },
-          {
-            "group": "App & Agent Developers",
-            "pages": [
-              "Developers/App-Agent-Developers/Getting-Started",
-              "Developers/App-Agent-Developers/Quick-Start",
-              "Developers/App-Agent-Developers/Creating-Apps",
-              "Developers/App-Agent-Developers/Executing-Abilities",
-              "Developers/App-Agent-Developers/Auth-Users",
-              "Developers/App-Agent-Developers/MCP",
-              "Developers/App-Agent-Developers/Upgrading-Apps"
-            ]
-          },
-          {
-            "group": "Ability Developers",
-            "pages": [
-              "Developers/Ability-Developers/Getting-Started",
-              "Developers/Ability-Developers/Quick-Start",
-              "Developers/Ability-Developers/Creating-Abilities"
-            ]
-          },
-          {
-            "group": "Policy Developers",
-            "pages": [
-              "Developers/Policy-Developers/Getting-Started",
-              "Developers/Policy-Developers/Quick-Start",
-              "Developers/Policy-Developers/Creating-Policies"
-            ]
-          },
-          {
-            "group": "Abilities",
-            "pages": [
-              "Developers/Abilities/Overview",
-              "Developers/Abilities/EvmTransactionSigner",
-              "Developers/Abilities/Erc20Transfer",
-              "Developers/Abilities/Erc20Approval",
-              "Developers/Abilities/UniswapSwap",
-              "Developers/Abilities/Aave",
-              "Developers/Abilities/Morpho",
-              "Developers/Abilities/Debridge"
-            ]
-          },
-          {
-            "group": "Policies",
-            "pages": [
-              "Developers/Policies/Overview",
-              "Developers/Policies/SpendingLimit",
-              "Developers/Policies/ContractWhitelist"
+              "Concepts/Introduction/About",
+              "Concepts/Introduction/Security"
             ]
           }
         ]
