@@ -296,7 +296,7 @@ describe('getGasParams (live and mocked)', () => {
         estimatedGas,
       });
 
-      // 1 * 1.5 = 1.5, rounded down to 1
+      // 1 * 1.5 = 1.5, truncated towards zero to 1
       expect(result.estimatedGas).toBe('1');
     });
 
