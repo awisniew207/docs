@@ -32,6 +32,7 @@ import {
   TestConfig,
   YELLOWSTONE_RPC_URL,
   TEST_SOLANA_FUNDER_PRIVATE_KEY,
+  SOL_DEVNET_RPC_URL,
 } from './helpers';
 import {
   fundAppDelegateeIfNeeded,
@@ -380,6 +381,7 @@ describe('Solana Transaction Signer Ability E2E Tests', () => {
     const client = getSolanaTransactionSignerAbilityClient();
     const precheckResult = await client.precheck(
       {
+        rpcUrl: SOL_DEVNET_RPC_URL,
         cluster: 'devnet',
         serializedTransaction: SERIALIZED_TRANSACTION,
         ciphertext: CIPHERTEXT,

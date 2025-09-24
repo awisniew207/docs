@@ -3,7 +3,7 @@ import {
   supportedPoliciesForAbility,
   getSolanaKeyPairFromWrappedKey,
 } from '@lit-protocol/vincent-ability-sdk';
-import { Transaction } from '@solana/web3.js';
+import { clusterApiUrl, Transaction } from '@solana/web3.js';
 
 import {
   executeFailSchema,
@@ -16,6 +16,12 @@ import {
   deserializeTransaction,
   verifyBlockhashForCluster,
 } from './lit-action-helpers';
+
+declare const Lit: {
+  Actions: {
+    getRpcUrl: (params: { chain: string }) => Promise<string>;
+  };
+};
 
 export const vincentAbility = createVincentAbility({
   packageName: '@lit-protocol/vincent-ability-sol-transaction-signer' as const,
@@ -30,23 +36,33 @@ export const vincentAbility = createVincentAbility({
   executeFailSchema,
 
   precheck: async ({ abilityParams }, { succeed, fail }) => {
-    const { serializedTransaction, cluster } = abilityParams;
+    const { serializedTransaction, cluster, rpcUrl } = abilityParams;
+
+    if (!rpcUrl) {
+      console.log(
+        '[@lit-protocol/vincent-ability-sol-transaction-signer] rpcUrl not provided using @solana/web3.js default',
+      );
+    }
 
     try {
       const transaction = deserializeTransaction(serializedTransaction);
 
       // Verify blockhash matches the specified cluster
-      const verification = await verifyBlockhashForCluster(transaction, cluster);
+      const verification = await verifyBlockhashForCluster({
+        transaction,
+        cluster,
+        rpcUrl: rpcUrl || clusterApiUrl(cluster),
+      });
       if (!verification.valid) {
         return fail({
-          error: verification.error,
+          error: `[@lit-protocol/vincent-ability-sol-transaction-signer] ${verification.error}`,
         });
       }
 
       return succeed();
     } catch (error) {
       return fail({
-        error: `Failed to decode Solana transaction: ${error instanceof Error ? error.message : String(error)}`,
+        error: `[@lit-protocol/vincent-ability-sol-transaction-signer] Failed to decode Solana transaction: ${error instanceof Error ? error.message : String(error)}`,
       });
     }
   },
@@ -70,11 +86,21 @@ export const vincentAbility = createVincentAbility({
 
       const transaction = deserializeTransaction(serializedTransaction);
 
+      const litChainIdentifier = {
+        devnet: 'solanaDevnet',
+        testnet: 'solanaTestnet',
+        'mainnet-beta': 'solana',
+      };
+
       // Verify blockhash is still valid for the specified cluster before signing
-      const verification = await verifyBlockhashForCluster(transaction, cluster);
+      const verification = await verifyBlockhashForCluster({
+        transaction,
+        cluster,
+        rpcUrl: await Lit.Actions.getRpcUrl({ chain: litChainIdentifier[cluster] }),
+      });
       if (!verification.valid) {
         return fail({
-          error: verification.error,
+          error: `[@lit-protocol/vincent-ability-sol-transaction-signer] ${verification.error}`,
         });
       }
 
@@ -102,7 +128,7 @@ export const vincentAbility = createVincentAbility({
       });
     } catch (error) {
       return fail({
-        error: `Failed to sign Solana transaction: ${error instanceof Error ? error.message : String(error)}`,
+        error: `[@lit-protocol/vincent-ability-sol-transaction-signer] Failed to sign Solana transaction: ${error instanceof Error ? error.message : String(error)}`,
       });
     }
   },
