@@ -14,18 +14,18 @@ interface Eip1559GasParams {
 }
 
 const DEFAULT_GAS_LIMIT_BUFFER = 50; // adding 50% buffer to the estimated gas
-const DEFAULT_HEADROOM_MULTIPLIER = 2; // maxFee = base * 2 + tip
+const DEFAULT_BASE_FEE_PER_GAS_MULTIPLIER = 2; // maxFee = base * 2 + tip
 
 export const getGasParams = async ({
   rpcUrl,
   estimatedGas,
   gasLimitBuffer = DEFAULT_GAS_LIMIT_BUFFER,
-  headroomMultiplier = DEFAULT_HEADROOM_MULTIPLIER,
+  baseFeePerGasMultiplier = DEFAULT_BASE_FEE_PER_GAS_MULTIPLIER,
 }: {
   rpcUrl: string;
   estimatedGas: string;
   gasLimitBuffer?: number;
-  headroomMultiplier?: number;
+  baseFeePerGasMultiplier?: number;
 }): Promise<GasParams> => {
   const provider = new JsonRpcProvider(rpcUrl);
 
@@ -41,10 +41,10 @@ export const getGasParams = async ({
      *
      * For example:
      *  gasLimitBuffer = 50 → 5000 (meaning 50.00%)
-     *  headroomMultiplier = 1.5 → 150 (meaning 1.50×)
+     *  baseFeePerGasMultiplier = 1.5 → 150 (meaning 1.50×)
      */
     const gasLimitBufferScaled = BigInt(Math.round(gasLimitBuffer * 100)); // e.g. 50 -> 5000
-    const headroomMultiplierScaled = BigInt(Math.round(headroomMultiplier * 100)); // e.g. 1.5 -> 150
+    const baseFeePerGasMultiplierScaled = BigInt(Math.round(baseFeePerGasMultiplier * 100)); // e.g. 1.5 -> 150
     const SCALE = 100n;
 
     /**
@@ -79,10 +79,10 @@ export const getGasParams = async ({
     const isEip1559Network = baseFee != null || maxFee != null || priority != null;
 
     if (isEip1559Network) {
-      // Prefer maxFee provided by the provider, otherwise compute with headroomMultiplier: base * headroomMultiplier + tip
+      // Prefer maxFee provided by the provider, otherwise compute with baseFeePerGasMultiplier: base * baseFeePerGasMultiplier + tip
       let computedMaxFee = maxFee;
       if (!computedMaxFee && baseFee != null && priority != null) {
-        computedMaxFee = (baseFee * headroomMultiplierScaled) / SCALE + priority;
+        computedMaxFee = (baseFee * baseFeePerGasMultiplierScaled) / SCALE + priority;
       }
 
       if (priority == null || computedMaxFee == null) {

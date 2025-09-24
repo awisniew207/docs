@@ -37,7 +37,7 @@ export const abilityParamsSchema = z.object({
         .describe(
           'Extra percentage added to the estimated gas limit to reduce risk of out-of-gas errors. Defaults to 50 (i.e. 50%).',
         ),
-      headroomMultiplier: z
+      baseFeePerGasMultiplier: z
         .number()
         .optional()
         .describe(

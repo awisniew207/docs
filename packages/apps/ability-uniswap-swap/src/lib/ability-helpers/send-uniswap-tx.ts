@@ -80,10 +80,9 @@ export const sendUniswapTx = async ({
 
         // Use getGasParams helper which handles block/feeData fetching and applies 50% buffer
         const gasParams = await getGasParams({
+          ...transactionOptions,
           rpcUrl,
           estimatedGas: uniswapTxData.estimatedGasUsed,
-          gasLimitBuffer: transactionOptions?.gasLimitBuffer,
-          headroomMultiplier: transactionOptions?.headroomMultiplier,
         });
 
         const partialSwapTx: PartialSwapTx = {

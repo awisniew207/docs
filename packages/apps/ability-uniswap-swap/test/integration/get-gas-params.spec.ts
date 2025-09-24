@@ -64,7 +64,7 @@ describe('getGasParams (live and mocked)', () => {
       jest.restoreAllMocks();
     });
 
-    it('EIP-1559: computes cap as base * headroom + tip when provider maxFeePerGas is null', async () => {
+    it('EIP-1559: computes cap as base * baseFeePerGasMultiplier + tip when provider maxFeePerGas is null', async () => {
       const baseFee = 1_000_000_000n; // 1 gwei
       const priority = 1_000_000n; // 0.001 gwei
 
@@ -93,7 +93,7 @@ describe('getGasParams (live and mocked)', () => {
       // EIP-1559 branch
       expect('maxFeePerGas' in result).toBe(true);
       if ('maxFeePerGas' in result) {
-        const expectedCap = baseFee * 2n + priority; // default headroom is 2x
+        const expectedCap = baseFee * 2n + priority; // default baseFeePerGasMultiplier is 2x
         expect(result.maxFeePerGas).toBe(expectedCap.toString());
         expect(result.maxPriorityFeePerGas).toBe(priority.toString());
         expect(BigInt(result.maxFeePerGas) >= BigInt(result.maxPriorityFeePerGas)).toBe(true);
@@ -133,10 +133,10 @@ describe('getGasParams (live and mocked)', () => {
       }
     });
 
-    it('EIP-1559: applies custom headroom multiplier', async () => {
+    it('EIP-1559: applies custom baseFeePerGasMultiplier', async () => {
       const baseFee = 2_000_000_000n; // 2 gwei
       const priority = 500_000_000n; // 0.5 gwei
-      const headroomMultiplier = 1.5; // 1.5x instead of default 2x
+      const baseFeePerGasMultiplier = 1.5; // 1.5x instead of default 2x
 
       feeDataSpy.mockResolvedValue({
         gasPrice: null,
@@ -155,7 +155,7 @@ describe('getGasParams (live and mocked)', () => {
       const result = await getGasParams({
         rpcUrl: 'http://mock.rpc',
         estimatedGas,
-        headroomMultiplier,
+        baseFeePerGasMultiplier,
       });
 
       // Assert buffer: 30000 * 1.5 = 45000
