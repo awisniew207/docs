@@ -1,0 +1,90 @@
+---
+title: Quick Start
+---
+
+## Creating a New Vincent App
+
+This section of the Quick Start will cover the steps to create a new Vincent App and the minimum possible steps to execute an ability on behalf of a user.
+
+// DEV NOTE: The images aren't added since I'm wondering if we improve the UX here alongside the docs. It might sound like a waste of time since this is such a high priority, 
+// but the next best way to shorten these pages WILL be making a smoother devX on the Developer Dashboard. I'm going to take notes on areas for improvement as I work on these pages
+
+<Steps>
+  <Step title="Log into the Vincent Developer Dashboard">
+    Go to the [Vincent Developer Dashboard](https://dashboard.heyvincent.ai) and log in with your preferred authentication method. [TODO: ADD IMAGE]
+  </Step>
+
+  <Step title="Create a New Vincent App">
+    After logging in, click the **Create an app** button to access the [Create App Page](https://dashboard.heyvincent.ai/developer/create-app) [TODO: ADD IMAGE]
+  </Step>
+
+  <Step title="Fill in the App Details">
+    You can use test values for:
+    - App Name
+    - Contact Email
+    - Description
+    - App User URL
+    - Redirect URIs
+
+    The following field requires specific values:
+    - **Delegatee Addresses**: This can be any EOA you have access to the private key of.
+
+    Once you've filled in the required fields, click the **Create App** button to create your new Vincent App.
+
+    <Info>
+    If you misinput any of these, don't worry. These are editable after app creation as well.
+    </Info>
+  </Step>
+
+  <Step title="Add Vincent Abilities">
+    After creating your Vincent App, you'll be directed to the Add Abilities page. Click the **Add Abilities to Version** button, and select:
+    - **ERC20 Approval**
+    - **Uniswap Swap**
+
+    to add them to your Vincent App. [TODO: ADD IMAGE]
+  </Step>
+
+  <Step title="Set Version 1 as Active">
+    Set version 1 of your application as the active version. This is not set as a default to prevent users from seeing your app before you're ready to release it. [TODO: ADD IMAGE]
+  </Step>
+
+  <Step title="Publish the App Version">
+    On the left sidebar, click **Apps**, then **App Versions**, and **Version 1** to navigate to the App Version management page. Click the **Publish App Version** button to register the App Version as published in the Vincent Registry smart contract. [TODO: ADD IMAGE]
+  </Step>
+
+  <Step title="Permit your App">
+    On your App page, click the share button to view the Connect Page URL. Navigate to your App's connect page, and grant permissions to your application. [TODO: ADD IMAGE]
+  </Step>
+
+  <Step title="Execute Code on Behalf of your User">
+    Once permissions are granted, you can execute abilities on behalf of the user:
+
+    // DEV NOTE: I'm not sure about the example-org here, or why it exists. 
+    // FIXME
+    ```typescript
+    import { ethers } from 'ethers';
+    import { getVincentAbilityClient } from '@lit-protocol/vincent-app-sdk/abilityClient';
+    import { bundledVincentAbility } from '@example-org/vincent-ability-example-erc20-transfer';
+
+    // FIXME: replace this with your app's delegatee private key
+    const ethersSigner = new ethers.Wallet("REPLACE-ME");
+
+    const abilityClient = getVincentAbilityClient({
+      bundledVincentAbility,
+      ethersSigner,
+    });
+
+    const executeResult = await abilityClient.execute({
+      abilityParams: {
+        tokenAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base
+        recipientAddress: '0x1234567890123456789012345678901234567890',
+        amount: 100,
+      },
+      context: {
+        // The ETH address of the Vincent Wallet you are executing the Ability on behalf of
+        delegatorPkpEthAddress: '0x1234567890123456789012345678901234567890',
+      },
+    });
+    ```
+  </Step>
+</Steps>

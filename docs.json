@@ -49,12 +49,12 @@
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "App Developers",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Introduction",
             "pages": [
-              "api-reference/introduction"
+              "app/quickstart"
             ]
           }
         ]
