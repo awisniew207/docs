@@ -19,6 +19,8 @@ module.exports = [
           ignoredDependencies: [
             // It's a peerDependency to ensure people don't try to use the wrong VincentAbilityClient with it -- not directly used.
             '@lit-protocol/vincent-app-sdk',
+            // ethers-v6 is an alias for ethers@^6, used in get-gas-params.ts
+            'ethers-v6',
           ],
         },
       ],
