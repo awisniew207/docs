@@ -16,8 +16,34 @@
           {
             "group": "Introduction",
             "pages": [
-              "Concepts/Introduction/About",
-              "Concepts/Introduction/Security"
+              "concepts/introduction/about",
+              "concepts/introduction/security"
+            ]
+          },
+          {
+            "group": "Apps",
+            "pages" : [
+              "concepts/apps/about"
+            ]
+          },
+          {
+            "group": "Abilities",
+            "pages" : [
+              "concepts/abilities/about"
+            ]
+          },
+          {
+            "group": "Policies",
+            "pages" : [
+              "concepts/policies/about"
+            ]
+          },
+          {
+            "group": "Wallets",
+            "pages" : [
+              "concepts/wallets/about",
+              "concepts/wallets/user-accounts",
+              "concepts/wallets/agent-wallets"
             ]
           }
         ]
