@@ -15,17 +15,53 @@ declare const Lit: {
   };
 };
 
+interface PartialSwapTx {
+  to: string;
+  data: string;
+  nonce: number;
+  gasLimit: string;
+  gasPrice?: string;
+  maxFeePerGas?: string;
+  maxPriorityFeePerGas?: string;
+}
+
+interface BaseUnsignedSwapTx {
+  to: string;
+  data: string;
+  value: ethers.BigNumber;
+  gasLimit: ethers.BigNumber;
+  chainId: number;
+  nonce: number;
+}
+
+interface Eip1559UnsignedSwapTx extends BaseUnsignedSwapTx {
+  type: 2;
+  maxFeePerGas: ethers.BigNumber;
+  maxPriorityFeePerGas: ethers.BigNumber;
+}
+
+interface LegacyUnsignedSwapTx extends BaseUnsignedSwapTx {
+  gasPrice: ethers.BigNumber;
+}
+
+type UnsignedSwapTx = Eip1559UnsignedSwapTx | LegacyUnsignedSwapTx;
+
 export const sendUniswapTx = async ({
   rpcUrl,
   chainId,
   pkpEthAddress,
   pkpPublicKey,
   uniswapTxData,
+  transactionOptions,
 }: {
   rpcUrl: string;
   chainId: number;
   pkpEthAddress: string;
   pkpPublicKey: string;
+  transactionOptions?: {
+    gasLimitBuffer?: number;
+    headroomMultiplier?: number;
+  };
   uniswapTxData: {
     to: string;
     calldata: string;
@@ -43,30 +79,41 @@ export const sendUniswapTx = async ({
         console.log('Using pre-computed Uniswap route for swap (sendUniswapTx)');
 
         // Use getGasParams helper which handles block/feeData fetching and applies 50% buffer
-        const { estimatedGas, maxFeePerGas, maxPriorityFeePerGas } = await getGasParams(
-          uniswapRpcProvider,
-          ethers.BigNumber.from(uniswapTxData.estimatedGasUsed),
-        );
-
-        console.log('Swap transaction details with pre-computed route (sendUniswapTx)', {
-          to: uniswapTxData.to,
-          calldata: uniswapTxData.calldata,
-          routeEstimatedGas: uniswapTxData.estimatedGasUsed,
-          adjustedGasLimit: estimatedGas.toString(),
-          maxPriorityFeePerGas: `${ethers.utils.formatUnits(maxPriorityFeePerGas, 'gwei')} gwei`,
-          maxFeePerGas: `${ethers.utils.formatUnits(maxFeePerGas, 'gwei')} gwei`,
+        const gasParams = await getGasParams({
+          rpcUrl,
+          estimatedGas: uniswapTxData.estimatedGasUsed,
+          gasLimitBuffer: transactionOptions?.gasLimitBuffer,
+          headroomMultiplier: transactionOptions?.headroomMultiplier,
         });
+
+        const partialSwapTx: PartialSwapTx = {
+          to: uniswapTxData.to,
+          data: uniswapTxData.calldata,
+          nonce: await uniswapRpcProvider.getTransactionCount(pkpEthAddress),
+          gasLimit: gasParams.estimatedGas,
+        };
+
+        if ('gasPrice' in gasParams) {
+          partialSwapTx.gasPrice = gasParams.gasPrice;
+
+          console.log('[sendUniswapTx] partialSwapTx with legacy gas price:', {
+            ...partialSwapTx,
+            gasPrice: `${ethers.utils.formatUnits(gasParams.gasPrice, 'gwei')} gwei`,
+          });
+        } else {
+          partialSwapTx.maxFeePerGas = gasParams.maxFeePerGas;
+          partialSwapTx.maxPriorityFeePerGas = gasParams.maxPriorityFeePerGas;
+
+          console.log('[sendUniswapTx] partialSwapTx with EIP-1559 gas params:', {
+            ...partialSwapTx,
+            maxFeePerGas: `${ethers.utils.formatUnits(gasParams.maxFeePerGas, 'gwei')} gwei`,
+            maxPriorityFeePerGas: `${ethers.utils.formatUnits(gasParams.maxPriorityFeePerGas, 'gwei')} gwei`,
+          });
+        }
 
         return JSON.stringify({
           status: 'success',
-          partialSwapTx: {
-            to: uniswapTxData.to,
-            data: uniswapTxData.calldata,
-            gasLimit: estimatedGas.toString(),
-            maxFeePerGas: maxFeePerGas.toString(),
-            maxPriorityFeePerGas: maxPriorityFeePerGas.toString(),
-            nonce: await uniswapRpcProvider.getTransactionCount(pkpEthAddress),
-          },
+          partialSwapTx,
         });
       } catch (error) {
         return JSON.stringify({
@@ -83,26 +130,40 @@ export const sendUniswapTx = async ({
       `Error getting transaction data for swap: ${parsedPartialSwapTxResponse.error} (sendUniswapTx)`,
     );
   }
-  const { partialSwapTx } = parsedPartialSwapTxResponse;
+  const { partialSwapTx }: { partialSwapTx: PartialSwapTx } = parsedPartialSwapTxResponse;
 
-  const unsignedSwapTx = {
+  const baseUnsignedSwapTx: BaseUnsignedSwapTx = {
     to: partialSwapTx.to,
     data: partialSwapTx.data,
     value: ethers.BigNumber.from(0),
     gasLimit: ethers.BigNumber.from(partialSwapTx.gasLimit),
-    maxFeePerGas: ethers.BigNumber.from(partialSwapTx.maxFeePerGas),
-    maxPriorityFeePerGas: ethers.BigNumber.from(partialSwapTx.maxPriorityFeePerGas),
     nonce: partialSwapTx.nonce,
     chainId,
-    type: 2,
   };
-  console.log('Unsigned swap transaction object with pre-computed route (sendUniswapTx)', {
-    ...unsignedSwapTx,
-    value: unsignedSwapTx.value.toString(),
-    gasLimit: unsignedSwapTx.gasLimit.toString(),
-    maxFeePerGas: unsignedSwapTx.maxFeePerGas.toString(),
-    maxPriorityFeePerGas: unsignedSwapTx.maxPriorityFeePerGas.toString(),
-  });
+
+  let unsignedSwapTx: UnsignedSwapTx;
+  if ('gasPrice' in partialSwapTx) {
+    unsignedSwapTx = {
+      ...baseUnsignedSwapTx,
+      gasPrice: ethers.BigNumber.from(partialSwapTx.gasPrice),
+    };
+    console.log('[sendUniswapTx] unsignedSwapTx with legacy gas price:', {
+      ...unsignedSwapTx,
+      gasPrice: `${ethers.utils.formatUnits(unsignedSwapTx.gasPrice, 'gwei')} gwei`,
+    });
+  } else {
+    unsignedSwapTx = {
+      ...baseUnsignedSwapTx,
+      type: 2,
+      maxFeePerGas: ethers.BigNumber.from(partialSwapTx.maxFeePerGas),
+      maxPriorityFeePerGas: ethers.BigNumber.from(partialSwapTx.maxPriorityFeePerGas),
+    };
+    console.log('[sendUniswapTx] unsignedSwapTx with EIP-1559 gas params:', {
+      ...unsignedSwapTx,
+      maxFeePerGas: `${ethers.utils.formatUnits(unsignedSwapTx.maxFeePerGas, 'gwei')} gwei`,
+      maxPriorityFeePerGas: `${ethers.utils.formatUnits(unsignedSwapTx.maxPriorityFeePerGas, 'gwei')} gwei`,
+    });
+  }
 
   const signedSwapTx = await signTx(pkpPublicKey, unsignedSwapTx, 'uniswapSwapSig');
 

@@ -103,7 +103,7 @@ export const vincentAbility = createVincentAbility({
   execute: async ({ abilityParams }, { succeed, fail, delegation: { delegatorPkpInfo } }) => {
     console.log('Executing UniswapSwapAbility', JSON.stringify(abilityParams, bigintReplacer, 2));
 
-    const { rpcUrlForUniswap, signedUniswapQuote } = abilityParams;
+    const { rpcUrlForUniswap, signedUniswapQuote, transactionOptions } = abilityParams;
     const { quote } = signedUniswapQuote;
 
     try {
@@ -128,6 +128,7 @@ export const vincentAbility = createVincentAbility({
         calldata: quote.calldata,
         estimatedGasUsed: quote.estimatedGasUsed,
       },
+      transactionOptions,
     });
 
     return succeed({ swapTxHash });

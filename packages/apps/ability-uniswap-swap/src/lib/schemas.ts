@@ -29,6 +29,23 @@ export const abilityParamsSchema = z.object({
       signature: z.string().describe('The signature of the Uniswap quote'),
     })
     .describe('Signed Uniswap quote from Prepare Lit Action'),
+  transactionOptions: z
+    .object({
+      gasLimitBuffer: z
+        .number()
+        .optional()
+        .describe(
+          'Extra percentage added to the estimated gas limit to reduce risk of out-of-gas errors. Defaults to 50 (i.e. 50%).',
+        ),
+      headroomMultiplier: z
+        .number()
+        .optional()
+        .describe(
+          'Multiplier applied to the base fee when computing maxFeePerGas, ensuring the tx remains valid if base fees rise before inclusion. Defaults to 2.',
+        ),
+    })
+    .optional()
+    .describe('Optional overrides for gasLimit and maxFeePerGas calculation behavior'),
 });
 
 export const precheckFailSchema = z.object({
