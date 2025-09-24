@@ -107,6 +107,11 @@ export const getGasParams = async ({
     };
   } finally {
     // Clean up provider to prevent open handles
-    provider.destroy();
+    try {
+      provider.destroy();
+    } catch (error) {
+      // Silently ignore cleanup errors - the provider will be garbage collected
+      console.log('[getGasParams] Error destroying provider (non-critical):', error);
+    }
   }
 };
