@@ -45,6 +45,12 @@
               "concepts/wallets/user-accounts",
               "concepts/wallets/agent-wallets"
             ]
+          },
+          {
+            "group": "AI Agents",
+            "pages" : [
+              "concepts/ai-agents/about"
+            ]
           }
         ]
       },
@@ -54,7 +60,9 @@
           {
             "group": "Introduction",
             "pages": [
-              "app/quickstart"
+              "app/quickstart",
+              "app/updating-apps",
+              "app/authenticating-users"
             ]
           }
         ]

@@ -1,0 +1,116 @@
+---
+title: Authenticating Users
+---
+
+The Vincent Web App Client enables secure user authentication and consent management for executing Vincent Abilities on their behalf.
+
+## Authentication Flow
+
+1. Your app redirects users to the Vincent Connect Page
+2. Users review requested Abilities and configure Policies
+3. Upon approval, users return to your app with a signed JWT
+4. Your app verifies and stores the JWT for authenticated requests
+
+## Vincent JWT
+
+The JWT proves:
+- User authentication via their Vincent Wallet
+- User permission for your app to act on their behalf
+
+### JWT Contains
+
+- **pkp**: User's Vincent Wallet (address, public key, token ID)
+- **app**: Your app ID and authorized version
+- **authentication**: Method used (email, phone, or passkey)
+- **aud**: Valid audience (your domain/redirect URI)
+- **exp**: Expiration timestamp
+
+## Setting Up the Web App Client
+
+```javascript
+import { getWebAuthClient } from '@lit-protocol/vincent-app-sdk/webAuthClient';
+
+const vincentAppClient = getWebAuthClient({
+  appId: process.env.MY_VINCENT_APP_ID
+});
+```
+
+## Handling Authentication
+
+```javascript
+import { getWebAuthClient } from '@lit-protocol/vincent-app-sdk/webAuthClient';
+import { isExpired } from '@lit-protocol/vincent-app-sdk/jwt';
+
+const vincentAppClient = getWebAuthClient({
+  appId: process.env.MY_VINCENT_APP_ID
+});
+
+// Check for JWT in URL after Connect flow
+if (vincentAppClient.uriContainsVincentJWT()) {
+  const { decodedJWT, jwtStr } = vincentAppClient.decodeVincentJWTFromUri(
+    window.location.origin
+  );
+
+  // Store JWT
+  localStorage.setItem('VINCENT_AUTH_JWT', jwtStr);
+
+  // Clean URL
+  vincentAppClient.removeVincentJWTFromURI();
+} else {
+  // Check for existing JWT
+  const storedJwt = localStorage.getItem('VINCENT_AUTH_JWT');
+  const expired = storedJwt ? isExpired(storedJwt) : true;
+
+  if (!storedJwt || expired) {
+    // Redirect to Connect Page
+    vincentAppClient.redirectToConnectPage({
+      redirectUri: window.location.href
+    });
+  }
+}
+```
+
+<Warning>
+The `redirectUri` must be one of your configured Authorized Redirect URIs.
+</Warning>
+
+## Backend Verification
+
+Always verify JWTs submitted to your backend:
+
+```javascript
+import { verify } from '@lit-protocol/vincent-app-sdk/jwt';
+
+const vincentJwt = '...'; // JWT from frontend
+const jwtAudience = 'https://my-redirect-uri.com';
+
+try {
+  const decodedJWT = verify(vincentJwt, jwtAudience);
+  // JWT is valid
+} catch (error) {
+  // JWT is invalid, expired, or mis-scoped
+}
+```
+
+## Client Methods
+
+### `redirectToConnectPage`
+Redirects to Vincent Connect Page for user authentication and consent.
+
+### `uriContainsVincentJWT`
+Returns `true` if URL contains a Vincent JWT after Connect flow.
+
+### `decodeVincentJWTFromUri`
+Extracts and validates JWT from URL, verifying:
+- Signature from user's Vincent Wallet
+- JWT hasn't expired
+- JWT was issued for your app
+
+### `removeVincentJWTFromURI`
+Removes JWT parameter from URL after extraction and storage.
+
+## Next Steps
+
+- [Execute Vincent Abilities](/app/executing-abilities) on behalf of authenticated users
+- [Create custom Vincent Abilities](/abilities/creating-abilities)
+- [Create custom Vincent Policies](/policies/creating-policies)
