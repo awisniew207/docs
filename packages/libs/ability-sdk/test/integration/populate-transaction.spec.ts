@@ -22,17 +22,16 @@ describe('populateTransaction (live and mocked)', () => {
 
   describe('live: Base network', () => {
     it('should populate transaction with real gas estimates from Base network and apply buffers', async () => {
-      // Test with zero address as 'from' to test gas estimation without needing a real funded account
       const result = await populateTransaction({
         to: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base
-        from: '0x1234567890123456789012345678901234567890', // Zero address
+        from: '0x1234567890123456789012345678901234567890',
         data: erc20Interface.encodeFunctionData('balanceOf', [
           '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
-        ]), // balanceOf function
+        ]),
         value: '0x0',
         rpcUrl: BASE_RPC_URL,
-        gasBufferPercentage: 50, // 50% gas buffer
-        baseFeePerGasBufferPercentage: 20, // 20% base fee buffer
+        gasBufferPercentage: 50,
+        baseFeePerGasBufferPercentage: 20,
       });
 
       // Basic structure checks
@@ -75,7 +74,7 @@ describe('populateTransaction (live and mocked)', () => {
 
     it('should apply gas buffer when gasBufferPercentage is provided', async () => {
       const baseGasLimit = 100000n;
-      const gasBufferPercentage = 50; // 50% buffer
+      const gasBufferPercentage = 50;
 
       populateTransactionSpy.mockResolvedValue({
         to: mockTransaction.to,
@@ -101,7 +100,7 @@ describe('populateTransaction (live and mocked)', () => {
     it('should apply baseFeePerGas buffer for EIP-1559 transactions', async () => {
       const baseGasLimit = 80000n;
       const baseMaxFeePerGas = 2_000_000_000n; // 2 gwei
-      const baseFeePerGasBufferPercentage = 25; // 25% buffer
+      const baseFeePerGasBufferPercentage = 25;
 
       populateTransactionSpy.mockResolvedValue({
         to: mockTransaction.to,
@@ -122,14 +121,14 @@ describe('populateTransaction (live and mocked)', () => {
       // Base fee buffer: 2 gwei * 1.25 = 2.5 gwei
       const expectedMaxFeePerGas = (baseMaxFeePerGas * 125n) / 100n;
       expect(result.maxFeePerGas).toBe('0x' + expectedMaxFeePerGas.toString(16));
-      expect(result.maxPriorityFeePerGas).toBe('0x' + 1_000_000_000n.toString(16)); // unchanged
+      expect(result.maxPriorityFeePerGas).toBe('0x' + 1_000_000_000n.toString(16));
     });
 
     it('should apply both gas and base fee buffers', async () => {
       const baseGasLimit = 60000n;
       const baseMaxFeePerGas = 3_000_000_000n; // 3 gwei
-      const gasBufferPercentage = 30; // 30% gas buffer
-      const baseFeePerGasBufferPercentage = 15; // 15% base fee buffer
+      const gasBufferPercentage = 30;
+      const baseFeePerGasBufferPercentage = 15;
 
       populateTransactionSpy.mockResolvedValue({
         to: mockTransaction.to,
@@ -227,7 +226,6 @@ describe('populateTransaction (live and mocked)', () => {
         data: mockTransaction.data,
         value: mockTransaction.value,
         gasLimit: 50000n,
-        // maxFeePerGas is missing but it's not a legacy tx (no gasPrice)
         maxPriorityFeePerGas: 1_000_000_000n,
         chainId: 1,
       });
