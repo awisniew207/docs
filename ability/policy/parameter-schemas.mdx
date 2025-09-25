@@ -1,0 +1,308 @@
+---
+title: Policy Parameter Schemas
+---
+
+Define the structure and validation for your Policy's parameters using Zod schemas. Policies use two distinct parameter types to maintain security boundaries.
+
+## Schema Types
+
+<CardGroup cols={2}>
+  <Card title="Ability Parameters" icon="arrow-right">
+    Parameters passed from executing Abilities to your Policy
+  </Card>
+  <Card title="User Parameters" icon="user-cog">
+    User-configurable boundaries stored securely on-chain
+  </Card>
+</CardGroup>
+
+## abilityParamsSchema
+
+This schema defines what parameters Vincent Abilities must provide when your Policy evaluates their execution request.
+
+```typescript
+import { z } from 'zod';
+
+const abilityParamsSchema = z.object({
+  // Core transaction details
+  tokenAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid token address"),
+  amount: z.number().positive("Amount must be positive"),
+
+  // Optional context
+  recipientAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/).optional(),
+  transactionType: z.enum(["transfer", "swap", "stake"]).optional(),
+});
+```
+
+### Common Patterns
+
+<Tabs>
+  <Tab title="Financial Policies">
+    ```typescript
+    const abilityParamsSchema = z.object({
+      tokenAddress: z.string(),
+      amount: z.number().positive(),
+      // Optional price/value context
+      usdValue: z.number().positive().optional(),
+      pricePerToken: z.number().positive().optional(),
+    });
+    ```
+  </Tab>
+  <Tab title="Access Control">
+    ```typescript
+    const abilityParamsSchema = z.object({
+      resourceId: z.string(),
+      action: z.enum(["read", "write", "execute"]),
+      // Context for permission checking
+      requesterAddress: z.string(),
+      timestamp: z.number(),
+    });
+    ```
+  </Tab>
+  <Tab title="Rate Limiting">
+    ```typescript
+    const abilityParamsSchema = z.object({
+      operationType: z.string(),
+      // Minimal params for rate limiting
+      timestamp: z.number(),
+      resourceIdentifier: z.string().optional(),
+    });
+    ```
+  </Tab>
+</Tabs>
+
+## userParamsSchema
+
+This schema defines the user-configurable parameters that control your Policy's behavior. These parameters are:
+- Set by users during delegation
+- Stored securely on-chain
+- Cannot be modified by Apps or executors
+
+```typescript
+const userParamsSchema = z.object({
+  // Spending controls
+  dailySpendingLimit: z.number().positive(),
+  weeklySpendingLimit: z.number().positive().optional(),
+
+  // Token restrictions
+  allowedTokens: z.array(z.string()).optional(),
+  blockedTokens: z.array(z.string()).optional(),
+
+  // Time-based controls
+  allowedHours: z.array(z.number().min(0).max(23)).optional(),
+  timezone: z.string().optional(),
+});
+```
+
+### Advanced User Parameters
+
+<Tabs>
+  <Tab title="Multi-Level Limits">
+    ```typescript
+    const userParamsSchema = z.object({
+      limits: z.object({
+        perTransaction: z.number().positive(),
+        daily: z.number().positive(),
+        weekly: z.number().positive(),
+        monthly: z.number().positive(),
+      }),
+
+      // Emergency controls
+      emergencyStop: z.boolean().default(false),
+      maxFailureCount: z.number().min(1).max(10).default(3),
+    });
+    ```
+  </Tab>
+  <Tab title="Complex Rules">
+    ```typescript
+    const userParamsSchema = z.object({
+      rules: z.array(z.object({
+        condition: z.enum(["amount_gt", "token_eq", "time_between"]),
+        value: z.union([z.number(), z.string(), z.array(z.number())]),
+        action: z.enum(["allow", "deny", "require_approval"]),
+      })),
+
+      // Fallback behavior
+      defaultAction: z.enum(["allow", "deny"]).default("deny"),
+    });
+    ```
+  </Tab>
+  <Tab title="Approval Workflows">
+    ```typescript
+    const userParamsSchema = z.object({
+      approvers: z.array(z.string()).min(1),
+      requiredApprovals: z.number().min(1),
+
+      // Auto-approval thresholds
+      autoApproveBelow: z.number().positive().optional(),
+      approvalTimeoutHours: z.number().min(1).max(168).default(24),
+    });
+    ```
+  </Tab>
+</Tabs>
+
+## Schema Integration
+
+Your schemas work together to provide comprehensive validation:
+
+```typescript
+import { createVincentPolicy } from '@lit-protocol/vincent-ability-sdk';
+
+const vincentPolicy = createVincentPolicy({
+  packageName: '@example/spending-limit-policy',
+
+  // Define what Abilities must provide
+  abilityParamsSchema: z.object({
+    tokenAddress: z.string(),
+    amount: z.number().positive(),
+    usdValue: z.number().positive(),
+  }),
+
+  // Define what users can configure
+  userParamsSchema: z.object({
+    dailySpendingLimit: z.number().positive(),
+    allowedTokens: z.array(z.string()).optional(),
+  }),
+
+  // Use both in your policy functions
+  precheck: async ({ abilityParams, userParams }, policyContext) => {
+    const { tokenAddress, amount, usdValue } = abilityParams;
+    const { dailySpendingLimit, allowedTokens } = userParams;
+
+    // Validate against user configuration
+    if (allowedTokens && !allowedTokens.includes(tokenAddress)) {
+      return policyContext.deny({ reason: 'Token not allowed' });
+    }
+
+    // Check spending limits
+    if (usdValue > dailySpendingLimit) {
+      return policyContext.deny({ reason: 'Exceeds daily limit' });
+    }
+
+    return policyContext.allow({ validated: true });
+  },
+});
+```
+
+## Validation Best Practices
+
+<Steps>
+  <Step title="Keep Ability Params Minimal">
+    Only require parameters you actually need for policy decisions
+  </Step>
+
+  <Step title="Make User Params Flexible">
+    Provide sensible defaults and optional parameters for user convenience
+  </Step>
+
+  <Step title="Use Descriptive Validation">
+    Add custom error messages to help with debugging
+  </Step>
+
+  <Step title="Consider Future Needs">
+    Design schemas that can evolve without breaking existing deployments
+  </Step>
+</Steps>
+
+### Schema Evolution Example
+
+```typescript
+// Version 1 - Basic schema
+const userParamsSchemaV1 = z.object({
+  dailyLimit: z.number(),
+});
+
+// Version 2 - Extended with backward compatibility
+const userParamsSchemaV2 = z.object({
+  // Legacy support
+  dailyLimit: z.number().optional(),
+
+  // New structured approach
+  limits: z.object({
+    daily: z.number(),
+    weekly: z.number().optional(),
+    monthly: z.number().optional(),
+  }).optional(),
+}).refine((data) => {
+  // Ensure either old or new format is provided
+  return data.dailyLimit !== undefined || data.limits !== undefined;
+}, {
+  message: "Either dailyLimit or limits must be specified",
+});
+```
+
+## Type Safety
+
+Get TypeScript types from your schemas:
+
+```typescript
+import { z } from 'zod';
+
+const abilityParamsSchema = z.object({
+  tokenAddress: z.string(),
+  amount: z.number(),
+});
+
+const userParamsSchema = z.object({
+  dailyLimit: z.number(),
+  allowedTokens: z.array(z.string()).optional(),
+});
+
+// Infer TypeScript types
+type AbilityParams = z.infer<typeof abilityParamsSchema>;
+// Result: { tokenAddress: string; amount: number; }
+
+type UserParams = z.infer<typeof userParamsSchema>;
+// Result: { dailyLimit: number; allowedTokens?: string[]; }
+
+// Use in your policy functions
+const precheck = async (
+  { abilityParams, userParams }: {
+    abilityParams: AbilityParams;
+    userParams: UserParams
+  },
+  policyContext: PolicyContext
+) => {
+  // Full type safety and IntelliSense
+  const isAllowed = userParams.allowedTokens?.includes(abilityParams.tokenAddress);
+  // ...
+};
+```
+
+## Testing Your Schemas
+
+Validate your schemas work correctly:
+
+```typescript
+// Test ability parameter validation
+const testAbilityParams = {
+  tokenAddress: '0x1234567890123456789012345678901234567890',
+  amount: 100,
+};
+
+const abilityResult = abilityParamsSchema.safeParse(testAbilityParams);
+if (!abilityResult.success) {
+  console.error('Ability params validation failed:', abilityResult.error.issues);
+}
+
+// Test user parameter validation
+const testUserParams = {
+  dailyLimit: 1000,
+  allowedTokens: ['0x1234567890123456789012345678901234567890'],
+};
+
+const userResult = userParamsSchema.safeParse(testUserParams);
+if (!userResult.success) {
+  console.error('User params validation failed:', userResult.error.issues);
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Precheck Function" icon="check-circle" href="/ability/policy/precheck-function">
+    Use your parameters in local validation logic
+  </Card>
+  <Card title="User Interface" icon="palette" href="/ability/policy/user-interface">
+    Define how users configure your parameters
+  </Card>
+</CardGroup>

@@ -1,0 +1,418 @@
+---
+title: How Vincent Policies Work
+---
+
+Vincent Policies are programmable guardrails that determine whether Vincent Apps can execute specific Abilities on behalf of users. They ensure autonomous agents operate strictly within user-defined boundaries.
+
+## What is a Vincent Policy?
+
+A Vincent Policy is a function built using Lit Actions that provides user-configurable parameters and sophisticated validation logic for Ability executions.
+
+### Key Capabilities
+
+<CardGroup cols={2}>
+  <Card title="Flexible Data Access" icon="database">
+    Read and write on-chain and off-chain data across any blockchain or API
+  </Card>
+  <Card title="Stateful Management" icon="memory">
+    Persist data across executions to track metrics and implement complex rules
+  </Card>
+  <Card title="Cryptographic Security" icon="lock">
+    Utilize Lit Protocol's encryption and TEE capabilities for private data
+  </Card>
+  <Card title="Type-Safe Development" icon="shield-check">
+    Strongly-typed Zod schemas ensure parameter validation and clear interfaces
+  </Card>
+</CardGroup>
+
+## Real-World Policy Examples
+
+<Tabs>
+  <Tab title="Financial Controls">
+    - **Daily Spending Limits**: Track cumulative spending and deny executions when exceeded
+    - **Multi-Signature Requirements**: Require additional approvals for high-value transactions
+    - **Token Allowlists**: Restrict transactions to specific tokens or verified contracts
+  </Tab>
+  <Tab title="Access Management">
+    - **Membership Gates**: Verify ownership of assets or roles before allowing access
+    - **Time-Based Restrictions**: Allow execution only during specific hours or days
+    - **Usage Limits**: Implement rate limiting and cooldown periods
+  </Tab>
+  <Tab title="Risk Management">
+    - **Pattern Analysis**: Monitor spending patterns and flag suspicious activity
+    - **Circuit Breakers**: Automatically disable abilities when unusual activity detected
+    - **Emergency Stops**: Admin-controlled pauses for policy-governed operations
+  </Tab>
+</Tabs>
+
+## Policy Lifecycle
+
+Vincent Policies execute in three phases to provide comprehensive validation and state management:
+
+<Steps>
+  <Step title="Precheck">
+    Local validation to check if policy should permit execution based on current conditions
+  </Step>
+
+  <Step title="Evaluate">
+    In-action validation with full blockchain access to make final allow/deny decision
+  </Step>
+
+  <Step title="Commit (Optional)">
+    Update policy state after successful Ability execution to maintain accurate tracking
+  </Step>
+</Steps>
+
+## Defining Your Policy
+
+Vincent Policies are created using `createVincentPolicy` from the Vincent Ability SDK:
+
+```typescript
+import { createVincentPolicy } from '@lit-protocol/vincent-ability-sdk';
+
+export const vincentPolicy = createVincentPolicy({
+  packageName: '@your-org/my-policy',
+
+  // Parameter schemas
+  abilityParamsSchema,    // What Abilities pass to your Policy
+  userParamsSchema,       // User-configurable boundaries and limits
+
+  // Precheck validation
+  precheckAllowResultSchema,
+  precheckDenyResultSchema,
+  precheck: async ({ abilityParams, userParams }, policyContext) => {
+    // Local validation logic
+  },
+
+  // In-action evaluation
+  evalAllowResultSchema,
+  evalDenyResultSchema,
+  evaluate: async ({ abilityParams, userParams }, policyContext) => {
+    // Final validation with blockchain access
+  },
+
+  // State management
+  commitParamsSchema,
+  commitAllowResultSchema,
+  commitDenyResultSchema,
+  commit: async (params, policyContext) => {
+    // Update policy state after successful execution
+  },
+});
+```
+
+## Policy Context
+
+The `policyContext` object provides essential information and utilities:
+
+<ParamField path="abilityIpfsCid" type="string">
+  IPFS CID of the executing Ability
+</ParamField>
+
+<ParamField path="appId" type="number">
+  ID of the Vincent App executing this Ability
+</ParamField>
+
+<ParamField path="appVersion" type="number">
+  Version of the Vincent App
+</ParamField>
+
+<ParamField path="delegation" type="object">
+  Information about the execution delegation
+  <Expandable title="properties">
+    <ParamField path="delegateeAddress" type="string">
+      Ethereum address of the Ability executor
+    </ParamField>
+    <ParamField path="delegatorPkpInfo" type="object">
+      User's Vincent Wallet information (tokenId, ethAddress, publicKey)
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField path="allow" type="function">
+  Helper to return allow results
+</ParamField>
+
+<ParamField path="deny" type="function">
+  Helper to return deny results
+</ParamField>
+
+## Parameter Schemas
+
+### abilityParamsSchema
+
+Defines what parameters Abilities must provide to your Policy:
+
+```typescript
+import { z } from 'zod';
+
+const abilityParamsSchema = z.object({
+  tokenAddress: z.string(),
+  amount: z.number(),
+});
+```
+
+### userParamsSchema
+
+Defines user-configurable boundaries stored on-chain:
+
+```typescript
+const userParamsSchema = z.object({
+  dailySpendingLimit: z.number(),
+  allowedTokens: z.array(z.string()).optional(),
+});
+```
+
+## Precheck Function
+
+Provides fast, local validation before using network resources:
+
+```typescript
+precheck: async ({ abilityParams, userParams }, policyContext) => {
+  const { amount, tokenAddress } = abilityParams;
+  const { dailySpendingLimit, allowedTokens } = userParams;
+
+  // Check token allowlist
+  if (allowedTokens && !allowedTokens.includes(tokenAddress)) {
+    return policyContext.deny({
+      reason: 'Token not allowed',
+      allowedTokens,
+    });
+  }
+
+  // Check spending limit
+  const currentSpending = await getCurrentDailySpending(tokenAddress);
+  if (currentSpending + amount > dailySpendingLimit) {
+    return policyContext.deny({
+      reason: 'Spending limit exceeded',
+      currentSpending,
+      dailySpendingLimit,
+    });
+  }
+
+  return policyContext.allow({
+    currentSpending,
+    dailySpendingLimit,
+  });
+}
+```
+
+## Evaluate Function
+
+Final validation with full blockchain access in the Lit Action environment:
+
+```typescript
+evaluate: async ({ abilityParams, userParams }, policyContext) => {
+  // Similar logic to precheck but with blockchain access
+  // This is the final decision point for allow/deny
+
+  const validation = await performBlockchainValidation();
+
+  if (validation.success) {
+    return policyContext.allow(validation.data);
+  } else {
+    return policyContext.deny({ reason: validation.error });
+  }
+}
+```
+
+## Commit Function
+
+Updates policy state after successful Ability execution:
+
+```typescript
+commit: async (params, policyContext) => {
+  const { spentAmount, tokenAddress } = params;
+
+  try {
+    const result = await updateSpendingRecord({
+      appId: policyContext.appId,
+      userAddress: policyContext.delegation.delegatorPkpInfo.ethAddress,
+      spentAmount,
+      tokenAddress,
+    });
+
+    return policyContext.allow({
+      updatedDailySpending: result.updatedSpending,
+      remainingLimit: result.remainingLimit,
+    });
+  } catch (error) {
+    return policyContext.deny({
+      reason: 'Failed to update spending record',
+      error: error.message,
+    });
+  }
+}
+```
+
+<Warning>
+Always implement commit functions for stateful Policies. Failure to update state can lead to incorrect policy decisions in future executions.
+</Warning>
+
+## Response Schemas
+
+Define the structure of your policy responses for type safety:
+
+<Tabs>
+  <Tab title="Allow Schemas">
+    ```typescript
+    precheckAllowResultSchema: z.object({
+      currentSpending: z.number(),
+      dailySpendingLimit: z.number(),
+      remainingLimit: z.number(),
+    });
+
+    evalAllowResultSchema: z.object({
+      validated: z.boolean(),
+      blockNumber: z.number().optional(),
+    });
+
+    commitAllowResultSchema: z.object({
+      updatedDailySpending: z.number(),
+      remainingLimit: z.number(),
+      transactionHash: z.string().optional(),
+    });
+    ```
+  </Tab>
+  <Tab title="Deny Schemas">
+    ```typescript
+    precheckDenyResultSchema: z.object({
+      reason: z.string(),
+      currentSpending: z.number().optional(),
+      dailySpendingLimit: z.number().optional(),
+    });
+
+    evalDenyResultSchema: z.object({
+      reason: z.string(),
+      blockNumber: z.number().optional(),
+      errorCode: z.string().optional(),
+    });
+
+    commitDenyResultSchema: z.object({
+      reason: z.string(),
+      attemptedAmount: z.number().optional(),
+      errorDetails: z.string().optional(),
+    });
+    ```
+  </Tab>
+</Tabs>
+
+## User Interface Configuration
+
+Define how users configure your Policy using `inputUiSchema.json`:
+
+```json
+{
+  "jsonSchema": {
+    "type": "object",
+    "properties": {
+      "dailySpendingLimit": {
+        "type": "number",
+        "title": "Daily Spending Limit",
+        "description": "Maximum amount allowed per day"
+      },
+      "allowedTokens": {
+        "type": "array",
+        "items": { "type": "string" },
+        "title": "Allowed Tokens",
+        "description": "List of permitted token addresses"
+      }
+    }
+  },
+  "uiSchema": {
+    "dailySpendingLimit": {
+      "ui:placeholder": "Enter daily limit in USD"
+    },
+    "allowedTokens": {
+      "ui:options": {
+        "addable": true,
+        "removable": true
+      }
+    }
+  }
+}
+```
+
+## Complete Example
+
+<AccordionGroup>
+  <Accordion title="Full Spending Limit Policy" icon="code">
+    ```typescript
+    import { createVincentPolicy } from '@lit-protocol/vincent-ability-sdk';
+    import { z } from 'zod';
+
+    const vincentPolicy = createVincentPolicy({
+      packageName: '@example/spending-limit-policy',
+
+      abilityParamsSchema: z.object({
+        tokenAddress: z.string(),
+        amount: z.number(),
+      }),
+
+      userParamsSchema: z.object({
+        dailySpendingLimit: z.number(),
+        allowedTokens: z.array(z.string()).optional(),
+      }),
+
+      precheckAllowResultSchema: z.object({
+        currentSpending: z.number(),
+        dailySpendingLimit: z.number(),
+      }),
+
+      precheckDenyResultSchema: z.object({
+        reason: z.string(),
+        currentSpending: z.number().optional(),
+        dailySpendingLimit: z.number().optional(),
+      }),
+
+      precheck: async ({ abilityParams, userParams }, policyContext) => {
+        // Implementation here
+      },
+
+      evalAllowResultSchema: z.object({
+        validated: z.boolean(),
+        currentSpending: z.number(),
+      }),
+
+      evalDenyResultSchema: z.object({
+        reason: z.string(),
+        currentSpending: z.number().optional(),
+      }),
+
+      evaluate: async ({ abilityParams, userParams }, policyContext) => {
+        // Implementation here
+      },
+
+      commitParamsSchema: z.object({
+        spentAmount: z.number(),
+        tokenAddress: z.string(),
+      }),
+
+      commitAllowResultSchema: z.object({
+        updatedDailySpending: z.number(),
+        remainingLimit: z.number(),
+      }),
+
+      commitDenyResultSchema: z.object({
+        reason: z.string(),
+        spentAmount: z.number(),
+      }),
+
+      commit: async (params, policyContext) => {
+        // Implementation here
+      },
+    });
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Policy Quick Start" icon="rocket" href="/ability/policy/quickstart">
+    Build your first Policy with the starter kit
+  </Card>
+  <Card title="Integration Guide" icon="link" href="/ability/supporting-policies">
+    Learn how Abilities integrate with Policies
+  </Card>
+</CardGroup>

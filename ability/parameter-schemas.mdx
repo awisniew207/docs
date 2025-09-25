@@ -1,0 +1,174 @@
+---
+title: Parameter Schemas
+---
+
+Define the structure and validation for your Ability's input parameters using Zod schemas.
+
+## abilityParamsSchema
+
+The `abilityParamsSchema` defines what parameters executors must provide to your Ability. Include parameters for both your core functionality and any supported Policies.
+
+```typescript
+import { z } from 'zod';
+
+const abilityParamsSchema = z.object({
+  // Core ability parameters
+  tokenAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid Ethereum address"),
+  amountToSend: z.number().positive("Amount must be positive"),
+  recipientAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid recipient address"),
+
+  // Optional parameters
+  gasLimit: z.number().optional(),
+  customData: z.string().optional(),
+});
+```
+
+## Schema Validation Tips
+
+<CardGroup cols={2}>
+  <Card title="Use Descriptive Validation" icon="check-circle">
+    Add custom error messages to help developers understand requirements
+  </Card>
+  <Card title="Consider Policy Needs" icon="shield-check">
+    Include parameters required by your supported Policies
+  </Card>
+</CardGroup>
+
+### Common Validation Patterns
+
+<Tabs>
+  <Tab title="Ethereum Addresses">
+    ```typescript
+    address: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid Ethereum address")
+    ```
+  </Tab>
+  <Tab title="Token Amounts">
+    ```typescript
+    amount: z.number().positive("Amount must be positive")
+    // or for big numbers
+    amount: z.string().regex(/^\d+$/, "Must be a valid number string")
+    ```
+  </Tab>
+  <Tab title="Optional Parameters">
+    ```typescript
+    gasLimit: z.number().min(21000).optional(),
+    deadline: z.number().optional(),
+    ```
+  </Tab>
+</Tabs>
+
+## Advanced Schema Features
+
+### Conditional Validation
+
+```typescript
+const abilityParamsSchema = z.object({
+  tokenAddress: z.string(),
+  amountToSend: z.number(),
+  recipientAddress: z.string(),
+  useCustomGas: z.boolean().optional(),
+  gasLimit: z.number().optional(),
+}).refine((data) => {
+  // If useCustomGas is true, gasLimit is required
+  if (data.useCustomGas && !data.gasLimit) {
+    return false;
+  }
+  return true;
+}, {
+  message: "gasLimit is required when useCustomGas is true",
+  path: ["gasLimit"],
+});
+```
+
+### Transform Values
+
+```typescript
+const abilityParamsSchema = z.object({
+  tokenAddress: z.string().transform((val) => val.toLowerCase()),
+  amountToSend: z.string().transform((val) => parseFloat(val)),
+});
+```
+
+## Integration with Policies
+
+When supporting Policies, ensure your schema includes their required parameters:
+
+```typescript
+// Your Ability needs these for core functionality
+const coreParams = {
+  tokenAddress: z.string(),
+  recipientAddress: z.string(),
+  amountToSend: z.number(),
+};
+
+// Spending limit policy needs these additional params
+const policyParams = {
+  // tokenAddress: already included above
+  // amount: maps to amountToSend above
+};
+
+const abilityParamsSchema = z.object({
+  ...coreParams,
+  // Policy params are handled via parameter mappings
+});
+```
+
+## Type Inference
+
+Get TypeScript types from your schemas:
+
+```typescript
+type AbilityParams = z.infer<typeof abilityParamsSchema>;
+// Results in:
+// {
+//   tokenAddress: string;
+//   amountToSend: number;
+//   recipientAddress: string;
+//   gasLimit?: number;
+//   customData?: string;
+// }
+```
+
+## Error Handling
+
+Zod provides detailed validation errors:
+
+```typescript
+const result = abilityParamsSchema.safeParse(userInput);
+
+if (!result.success) {
+  // result.error.issues contains detailed error information
+  console.log("Validation errors:", result.error.issues);
+}
+```
+
+## Best Practices
+
+<Steps>
+  <Step title="Keep It Simple">
+    Only require parameters you actually need for execution
+  </Step>
+
+  <Step title="Provide Clear Errors">
+    Use custom error messages that help developers fix issues
+  </Step>
+
+  <Step title="Consider Future Needs">
+    Make optional parameters for features you might add later
+  </Step>
+
+  <Step title="Document Complex Logic">
+    Use comments to explain conditional validation rules
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Supporting Policies" icon="shield" href="/ability/supporting-policies">
+    Learn how to integrate Policies with your parameters
+  </Card>
+  <Card title="Precheck Function" icon="check" href="/ability/precheck-function">
+    Use your parameters in validation logic
+  </Card>
+</CardGroup>

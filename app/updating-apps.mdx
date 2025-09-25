@@ -4,28 +4,44 @@ title: Updating Your App
 
 Vincent Apps use versioning to ensure user trust and security. When users delegate to your App, they delegate to a specific version with an immutable set of Abilities and Policies that cannot be changed without their explicit consent.
 
-## When to Create a New Version
+## Version Changes
 
-Create a new version when:
-- Adding or removing Vincent Abilities
-- Upgrading Abilities to newer iterations
-- Modifying Vincent Policies for your App's Abilities
-
-## What Can Change Without a New Version
-
-Through the Vincent App Dashboard, you can update:
-- App Delegatees authorized for all versions
-- Redirect URIs for the Vincent Connect page
-- Deployment status
-- App details (name, description, logo)
+<Tabs>
+  <Tab title="Requires New Version">
+    <ParamField path="abilities" type="array">
+      Adding, updating, or removing Vincent Abilities from your App
+    </ParamField>
+    <ParamField path="policies" type="array">
+      Modifying Vincent Policies for your App's Abilities
+    </ParamField>
+  </Tab>
+  <Tab title="Can Change Anytime">
+    <ParamField path="delegatees" type="array">
+      App Delegatees authorized for all versions
+    </ParamField>
+    <ParamField path="redirectUris" type="array">
+      Redirect URIs for the Vincent Connect page
+    </ParamField>
+    <ParamField path="deploymentStatus" type="string">
+      Deployment status (DEV, TEST, PROD)
+    </ParamField>
+    <ParamField path="appDetails" type="object">
+      App details including name, description, and logo
+    </ParamField>
+  </Tab>
+</Tabs>
 
 ## Version Lifecycle
 
-App Versions follow a two-step process:
+<Steps>
+  <Step title="Create">
+    Initialize the version off-chain with your chosen Abilities and Policies. Changes are still possible at this stage.
+  </Step>
 
-1. **Create** - Initialize the version off-chain with your chosen Abilities and Policies. Changes are still possible at this stage.
-
-2. **Publish** - Register the version on-chain in the Vincent App Registry. Once published, the version becomes immutable and available for user delegation.
+  <Step title="Publish">
+    Register the version on-chain in the Vincent App Registry. Once published, the version becomes immutable and available for user delegation.
+  </Step>
+</Steps>
 
 <Warning>
 Published versions cannot be modified. To make changes, create and publish a new version.

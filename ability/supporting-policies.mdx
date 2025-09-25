@@ -1,0 +1,290 @@
+---
+title: Supporting Policies
+---
+
+Enable Vincent Policies to work with your Ability by creating parameter mappings and defining supported policy configurations.
+
+## Overview
+
+Supporting a Policy means making it available for Vincent App Users to enable - it doesn't make the Policy required. Users choose which Policies to activate based on their security preferences.
+
+## Creating Policy Support
+
+Use `createVincentAbilityPolicy` to map your Ability's parameters to Policy requirements:
+
+```typescript
+import {
+  createVincentAbilityPolicy,
+  supportedPoliciesForAbility
+} from '@lit-protocol/vincent-ability-sdk';
+import { bundledVincentPolicy } from '@lit-protocol/vincent-policy-spending-limit';
+
+const SpendingLimitPolicy = createVincentAbilityPolicy({
+  abilityParamsSchema,                    // Your Ability's parameter schema
+  bundledVincentPolicy,                   // The Policy package
+  abilityParameterMappings: {
+    tokenAddress: 'tokenAddress',         // Your param -> Policy param
+    amountToSend: 'amount',              // Your param -> Policy param
+  },
+});
+```
+
+## Parameter Mappings
+
+Policies often expect different parameter names than your Ability uses. The `abilityParameterMappings` object handles this translation:
+
+<Tabs>
+  <Tab title="Direct Mapping">
+    ```typescript
+    abilityParameterMappings: {
+      tokenAddress: 'tokenAddress',       // Same name
+      recipientAddress: 'recipient',      // Different name
+    }
+    ```
+  </Tab>
+  <Tab title="Computed Mapping">
+    ```typescript
+    abilityParameterMappings: {
+      amountToSend: 'amount',
+      // For percentage-based policies
+      percentageLimit: (params) => params.amountToSend / params.totalBalance
+    }
+    ```
+  </Tab>
+  <Tab title="Multiple Source Mapping">
+    ```typescript
+    abilityParameterMappings: {
+      // Combine multiple ability params into one policy param
+      transactionData: (params) => ({
+        token: params.tokenAddress,
+        amount: params.amountToSend,
+        recipient: params.recipientAddress
+      })
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Registering Supported Policies
+
+Add your Policy objects to the Ability definition:
+
+```typescript
+const vincentAbility = createVincentAbility({
+  // ... other configuration
+
+  supportedPolicies: supportedPoliciesForAbility([
+    SpendingLimitPolicy,
+    TokenAllowlistPolicy,
+    TimeWindowPolicy,
+  ]),
+});
+```
+
+## Multiple Policy Support
+
+Support multiple Policies that can work together:
+
+```typescript
+import { bundledVincentPolicy as spendingLimitPolicy } from '@lit-protocol/vincent-policy-spending-limit';
+import { bundledVincentPolicy as tokenAllowlistPolicy } from '@lit-protocol/vincent-policy-token-allowlist';
+
+const SpendingLimitPolicy = createVincentAbilityPolicy({
+  abilityParamsSchema,
+  bundledVincentPolicy: spendingLimitPolicy,
+  abilityParameterMappings: {
+    tokenAddress: 'tokenAddress',
+    amountToSend: 'amount',
+  },
+});
+
+const TokenAllowlistPolicy = createVincentAbilityPolicy({
+  abilityParamsSchema,
+  bundledVincentPolicy: tokenAllowlistPolicy,
+  abilityParameterMappings: {
+    tokenAddress: 'tokenAddress',
+  },
+});
+
+const vincentAbility = createVincentAbility({
+  // ... other configuration
+  supportedPolicies: supportedPoliciesForAbility([
+    SpendingLimitPolicy,
+    TokenAllowlistPolicy,
+  ]),
+});
+```
+
+## Policy Lifecycle Integration
+
+Policies integrate with your Ability at key points:
+
+<Steps>
+  <Step title="Before Precheck">
+    Policy `precheck` functions run before your Ability's precheck
+  </Step>
+
+  <Step title="Before Execute">
+    Policy `evaluate` functions run before your Ability's execute
+  </Step>
+
+  <Step title="After Execute">
+    Your Ability calls Policy `commit` functions after successful execution
+  </Step>
+</Steps>
+
+## Accessing Policy Context
+
+In your execute function, access Policy results and commit functions:
+
+```typescript
+execute: async ({ abilityParams }, abilityContext) => {
+  // Main execution logic
+  const txHash = await performTransaction();
+
+  // Access Policy context
+  const { policiesContext } = abilityContext;
+
+  // Check if spending limit policy is active
+  const spendingLimitPolicy =
+    policiesContext.allowedPolicies['@lit-protocol/vincent-policy-spending-limit'];
+
+  if (spendingLimitPolicy?.commit) {
+    const commitResult = await spendingLimitPolicy.commit({
+      spentAmount: abilityParams.amountToSend,
+      tokenAddress: abilityParams.tokenAddress,
+    });
+
+    if (!commitResult.allow) {
+      return abilityContext.fail({
+        error: 'Policy commit failed: ' + commitResult.error
+      });
+    }
+  }
+
+  return abilityContext.succeed({ txHash });
+}
+```
+
+## Policy Requirements
+
+When supporting a Policy, ensure your Ability:
+
+<CardGroup cols={2}>
+  <Card title="Provides Required Parameters" icon="list-check">
+    Map all parameters the Policy needs for evaluation
+  </Card>
+  <Card title="Calls Commit Functions" icon="arrow-right">
+    Execute Policy commits after successful operations
+  </Card>
+  <Card title="Handles Policy Failures" icon="x-circle">
+    Properly respond when Policies deny execution
+  </Card>
+  <Card title="Maintains State Consistency" icon="sync">
+    Ensure Policy state stays accurate
+  </Card>
+</CardGroup>
+
+## Common Policy Types
+
+<Tabs>
+  <Tab title="Spending Limits">
+    ```typescript
+    const SpendingLimitPolicy = createVincentAbilityPolicy({
+      abilityParamsSchema,
+      bundledVincentPolicy: spendingLimitPolicy,
+      abilityParameterMappings: {
+        tokenAddress: 'tokenAddress',
+        amountToSend: 'amount',
+      },
+    });
+    ```
+
+    **Required Parameters:** `tokenAddress`, `amount`
+
+    **Commit Function:** Updates spent amounts after successful transactions
+  </Tab>
+  <Tab title="Token Allowlists">
+    ```typescript
+    const TokenAllowlistPolicy = createVincentAbilityPolicy({
+      abilityParamsSchema,
+      bundledVincentPolicy: tokenAllowlistPolicy,
+      abilityParameterMappings: {
+        tokenAddress: 'tokenAddress',
+      },
+    });
+    ```
+
+    **Required Parameters:** `tokenAddress`
+
+    **Commit Function:** None (stateless validation)
+  </Tab>
+  <Tab title="Time Windows">
+    ```typescript
+    const TimeWindowPolicy = createVincentAbilityPolicy({
+      abilityParamsSchema,
+      bundledVincentPolicy: timeWindowPolicy,
+      abilityParameterMappings: {
+        // Often no mapping needed - uses current timestamp
+      },
+    });
+    ```
+
+    **Required Parameters:** Usually none (uses current time)
+
+    **Commit Function:** May track execution timestamps
+  </Tab>
+</Tabs>
+
+## Testing Policy Integration
+
+Test your Policy support thoroughly:
+
+```typescript
+// Test with Policy enabled
+const abilityWithPolicy = createVincentAbility({
+  // ... configuration with policies
+});
+
+// Test policy parameter mapping
+const testParams = {
+  tokenAddress: '0x...',
+  amountToSend: 100,
+  recipientAddress: '0x...'
+};
+
+// Verify mapping works correctly
+const mappedParams = SpendingLimitPolicy.mapParameters(testParams);
+console.log(mappedParams); // Should match policy expectations
+```
+
+## Best Practices
+
+<Steps>
+  <Step title="Support Common Policies">
+    Include widely-used Policies like spending limits and token allowlists
+  </Step>
+
+  <Step title="Clear Parameter Names">
+    Use descriptive parameter names that map naturally to Policy requirements
+  </Step>
+
+  <Step title="Handle Edge Cases">
+    Test Policy interactions with unusual parameter values
+  </Step>
+
+  <Step title="Document Policy Support">
+    Clearly document which Policies your Ability supports
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Precheck Function" icon="check" href="/ability/precheck-function">
+    Validate parameters before execution
+  </Card>
+  <Card title="Execute Function" icon="play" href="/ability/execute-function">
+    Implement your Ability's core logic
+  </Card>
+</CardGroup>

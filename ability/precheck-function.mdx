@@ -1,0 +1,391 @@
+---
+title: Precheck Function
+---
+
+The precheck function validates that your Ability can execute successfully before using Lit network resources. This saves time and gas by catching potential failures early.
+
+## Purpose and Timing
+
+<Steps>
+  <Step title="Policy Prechecks Run First">
+    All enabled Policies run their precheck functions
+  </Step>
+
+  <Step title="Your Precheck Runs">
+    Only executes if all Policy prechecks return `allow`
+  </Step>
+
+  <Step title="Local Execution">
+    Runs in the executor's environment, not in Lit Actions
+  </Step>
+</Steps>
+
+## Function Structure
+
+```typescript
+precheck: async ({ abilityParams }, abilityContext) => {
+  const { tokenAddress, amountToSend, recipientAddress } = abilityParams;
+
+  try {
+    // Validation logic here
+    const validation = await validateExecution(abilityParams, abilityContext);
+
+    if (validation.success) {
+      return abilityContext.succeed(validation.data);
+    } else {
+      return abilityContext.fail(validation.error);
+    }
+  } catch (error) {
+    // Unhandled errors automatically become fail results
+    throw error;
+  }
+}
+```
+
+## Common Validation Patterns
+
+### Balance Checks
+
+```typescript
+precheck: async ({ abilityParams }, abilityContext) => {
+  const { tokenAddress, amountToSend } = abilityParams;
+  const userAddress = abilityContext.delegation.delegatorPkpInfo.ethAddress;
+
+  // Check ERC20 token balance
+  const tokenBalance = await getErc20TokenBalance(userAddress, tokenAddress);
+
+  if (tokenBalance < amountToSend) {
+    return abilityContext.fail({
+      reason: 'Insufficient token balance',
+      currentBalance: tokenBalance,
+      requiredAmount: amountToSend,
+    });
+  }
+
+  // Check native token for gas
+  const nativeBalance = await getNativeTokenBalance(userAddress);
+  const estimatedGas = await estimateGasForTransaction(/* ... */);
+
+  if (nativeBalance < estimatedGas) {
+    return abilityContext.fail({
+      reason: 'Insufficient gas balance',
+      currentBalance: nativeBalance,
+      requiredAmount: estimatedGas,
+    });
+  }
+
+  return abilityContext.succeed({
+    tokenBalance,
+    nativeBalance,
+    estimatedGas,
+  });
+}
+```
+
+### Contract State Validation
+
+```typescript
+precheck: async ({ abilityParams }, abilityContext) => {
+  const { tokenAddress, amountToSend } = abilityParams;
+  const userAddress = abilityContext.delegation.delegatorPkpInfo.ethAddress;
+
+  // Check if token contract exists
+  const tokenContract = new Contract(tokenAddress, ERC20_ABI, provider);
+
+  try {
+    const tokenSymbol = await tokenContract.symbol();
+    const tokenDecimals = await tokenContract.decimals();
+  } catch (error) {
+    return abilityContext.fail({
+      reason: 'Invalid token contract',
+      tokenAddress,
+      error: error.message,
+    });
+  }
+
+  // Check allowances for spending
+  const currentAllowance = await tokenContract.allowance(
+    userAddress,
+    SPENDING_CONTRACT_ADDRESS
+  );
+
+  if (currentAllowance < amountToSend) {
+    return abilityContext.fail({
+      reason: 'Insufficient token allowance',
+      currentAllowance,
+      requiredAmount: amountToSend,
+    });
+  }
+
+  return abilityContext.succeed({
+    tokenSymbol,
+    tokenDecimals,
+    currentAllowance,
+  });
+}
+```
+
+### Transaction Simulation
+
+```typescript
+precheck: async ({ abilityParams }, abilityContext) => {
+  const { tokenAddress, amountToSend, recipientAddress } = abilityParams;
+
+  // Create the transaction that would be sent
+  const transferTransaction = createErc20TransferTransaction(
+    tokenAddress,
+    recipientAddress,
+    amountToSend
+  );
+
+  try {
+    // Simulate the transaction
+    const estimatedGas = await transferTransaction.estimateGas();
+
+    // Some providers support call simulation
+    const callResult = await transferTransaction.callStatic();
+
+    return abilityContext.succeed({
+      estimatedGas,
+      simulationSuccess: true,
+    });
+  } catch (error) {
+    if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
+      return abilityContext.fail({
+        reason: 'Transaction would revert',
+        errorCode: error.code,
+        revertReason: error.reason || 'Unknown revert reason',
+      });
+    }
+
+    // Re-throw unexpected errors
+    throw error;
+  }
+}
+```
+
+## Success Schema
+
+Define what successful precheck returns:
+
+```typescript
+precheckSuccessSchema: z.object({
+  // Balance information
+  tokenBalance: z.number(),
+  nativeBalance: z.number(),
+
+  // Transaction details
+  estimatedGas: z.number(),
+  gasPrice: z.number().optional(),
+
+  // Contract information
+  tokenSymbol: z.string().optional(),
+  tokenDecimals: z.number().optional(),
+
+  // Validation flags
+  hasRequiredApprovals: z.boolean().optional(),
+  simulationSuccess: z.boolean().optional(),
+})
+```
+
+## Failure Schema
+
+Define what failed precheck returns:
+
+```typescript
+precheckFailSchema: z.object({
+  // Primary error information
+  reason: z.string(),
+  errorCode: z.string().optional(),
+
+  // Balance-related failures
+  currentBalance: z.number().optional(),
+  requiredAmount: z.number().optional(),
+
+  // Transaction-related failures
+  revertReason: z.string().optional(),
+  estimationError: z.string().optional(),
+
+  // Contract-related failures
+  contractAddress: z.string().optional(),
+  contractError: z.string().optional(),
+
+  // Additional context
+  userAddress: z.string().optional(),
+  blockNumber: z.number().optional(),
+})
+```
+
+## Error Handling Strategies
+
+<Tabs>
+  <Tab title="Graceful Degradation">
+    ```typescript
+    precheck: async ({ abilityParams }, abilityContext) => {
+      try {
+        const primaryCheck = await criticalValidation();
+
+        // Try optional validations
+        let optionalData = {};
+        try {
+          optionalData = await optionalValidation();
+        } catch (optionalError) {
+          // Log but don't fail precheck
+          console.warn('Optional validation failed:', optionalError);
+        }
+
+        return abilityContext.succeed({
+          ...primaryCheck,
+          ...optionalData,
+        });
+      } catch (criticalError) {
+        return abilityContext.fail({
+          reason: 'Critical validation failed',
+          error: criticalError.message,
+        });
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Timeout Handling">
+    ```typescript
+    precheck: async ({ abilityParams }, abilityContext) => {
+      const TIMEOUT_MS = 10000; // 10 seconds
+
+      try {
+        const validationPromise = performValidation();
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Validation timeout')), TIMEOUT_MS);
+        });
+
+        const result = await Promise.race([validationPromise, timeoutPromise]);
+
+        return abilityContext.succeed(result);
+      } catch (error) {
+        if (error.message === 'Validation timeout') {
+          return abilityContext.fail({
+            reason: 'Validation timed out',
+            timeoutMs: TIMEOUT_MS,
+          });
+        }
+        throw error;
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Retry Logic">
+    ```typescript
+    precheck: async ({ abilityParams }, abilityContext) => {
+      const MAX_RETRIES = 3;
+
+      for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        try {
+          const result = await performValidation();
+          return abilityContext.succeed(result);
+        } catch (error) {
+          if (attempt === MAX_RETRIES) {
+            return abilityContext.fail({
+              reason: 'Validation failed after retries',
+              attempts: attempt,
+              lastError: error.message,
+            });
+          }
+
+          // Wait before retry
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Performance Optimization
+
+<CardGroup cols={2}>
+  <Card title="Parallel Validation" icon="arrows-split">
+    Run independent checks concurrently using `Promise.all()`
+  </Card>
+  <Card title="Cache Results" icon="database">
+    Cache contract calls and balance checks when appropriate
+  </Card>
+  <Card title="Early Termination" icon="forward">
+    Return failure as soon as any critical check fails
+  </Card>
+  <Card title="Minimal Data" icon="minimize">
+    Only fetch data you actually need for validation
+  </Card>
+</CardGroup>
+
+### Parallel Validation Example
+
+```typescript
+precheck: async ({ abilityParams }, abilityContext) => {
+  const { tokenAddress, amountToSend } = abilityParams;
+  const userAddress = abilityContext.delegation.delegatorPkpInfo.ethAddress;
+
+  // Run multiple checks in parallel
+  const [
+    tokenBalance,
+    nativeBalance,
+    tokenContract,
+    gasEstimate
+  ] = await Promise.all([
+    getErc20TokenBalance(userAddress, tokenAddress),
+    getNativeTokenBalance(userAddress),
+    getTokenContractInfo(tokenAddress),
+    estimateTransactionGas(abilityParams)
+  ]);
+
+  // Validate results
+  if (tokenBalance < amountToSend) {
+    return abilityContext.fail({
+      reason: 'Insufficient token balance',
+      currentBalance: tokenBalance,
+      requiredAmount: amountToSend,
+    });
+  }
+
+  return abilityContext.succeed({
+    tokenBalance,
+    nativeBalance,
+    gasEstimate,
+    tokenSymbol: tokenContract.symbol,
+  });
+}
+```
+
+## Best Practices
+
+<Steps>
+  <Step title="Validate What Matters">
+    Check conditions that could cause execution to fail
+  </Step>
+
+  <Step title="Be Comprehensive">
+    Include balance, allowance, contract state, and gas checks
+  </Step>
+
+  <Step title="Provide Context">
+    Return useful information in both success and failure cases
+  </Step>
+
+  <Step title="Handle Edge Cases">
+    Account for network issues, invalid contracts, and unusual states
+  </Step>
+
+  <Step title="Keep It Fast">
+    Precheck should complete quickly to provide good user experience
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Execute Function" icon="play" href="/ability/execute-function">
+    Implement your Ability's main execution logic
+  </Card>
+  <Card title="Response Schemas" icon="file-text" href="/ability/response-schemas">
+    Define success and failure response structures
+  </Card>
+</CardGroup>

@@ -1,0 +1,458 @@
+---
+title: Execute Function
+---
+
+The execute function contains your Ability's core logic and runs in the Lit Action environment with access to signing capabilities. This is where the actual work happens.
+
+## Execution Environment
+
+<CardGroup cols={2}>
+  <Card title="Lit Action Runtime" icon="server">
+    Executes in a secure, isolated environment on Lit nodes
+  </Card>
+  <Card title="Signing Access" icon="key">
+    Can sign transactions and data with the user's Vincent Wallet
+  </Card>
+  <Card title="Network Access" icon="globe">
+    Make HTTP requests and interact with blockchain networks
+  </Card>
+  <Card title="Policy Integration" icon="shield">
+    Policy evaluate functions run before your execute function
+  </Card>
+</CardGroup>
+
+## Function Structure
+
+```typescript
+execute: async ({ abilityParams }, abilityContext) => {
+  const { tokenAddress, amountToSend, recipientAddress } = abilityParams;
+
+  try {
+    // Main execution logic
+    const result = await performMainOperation(abilityParams, abilityContext);
+
+    // Handle Policy commits
+    await executePolicyCommits(abilityContext, result);
+
+    return abilityContext.succeed(result);
+  } catch (error) {
+    return abilityContext.fail({
+      error: error.message,
+      errorCode: error.code,
+    });
+  }
+}
+```
+
+## Available Capabilities
+
+### Ethers.js Integration
+
+Ethers.js is pre-loaded in the Lit Action environment:
+
+```typescript
+execute: async ({ abilityParams }, abilityContext) => {
+  const { tokenAddress, amountToSend, recipientAddress } = abilityParams;
+
+  // Ethers is globally available
+  const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
+  const tokenContract = new ethers.Contract(tokenAddress, ERC20_ABI, provider);
+
+  // Create transaction
+  const transferTx = await tokenContract.populateTransaction.transfer(
+    recipientAddress,
+    ethers.utils.parseUnits(amountToSend.toString(), 18)
+  );
+
+  // Sign and send transaction
+  const signedTx = await LitActions.signAndExecuteTransaction({
+    toAddress: tokenAddress,
+    value: "0",
+    data: transferTx.data,
+    gasLimit: "100000",
+    gasPrice: await provider.getGasPrice(),
+  });
+
+  return abilityContext.succeed({
+    transactionHash: signedTx.transactionHash,
+  });
+}
+```
+
+### PKP Wallet Signing
+
+Access the user's PKP wallet for signing:
+
+```typescript
+execute: async ({ abilityParams }, abilityContext) => {
+  const userPkpInfo = abilityContext.delegation.delegatorPkpInfo;
+
+  // Sign arbitrary data
+  const messageToSign = "Hello from Vincent Ability";
+  const signature = await LitActions.signEcdsa({
+    toSign: ethers.utils.arrayify(ethers.utils.keccak256(messageToSign)),
+    publicKey: userPkpInfo.publicKey,
+    sigName: "messageSignature",
+  });
+
+  // Sign and execute transaction
+  const txResult = await LitActions.signAndExecuteTransaction({
+    toAddress: recipientAddress,
+    value: "0",
+    data: transactionData,
+    gasLimit: "100000",
+    publicKey: userPkpInfo.publicKey,
+  });
+
+  return abilityContext.succeed({
+    signature,
+    transactionHash: txResult.transactionHash,
+  });
+}
+```
+
+## Common Execution Patterns
+
+### ERC20 Token Transfer
+
+```typescript
+execute: async ({ abilityParams }, abilityContext) => {
+  const { tokenAddress, amountToSend, recipientAddress } = abilityParams;
+  const userPkpInfo = abilityContext.delegation.delegatorPkpInfo;
+
+  // Create ERC20 transfer transaction
+  const tokenContract = new ethers.Contract(tokenAddress, ERC20_ABI);
+  const transferTx = await tokenContract.populateTransaction.transfer(
+    recipientAddress,
+    ethers.utils.parseUnits(amountToSend.toString(), 18)
+  );
+
+  try {
+    // Estimate gas before execution
+    const gasEstimate = await tokenContract.estimateGas.transfer(
+      recipientAddress,
+      ethers.utils.parseUnits(amountToSend.toString(), 18)
+    );
+
+    const signedTx = await LitActions.signAndExecuteTransaction({
+      toAddress: tokenAddress,
+      value: "0",
+      data: transferTx.data,
+      gasLimit: gasEstimate.mul(120).div(100).toString(), // 20% buffer
+      publicKey: userPkpInfo.publicKey,
+    });
+
+    return abilityContext.succeed({
+      transactionHash: signedTx.transactionHash,
+      amountTransferred: amountToSend,
+    });
+  } catch (error) {
+    return abilityContext.fail({
+      error: "Transaction failed",
+      reason: error.reason || error.message,
+      errorCode: error.code,
+    });
+  }
+}
+```
+
+### Smart Contract Interaction
+
+```typescript
+execute: async ({ abilityParams }, abilityContext) => {
+  const { contractAddress, methodName, methodArgs } = abilityParams;
+  const userPkpInfo = abilityContext.delegation.delegatorPkpInfo;
+
+  // Dynamic contract interaction
+  const contract = new ethers.Contract(contractAddress, CONTRACT_ABI);
+  const contractTx = await contract.populateTransaction[methodName](...methodArgs);
+
+  try {
+    const result = await LitActions.signAndExecuteTransaction({
+      toAddress: contractAddress,
+      value: "0",
+      data: contractTx.data,
+      gasLimit: "200000",
+      publicKey: userPkpInfo.publicKey,
+    });
+
+    return abilityContext.succeed({
+      transactionHash: result.transactionHash,
+      contractAddress,
+      methodName,
+      methodArgs,
+    });
+  } catch (error) {
+    return abilityContext.fail({
+      error: "Contract interaction failed",
+      contractAddress,
+      methodName,
+      reason: error.message,
+    });
+  }
+}
+```
+
+### HTTP API Integration
+
+```typescript
+execute: async ({ abilityParams }, abilityContext) => {
+  const { apiEndpoint, requestData } = abilityParams;
+
+  try {
+    // Make HTTP request
+    const response = await fetch(apiEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData),
+    });
+
+    if (!response.ok) {
+      return abilityContext.fail({
+        error: "API request failed",
+        statusCode: response.status,
+        statusText: response.statusText,
+      });
+    }
+
+    const responseData = await response.json();
+
+    // Process API response and potentially sign/store results
+    const signature = await LitActions.signEcdsa({
+      toSign: ethers.utils.arrayify(
+        ethers.utils.keccak256(JSON.stringify(responseData))
+      ),
+      publicKey: abilityContext.delegation.delegatorPkpInfo.publicKey,
+      sigName: "apiResponseSignature",
+    });
+
+    return abilityContext.succeed({
+      apiResponse: responseData,
+      signature,
+    });
+  } catch (error) {
+    return abilityContext.fail({
+      error: "API integration failed",
+      reason: error.message,
+    });
+  }
+}
+```
+
+## Policy Commit Integration
+
+After successful execution, call commit functions for stateful Policies:
+
+```typescript
+execute: async ({ abilityParams }, abilityContext) => {
+  // Main execution logic
+  const txResult = await performTransaction();
+
+  // Handle Policy commits
+  const policyCommitResults = await executePolicyCommits(
+    abilityContext,
+    abilityParams
+  );
+
+  return abilityContext.succeed({
+    transactionHash: txResult.transactionHash,
+    policyCommitResults,
+  });
+}
+
+async function executePolicyCommits(abilityContext, abilityParams) {
+  const { policiesContext } = abilityContext;
+  const commitResults = {};
+
+  // Spending limit policy commit
+  const spendingLimitPolicy =
+    policiesContext.allowedPolicies['@lit-protocol/vincent-policy-spending-limit'];
+
+  if (spendingLimitPolicy?.commit) {
+    const commitResult = await spendingLimitPolicy.commit({
+      spentAmount: abilityParams.amountToSend,
+      tokenAddress: abilityParams.tokenAddress,
+    });
+
+    if (!commitResult.allow) {
+      throw new Error(`Spending limit commit failed: ${commitResult.error}`);
+    }
+
+    commitResults.spendingLimit = commitResult.result;
+  }
+
+  // Other policy commits...
+
+  return commitResults;
+}
+```
+
+## Error Handling
+
+<Tabs>
+  <Tab title="Transaction Errors">
+    ```typescript
+    try {
+      const txResult = await LitActions.signAndExecuteTransaction({
+        // transaction parameters
+      });
+    } catch (error) {
+      if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
+        return abilityContext.fail({
+          error: 'Transaction would revert',
+          reason: error.reason,
+          errorCode: error.code,
+        });
+      }
+
+      if (error.code === 'INSUFFICIENT_FUNDS') {
+        return abilityContext.fail({
+          error: 'Insufficient funds for transaction',
+          errorCode: error.code,
+        });
+      }
+
+      // Generic transaction error
+      return abilityContext.fail({
+        error: 'Transaction failed',
+        reason: error.message,
+        errorCode: error.code,
+      });
+    }
+    ```
+  </Tab>
+  <Tab title="Network Errors">
+    ```typescript
+    try {
+      const result = await fetch(apiEndpoint);
+    } catch (error) {
+      if (error.code === 'NETWORK_ERROR') {
+        return abilityContext.fail({
+          error: 'Network connectivity issue',
+          endpoint: apiEndpoint,
+        });
+      }
+
+      if (error.code === 'TIMEOUT') {
+        return abilityContext.fail({
+          error: 'Request timed out',
+          endpoint: apiEndpoint,
+          timeout: error.timeout,
+        });
+      }
+
+      return abilityContext.fail({
+        error: 'Network request failed',
+        reason: error.message,
+      });
+    }
+    ```
+  </Tab>
+  <Tab title="Policy Commit Errors">
+    ```typescript
+    try {
+      const commitResult = await policy.commit(commitParams);
+
+      if (!commitResult.allow) {
+        return abilityContext.fail({
+          error: 'Policy commit denied',
+          policyName: policyName,
+          reason: commitResult.error,
+        });
+      }
+    } catch (error) {
+      return abilityContext.fail({
+        error: 'Policy commit failed',
+        policyName: policyName,
+        reason: error.message,
+      });
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Success Schema
+
+Define what successful execution returns:
+
+```typescript
+executeSuccessSchema: z.object({
+  // Primary transaction result
+  transactionHash: z.string(),
+
+  // Policy commit results
+  policyCommitResults: z.record(z.any()).optional(),
+
+  // Operation-specific data
+  amountTransferred: z.number().optional(),
+  contractAddress: z.string().optional(),
+  apiResponse: z.any().optional(),
+
+  // Additional metadata
+  gasUsed: z.number().optional(),
+  blockNumber: z.number().optional(),
+})
+```
+
+## Failure Schema
+
+Define what failed execution returns:
+
+```typescript
+executeFailSchema: z.object({
+  // Primary error information
+  error: z.string(),
+  errorCode: z.string().optional(),
+  reason: z.string().optional(),
+
+  // Transaction-specific failures
+  transactionHash: z.string().optional(),
+  gasUsed: z.number().optional(),
+  revertReason: z.string().optional(),
+
+  // Network/API failures
+  endpoint: z.string().optional(),
+  statusCode: z.number().optional(),
+
+  // Policy failures
+  policyName: z.string().optional(),
+  policyError: z.string().optional(),
+})
+```
+
+## Best Practices
+
+<Steps>
+  <Step title="Validate Before Acting">
+    Perform final checks even if precheck passed
+  </Step>
+
+  <Step title="Handle All Error Cases">
+    Account for transaction, network, and policy failures
+  </Step>
+
+  <Step title="Always Commit Policies">
+    Call commit functions for stateful policies after success
+  </Step>
+
+  <Step title="Provide Rich Context">
+    Return detailed information for both success and failure cases
+  </Step>
+
+  <Step title="Use Gas Estimation">
+    Estimate gas before transactions to avoid failures
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Response Schemas" icon="file-text" href="/ability/response-schemas">
+    Define detailed success and failure response structures
+  </Card>
+  <Card title="Testing Execution" icon="flask" href="/ability/testing">
+    Test your execute function thoroughly
+  </Card>
+</CardGroup>

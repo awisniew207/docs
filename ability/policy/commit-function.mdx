@@ -1,0 +1,607 @@
+---
+title: Policy Commit Function
+---
+
+The commit function updates your Policy's state after successful Ability execution. This is crucial for maintaining accurate tracking of limits, counters, and other stateful information.
+
+## Purpose and Execution
+
+<Steps>
+  <Step title="Called After Success">
+    Only executes after the Ability's execute function completes successfully
+  </Step>
+
+  <Step title="State Synchronization">
+    Updates policy state to reflect the completed action
+  </Step>
+
+  <Step title="Lit Action Environment">
+    Runs with full blockchain access and signing capabilities
+  </Step>
+
+  <Step title="Critical for Accuracy">
+    Essential for policies that track cumulative data or limits
+  </Step>
+</Steps>
+
+<Warning>
+If your Policy is stateful (tracks spending, counts executions, etc.), you MUST implement a commit function. Without it, your Policy will make incorrect decisions in future executions.
+</Warning>
+
+## Function Structure
+
+```typescript
+commit: async (commitParams, policyContext) => {
+  try {
+    // Update policy state based on successful execution
+    const updateResult = await updatePolicyState(commitParams, policyContext);
+
+    if (updateResult.success) {
+      return policyContext.allow(updateResult.data);
+    } else {
+      return policyContext.deny(updateResult.error);
+    }
+  } catch (error) {
+    return policyContext.deny({
+      reason: 'State update failed',
+      error: error.message,
+      commitParams,
+    });
+  }
+}
+```
+
+## Commit Parameters
+
+The commit function receives parameters defined by your `commitParamsSchema`. These should include all data needed to update your Policy's state:
+
+```typescript
+import { createVincentPolicy } from '@lit-protocol/vincent-ability-sdk';
+
+const vincentPolicy = createVincentPolicy({
+  // ... other configuration
+
+  commitParamsSchema: z.object({
+    // Core transaction data
+    spentAmount: z.number(),
+    tokenAddress: z.string(),
+
+    // Execution context
+    transactionHash: z.string(),
+    blockNumber: z.number(),
+    gasUsed: z.number().optional(),
+
+    // Additional metadata
+    executionTimestamp: z.number(),
+    metadata: z.record(z.any()).optional(),
+  }),
+
+  commit: async (params, policyContext) => {
+    const { spentAmount, tokenAddress, transactionHash } = params;
+    // Use these parameters to update state
+  },
+});
+```
+
+## State Update Patterns
+
+### Database Updates
+
+```typescript
+commit: async (commitParams, policyContext) => {
+  const { spentAmount, tokenAddress, executionTimestamp } = commitParams;
+  const userAddress = policyContext.delegation.delegatorPkpInfo.ethAddress;
+
+  try {
+    // Update spending record in database
+    const updateResult = await db.transaction(async (trx) => {
+      // Get current daily spending
+      const currentRecord = await trx('daily_spending')
+        .where({
+          user_address: userAddress,
+          app_id: policyContext.appId,
+          token_address: tokenAddress,
+          date: new Date().toISOString().split('T')[0],
+        })
+        .first();
+
+      if (currentRecord) {
+        // Update existing record
+        await trx('daily_spending')
+          .where('id', currentRecord.id)
+          .update({
+            spent_amount: currentRecord.spent_amount + spentAmount,
+            execution_count: currentRecord.execution_count + 1,
+            last_execution: executionTimestamp,
+            updated_at: new Date(),
+          });
+
+        return {
+          previousSpending: currentRecord.spent_amount,
+          newSpending: currentRecord.spent_amount + spentAmount,
+          executionCount: currentRecord.execution_count + 1,
+        };
+      } else {
+        // Create new record
+        await trx('daily_spending').insert({
+          user_address: userAddress,
+          app_id: policyContext.appId,
+          token_address: tokenAddress,
+          date: new Date().toISOString().split('T')[0],
+          spent_amount: spentAmount,
+          execution_count: 1,
+          last_execution: executionTimestamp,
+          created_at: new Date(),
+        });
+
+        return {
+          previousSpending: 0,
+          newSpending: spentAmount,
+          executionCount: 1,
+        };
+      }
+    });
+
+    return policyContext.allow({
+      databaseUpdated: true,
+      spendingRecord: updateResult,
+      transactionHash: commitParams.transactionHash,
+    });
+
+  } catch (error) {
+    return policyContext.deny({
+      reason: 'Database update failed',
+      error: error.message,
+      userAddress,
+      spentAmount,
+    });
+  }
+}
+```
+
+### Smart Contract Updates
+
+```typescript
+commit: async (commitParams, policyContext) => {
+  const { spentAmount, tokenAddress } = commitParams;
+  const userAddress = policyContext.delegation.delegatorPkpInfo.ethAddress;
+
+  try {
+    // Get contract instance
+    const stateContract = new ethers.Contract(
+      STATE_CONTRACT_ADDRESS,
+      STATE_CONTRACT_ABI,
+      ethers.provider
+    );
+
+    // Prepare transaction data
+    const txData = stateContract.interface.encodeFunctionData('updateSpending', [
+      userAddress,
+      policyContext.appId,
+      tokenAddress,
+      ethers.utils.parseUnits(spentAmount.toString(), 6),
+    ]);
+
+    // Sign and execute transaction using PKP
+    const signedTx = await LitActions.signAndExecuteTransaction({
+      toAddress: STATE_CONTRACT_ADDRESS,
+      value: "0",
+      data: txData,
+      gasLimit: "150000",
+      publicKey: policyContext.delegation.delegatorPkpInfo.publicKey,
+    });
+
+    // Wait for confirmation
+    const receipt = await ethers.provider.waitForTransaction(signedTx.transactionHash);
+
+    if (receipt.status !== 1) {
+      return policyContext.deny({
+        reason: 'State contract transaction failed',
+        transactionHash: signedTx.transactionHash,
+        blockNumber: receipt.blockNumber,
+      });
+    }
+
+    // Parse logs to get updated state
+    const updateEvent = receipt.logs
+      .map(log => {
+        try {
+          return stateContract.interface.parseLog(log);
+        } catch (e) {
+          return null;
+        }
+      })
+      .find(event => event && event.name === 'SpendingUpdated');
+
+    return policyContext.allow({
+      contractUpdated: true,
+      transactionHash: signedTx.transactionHash,
+      blockNumber: receipt.blockNumber,
+      updatedState: updateEvent ? {
+        newSpending: ethers.utils.formatUnits(updateEvent.args.newSpending, 6),
+        executionCount: updateEvent.args.executionCount.toNumber(),
+      } : null,
+    });
+
+  } catch (error) {
+    return policyContext.deny({
+      reason: 'Smart contract update failed',
+      error: error.message,
+      contractAddress: STATE_CONTRACT_ADDRESS,
+    });
+  }
+}
+```
+
+### Hybrid Updates (Database + Blockchain)
+
+```typescript
+commit: async (commitParams, policyContext) => {
+  const { spentAmount, tokenAddress, transactionHash } = commitParams;
+  const userAddress = policyContext.delegation.delegatorPkpInfo.ethAddress;
+
+  try {
+    // Update both database and blockchain in parallel
+    const [dbResult, contractResult] = await Promise.allSettled([
+      // Update local database for fast queries
+      updateDatabase({
+        userAddress,
+        appId: policyContext.appId,
+        spentAmount,
+        tokenAddress,
+        transactionHash,
+      }),
+
+      // Update on-chain for verification and transparency
+      updateStateContract({
+        userAddress,
+        appId: policyContext.appId,
+        spentAmount,
+        tokenAddress,
+        publicKey: policyContext.delegation.delegatorPkpInfo.publicKey,
+      }),
+    ]);
+
+    // Check results
+    const dbSuccess = dbResult.status === 'fulfilled';
+    const contractSuccess = contractResult.status === 'fulfilled';
+
+    if (!dbSuccess && !contractSuccess) {
+      return policyContext.deny({
+        reason: 'Both database and contract updates failed',
+        dbError: dbResult.reason?.message,
+        contractError: contractResult.reason?.message,
+      });
+    }
+
+    if (!dbSuccess) {
+      // Database failed but contract succeeded - log warning but continue
+      console.warn('Database update failed:', dbResult.reason?.message);
+    }
+
+    if (!contractSuccess) {
+      // Contract failed but database succeeded - still problematic
+      return policyContext.deny({
+        reason: 'Contract update failed',
+        error: contractResult.reason?.message,
+        databaseUpdated: dbSuccess,
+      });
+    }
+
+    return policyContext.allow({
+      databaseUpdated: dbSuccess,
+      contractUpdated: contractSuccess,
+      databaseResult: dbResult.value,
+      contractResult: contractResult.value,
+    });
+
+  } catch (error) {
+    return policyContext.deny({
+      reason: 'Hybrid update failed',
+      error: error.message,
+    });
+  }
+}
+```
+
+## Advanced Patterns
+
+### Batch Updates
+
+```typescript
+commit: async (commitParams, policyContext) => {
+  const { operations } = commitParams; // Array of operations to commit
+
+  try {
+    const batchResults = [];
+
+    // Process operations in batches to avoid gas limits
+    const BATCH_SIZE = 10;
+    for (let i = 0; i < operations.length; i += BATCH_SIZE) {
+      const batch = operations.slice(i, i + BATCH_SIZE);
+
+      const batchResult = await processBatch(batch, policyContext);
+      batchResults.push(batchResult);
+
+      // Small delay between batches to avoid rate limits
+      if (i + BATCH_SIZE < operations.length) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    }
+
+    return policyContext.allow({
+      batchesProcessed: batchResults.length,
+      totalOperations: operations.length,
+      batchResults,
+    });
+
+  } catch (error) {
+    return policyContext.deny({
+      reason: 'Batch processing failed',
+      error: error.message,
+      processedBatches: batchResults.length,
+    });
+  }
+}
+```
+
+### Cross-Chain State Sync
+
+```typescript
+commit: async (commitParams, policyContext) => {
+  const { spentAmount, sourceChain, targetChain } = commitParams;
+
+  try {
+    // Update state on multiple chains
+    const syncResults = await Promise.allSettled(
+      [sourceChain, targetChain].map(async (chainId) => {
+        const provider = getProviderForChain(chainId);
+        const contract = new ethers.Contract(
+          getContractAddressForChain(chainId),
+          STATE_CONTRACT_ABI,
+          provider
+        );
+
+        const txData = contract.interface.encodeFunctionData('syncSpending', [
+          policyContext.delegation.delegatorPkpInfo.ethAddress,
+          spentAmount,
+        ]);
+
+        return await LitActions.signAndExecuteTransaction({
+          toAddress: contract.address,
+          value: "0",
+          data: txData,
+          gasLimit: "200000",
+          publicKey: policyContext.delegation.delegatorPkpInfo.publicKey,
+          chain: chainId,
+        });
+      })
+    );
+
+    const successfulSyncs = syncResults.filter(result => result.status === 'fulfilled');
+
+    if (successfulSyncs.length === 0) {
+      return policyContext.deny({
+        reason: 'Cross-chain sync failed on all chains',
+        targetChains: [sourceChain, targetChain],
+        errors: syncResults.map(r => r.reason?.message),
+      });
+    }
+
+    return policyContext.allow({
+      crossChainSyncComplete: true,
+      successfulChains: successfulSyncs.length,
+      totalChains: syncResults.length,
+      syncResults: successfulSyncs.map(r => ({
+        transactionHash: r.value.transactionHash,
+        chainId: r.value.chainId,
+      })),
+    });
+
+  } catch (error) {
+    return policyContext.deny({
+      reason: 'Cross-chain sync error',
+      error: error.message,
+    });
+  }
+}
+```
+
+## Error Recovery
+
+<Tabs>
+  <Tab title="Retry Logic">
+    ```typescript
+    commit: async (commitParams, policyContext) => {
+      const MAX_RETRIES = 3;
+      const BASE_DELAY = 2000;
+
+      for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        try {
+          const result = await updatePolicyState(commitParams, policyContext);
+          return policyContext.allow(result);
+        } catch (error) {
+          const isRetryable = error.code === 'NETWORK_ERROR' ||
+                             error.code === 'NONCE_EXPIRED' ||
+                             error.message.includes('timeout');
+
+          if (attempt === MAX_RETRIES || !isRetryable) {
+            return policyContext.deny({
+              reason: 'State update failed after retries',
+              error: error.message,
+              attempts: attempt,
+            });
+          }
+
+          // Exponential backoff
+          const delay = BASE_DELAY * Math.pow(2, attempt - 1);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Rollback Strategy">
+    ```typescript
+    commit: async (commitParams, policyContext) => {
+      const checkpoints = [];
+
+      try {
+        // Create checkpoint
+        const initialState = await getCurrentState(policyContext);
+        checkpoints.push(initialState);
+
+        // Perform update
+        const updateResult = await performUpdate(commitParams, policyContext);
+
+        if (!updateResult.success) {
+          // Rollback to checkpoint
+          await rollbackToCheckpoint(checkpoints[0], policyContext);
+          return policyContext.deny({
+            reason: 'Update failed, state rolled back',
+            error: updateResult.error,
+          });
+        }
+
+        return policyContext.allow(updateResult);
+
+      } catch (error) {
+        // Attempt rollback on error
+        if (checkpoints.length > 0) {
+          try {
+            await rollbackToCheckpoint(checkpoints[0], policyContext);
+          } catch (rollbackError) {
+            return policyContext.deny({
+              reason: 'Update and rollback both failed',
+              updateError: error.message,
+              rollbackError: rollbackError.message,
+            });
+          }
+        }
+
+        return policyContext.deny({
+          reason: 'Update failed',
+          error: error.message,
+          rolledBack: checkpoints.length > 0,
+        });
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Response Schemas
+
+Define clear schemas for commit responses:
+
+<Tabs>
+  <Tab title="Allow Schema">
+    ```typescript
+    commitAllowResultSchema: z.object({
+      // Update confirmation
+      updated: z.boolean(),
+
+      // Transaction details
+      transactionHash: z.string().optional(),
+      blockNumber: z.number().optional(),
+      gasUsed: z.number().optional(),
+
+      // State information
+      previousState: z.record(z.any()).optional(),
+      newState: z.record(z.any()).optional(),
+
+      // Timing
+      updatedAt: z.string(),
+
+      // Additional context
+      metadata: z.record(z.any()).optional(),
+    })
+    ```
+  </Tab>
+  <Tab title="Deny Schema">
+    ```typescript
+    commitDenyResultSchema: z.object({
+      reason: z.string(),
+
+      // Error context
+      error: z.string(),
+      errorCode: z.string().optional(),
+
+      // Failure details
+      failedOperation: z.string().optional(),
+      attemptedUpdate: z.record(z.any()).optional(),
+
+      // Recovery information
+      rollbackPerformed: z.boolean().optional(),
+      retryable: z.boolean().optional(),
+    })
+    ```
+  </Tab>
+</Tabs>
+
+## Testing Commit Functions
+
+```typescript
+// Test commit function behavior
+describe('Policy Commit Function', () => {
+  it('should update spending record correctly', async () => {
+    const commitParams = {
+      spentAmount: 100,
+      tokenAddress: '0x...',
+      transactionHash: '0x...',
+      executionTimestamp: Date.now(),
+    };
+
+    const policyContext = createMockPolicyContext();
+    const result = await vincentPolicy.commit(commitParams, policyContext);
+
+    expect(result.allow).toBe(true);
+    expect(result.data.updated).toBe(true);
+  });
+
+  it('should handle database failures gracefully', async () => {
+    // Mock database failure
+    mockDatabase.mockRejectedValueOnce(new Error('Connection failed'));
+
+    const result = await vincentPolicy.commit(commitParams, policyContext);
+
+    expect(result.allow).toBe(false);
+    expect(result.data.reason).toContain('Database update failed');
+  });
+});
+```
+
+## Best Practices
+
+<Steps>
+  <Step title="Always Implement for Stateful Policies">
+    Any Policy that tracks limits, counts, or cumulative data needs a commit function
+  </Step>
+
+  <Step title="Handle Partial Failures">
+    Design for scenarios where some updates succeed and others fail
+  </Step>
+
+  <Step title="Use Transactions">
+    Ensure atomicity when updating multiple records or contracts
+  </Step>
+
+  <Step title="Log State Changes">
+    Maintain audit trails of all policy state modifications
+  </Step>
+
+  <Step title="Test Thoroughly">
+    Test commit functions under various failure scenarios
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Testing Policies" icon="flask" href="/ability/policy/testing">
+    Test all aspects of your Policy implementation
+  </Card>
+  <Card title="Policy Quick Start" icon="rocket" href="/ability/policy/quickstart">
+    Build your first Policy from scratch
+  </Card>
+</CardGroup>

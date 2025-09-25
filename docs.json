@@ -61,8 +61,46 @@
             "group": "Introduction",
             "pages": [
               "app/quickstart",
+              "app/explaining-apps",
               "app/updating-apps",
               "app/authenticating-users"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Ability Developers",
+        "groups": [
+          {
+            "group": "Abilities",
+            "pages": [
+              "ability/quickstart",
+              "ability/explaining-abilities"
+            ]
+          },
+          {
+            "group": "Ability Guides",
+            "pages": [
+              "ability/parameter-schemas",
+              "ability/supporting-policies",
+              "ability/precheck-function",
+              "ability/execute-function"
+            ]
+          },
+          {
+            "group": "Policies",
+            "pages": [
+              "ability/policy/quickstart",
+              "ability/policy/explaining-policies"
+            ]
+          },
+          {
+            "group": "Policy Guides",
+            "pages": [
+              "ability/policy/parameter-schemas",
+              "ability/policy/precheck-function",
+              "ability/policy/evaluate-function",
+              "ability/policy/commit-function"
             ]
           }
         ]

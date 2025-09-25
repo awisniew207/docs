@@ -2,30 +2,92 @@
 title: Authenticating Users
 ---
 
-The Vincent Web App Client enables secure user authentication and consent management for executing Vincent Abilities on their behalf.
+The Vincent Web App Client enables secure user authentication and delegation management for executing Vincent Abilities on their behalf.
+
+Using the Web App Client, you can direct users to the Vincent Connect Page where:
+- New users can review the Abilities your App is requesting and configure Vincent Policies
+- Returning users can log in and confirm their identity and authorized App Version
 
 ## Authentication Flow
 
-1. Your app redirects users to the Vincent Connect Page
-2. Users review requested Abilities and configure Policies
-3. Upon approval, users return to your app with a signed JWT
-4. Your app verifies and stores the JWT for authenticated requests
+<Steps>
+  <Step title="Redirect to Connect Page">
+    Your App redirects users to the Vincent Connect Page
+  </Step>
+
+  <Step title="User Reviews and Configures">
+    Users review requested Abilities and configure Policies
+  </Step>
+
+  <Step title="Return with JWT">
+    Upon approval, users return to your App with a signed JWT
+  </Step>
+
+  <Step title="Verify and Store">
+    Your App verifies and stores the JWT for authenticated requests
+  </Step>
+</Steps>
 
 ## Vincent JWT
 
-The JWT proves:
-- User authentication via their Vincent Wallet
-- User permission for your app to act on their behalf
+The JWT proves user authentication via their Vincent Wallet and grants your App permission to act on their behalf.
+
+### JWT Structure
+
+<ParamField path="header" type="object">
+  Standard JWT header containing algorithm and type information
+</ParamField>
+
+<ParamField path="signature" type="string">
+  Signature from User's Vincent Wallet proving the JWT was signed using their wallet
+</ParamField>
+
+<ParamField path="data" type="string">
+  The raw, unsigned payload string used during signing
+</ParamField>
+
+<Note>
+To access these claims, use [`decodeVincentJWTFromUri`](https://docs.heyvincent.ai/interfaces/vincent-app-sdk.webAuthClient.WebAuthClient.html#decodevincentjwtfromuri) in your frontend.
+</Note>
 
 ### JWT Contains
 
-- **pkp**: User's Vincent Wallet (address, public key, token ID)
-- **app**: Your app ID and authorized version
-- **authentication**: Method used (email, phone, or passkey)
-- **aud**: Valid audience (your domain/redirect URI)
-- **exp**: Expiration timestamp
+<ParamField path="JWT" type="object">
+  The Vincent JWT containing authentication and authorization details.
+  <Expandable title="properties">
+    <ParamField path="pkp" type="object" required>
+      User's Vincent Wallet containing ethAddress, publicKey, and tokenId
+    </ParamField>
+    <ParamField path="app" type="object" required>
+      Vincent App the JWT was issued for, including id and version fields
+    </ParamField>
+    <ParamField path="authentication" type="object" required>
+      Authentication method with type (email, phone, or passkey) and optional value
+    </ParamField>
+    <ParamField path="aud" type="string" required>
+      Valid audience (your domain/redirect URI)
+    </ParamField>
+    <ParamField path="exp" type="number" required>
+      Expiration timestamp (seconds since Unix epoch)
+    </ParamField>
+  </Expandable>
+</ParamField>
 
 ## Setting Up the Web App Client
+
+<ParamField path="getWebAuthClient" type="function">
+  Creates a Vincent Web App Client instance
+  <Expandable title="parameters">
+    <ParamField path="appId" type="string" required>
+      Your Vincent App ID from the dashboard
+    </ParamField>
+  </Expandable>
+  <Expandable title="returns">
+    <ParamField path="vincentAppClient" type="object">
+      The Vincent App Client instance with authentication methods
+    </ParamField>
+  </Expandable>
+</ParamField>
 
 ```javascript
 import { getWebAuthClient } from '@lit-protocol/vincent-app-sdk/webAuthClient';
@@ -36,6 +98,59 @@ const vincentAppClient = getWebAuthClient({
 ```
 
 ## Handling Authentication
+
+<ParamField path="vincentAppClient.uriContainsVincentJWT" type="method">
+  Checks if the current URL contains a Vincent JWT
+  <Expandable title="returns">
+    <ParamField path="hasJWT" type="boolean">
+      Returns true if URL contains a Vincent JWT, false otherwise
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField path="vincentAppClient.decodeVincentJWTFromUri" type="method">
+  Extracts and validates JWT from URL
+  <Expandable title="parameters">
+    <ParamField path="origin" type="string" required>
+      The origin URL to validate against (e.g., window.location.origin)
+    </ParamField>
+  </Expandable>
+  <Expandable title="returns">
+    <ParamField path="decodedJWT" type="object">
+      The decoded JWT object containing all JWT claims
+    </ParamField>
+    <ParamField path="jwtStr" type="string">
+      The raw JWT string for storage
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField path="vincentAppClient.removeVincentJWTFromURI" type="method">
+  Removes the Vincent JWT query parameter from the current URL
+</ParamField>
+
+<ParamField path="vincentAppClient.redirectToConnectPage" type="method">
+  Redirects user to Vincent Connect Page for authentication
+  <Expandable title="parameters">
+    <ParamField path="redirectUri" type="string" required>
+      The URI to redirect back to after authentication. Must be one of your configured Authorized Redirect URIs.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField path="isExpired" type="function">
+  Checks if a JWT has expired
+  <Expandable title="parameters">
+    <ParamField path="jwt" type="string" required>
+      The JWT string to check
+    </ParamField>
+  </Expandable>
+  <Expandable title="returns">
+    <ParamField path="expired" type="boolean">
+      Returns true if the JWT is expired, false otherwise
+    </ParamField>
+  </Expandable>
+</ParamField>
 
 ```javascript
 import { getWebAuthClient } from '@lit-protocol/vincent-app-sdk/webAuthClient';
@@ -78,6 +193,23 @@ The `redirectUri` must be one of your configured Authorized Redirect URIs.
 
 Always verify JWTs submitted to your backend:
 
+<ParamField path="verify" type="function">
+  Verifies a Vincent JWT on your backend
+  <Expandable title="parameters">
+    <ParamField path="jwt" type="string" required>
+      The Vincent JWT string returned from the Connect flow
+    </ParamField>
+    <ParamField path="audience" type="string" required>
+      The redirect URI that received the JWT from the Vincent Connect Page
+    </ParamField>
+  </Expandable>
+  <Expandable title="returns">
+    <ParamField path="decodedJWT" type="object">
+      The decoded and verified JWT object if valid
+    </ParamField>
+  </Expandable>
+</ParamField>
+
 ```javascript
 import { verify } from '@lit-protocol/vincent-app-sdk/jwt';
 
@@ -86,31 +218,42 @@ const jwtAudience = 'https://my-redirect-uri.com';
 
 try {
   const decodedJWT = verify(vincentJwt, jwtAudience);
-  // JWT is valid
+  // JWT is valid and was created specifically for your App
 } catch (error) {
   // JWT is invalid, expired, or mis-scoped
 }
 ```
 
-## Client Methods
+<Warning>
+The verify method will throw an error if the JWT is invalid, expired, or mis-scoped.
+</Warning>
 
-### `redirectToConnectPage`
-Redirects to Vincent Connect Page for user authentication and consent.
+## FAQ
 
-### `uriContainsVincentJWT`
-Returns `true` if URL contains a Vincent JWT after Connect flow.
+<AccordionGroup>
+  <Accordion title="What happens when a JWT expires?" icon="clock">
+    When a JWT expires, you'll need to redirect the user back to the Vincent Connect Page using `redirectToConnectPage()`. Returning users will be able to quickly re-authenticate and get a new JWT without reconfiguring their Policies.
+  </Accordion>
 
-### `decodeVincentJWTFromUri`
-Extracts and validates JWT from URL, verifying:
-- Signature from user's Vincent Wallet
-- JWT hasn't expired
-- JWT was issued for your app
+  <Accordion title="Can I use the same JWT across multiple domains?" icon="globe">
+    No, JWTs are scoped to specific redirect URIs for security. Each domain needs its own JWT obtained through the Vincent Connect flow with that domain as the redirect URI.
+  </Accordion>
 
-### `removeVincentJWTFromURI`
-Removes JWT parameter from URL after extraction and storage.
+  <Accordion title="How long are JWTs valid?" icon="timer">
+    JWT expiration is set by the Vincent platform. Check the `exp` claim in the JWT to see when it expires (timestamp in seconds since Unix epoch).
+  </Accordion>
+
+  <Accordion title="Do I need to verify JWTs in my frontend?" icon="shield-check">
+    The `decodeVincentJWTFromUri` method automatically validates JWTs in your frontend. However, you MUST always verify JWTs on your backend using the `verify` function before processing authenticated requests.
+  </Accordion>
+
+  <Accordion title="What's the difference between new and returning users?" icon="users">
+    New users will see your App's requested Abilities and can configure Policies before granting permission. Returning users who have already authorized your App will simply confirm their identity and the App version they've authorized.
+  </Accordion>
+
+  <Accordion title="Can users revoke access to my App?" icon="user-x">
+    Yes, users can manage their App authorizations through their Vincent Wallet. If access is revoked, authentication will fail and they'll need to go through the Connect flow again as a new user.
+  </Accordion>
+</AccordionGroup>
 
 ## Next Steps
-
-- [Execute Vincent Abilities](/app/executing-abilities) on behalf of authenticated users
-- [Create custom Vincent Abilities](/abilities/creating-abilities)
-- [Create custom Vincent Policies](/policies/creating-policies)

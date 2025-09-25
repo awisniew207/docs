@@ -1,0 +1,588 @@
+---
+title: Policy Evaluate Function
+---
+
+The evaluate function provides final validation with full blockchain access in the Lit Action environment. This is where your Policy makes the definitive allow/deny decision.
+
+## Execution Context
+
+<CardGroup cols={2}>
+  <Card title="Lit Action Environment" icon="server">
+    Runs in Lit's secure execution environment with full capabilities
+  </Card>
+  <Card title="Blockchain Access" icon="ethereum">
+    Direct access to on-chain data and smart contracts
+  </Card>
+  <Card title="Final Authority" icon="gavel">
+    The definitive decision point for Policy enforcement
+  </Card>
+  <Card title="State Consistency" icon="database">
+    Access to real-time, consistent blockchain state
+  </Card>
+</CardGroup>
+
+## Function Structure
+
+```typescript
+evaluate: async ({ abilityParams, userParams }, policyContext) => {
+  try {
+    // Perform final validation with blockchain access
+    const validation = await performBlockchainValidation(abilityParams, userParams, policyContext);
+
+    if (validation.success) {
+      return policyContext.allow(validation.data);
+    } else {
+      return policyContext.deny(validation.error);
+    }
+  } catch (error) {
+    return policyContext.deny({
+      reason: 'Evaluation failed',
+      error: error.message,
+      blockNumber: await ethers.provider.getBlockNumber(),
+    });
+  }
+}
+```
+
+## Blockchain Integration
+
+### Smart Contract Interaction
+
+```typescript
+evaluate: async ({ abilityParams, userParams }, policyContext) => {
+  const { tokenAddress, amount } = abilityParams;
+  const { dailySpendingLimit, contractAddress } = userParams;
+
+  // Access your policy's smart contract
+  const policyContract = new ethers.Contract(
+    contractAddress,
+    POLICY_CONTRACT_ABI,
+    ethers.provider
+  );
+
+  try {
+    // Get current spending from contract
+    const currentSpending = await policyContract.getCurrentSpending(
+      policyContext.delegation.delegatorPkpInfo.ethAddress,
+      policyContext.appId,
+      Math.floor(Date.now() / 86400000) // Current day
+    );
+
+    // Verify spending limit
+    if (currentSpending.add(amount).gt(ethers.utils.parseUnits(dailySpendingLimit.toString(), 6))) {
+      return policyContext.deny({
+        reason: 'Spending limit exceeded',
+        currentSpending: ethers.utils.formatUnits(currentSpending, 6),
+        requestedAmount: amount,
+        dailyLimit: dailySpendingLimit,
+      });
+    }
+
+    // Validate token contract
+    const tokenContract = new ethers.Contract(tokenAddress, ERC20_ABI, ethers.provider);
+    const tokenSymbol = await tokenContract.symbol();
+    const tokenDecimals = await tokenContract.decimals();
+
+    return policyContext.allow({
+      validated: true,
+      currentSpending: ethers.utils.formatUnits(currentSpending, 6),
+      remainingLimit: dailySpendingLimit - parseFloat(ethers.utils.formatUnits(currentSpending, 6)) - amount,
+      tokenSymbol,
+      tokenDecimals,
+      blockNumber: await ethers.provider.getBlockNumber(),
+    });
+
+  } catch (error) {
+    return policyContext.deny({
+      reason: 'Blockchain validation failed',
+      error: error.message,
+      contractAddress,
+    });
+  }
+}
+```
+
+### Multi-Contract Validation
+
+```typescript
+evaluate: async ({ abilityParams, userParams }, policyContext) => {
+  const { tokenAddress, recipientAddress, amount } = abilityParams;
+  const { allowlistContract, spendingContract } = userParams;
+
+  try {
+    // Check multiple contracts in parallel
+    const [allowlistResult, spendingResult, tokenInfo] = await Promise.all([
+      // Check if token is on allowlist
+      new ethers.Contract(allowlistContract, ALLOWLIST_ABI, ethers.provider)
+        .isTokenAllowed(tokenAddress),
+
+      // Check spending limits
+      new ethers.Contract(spendingContract, SPENDING_ABI, ethers.provider)
+        .canSpend(policyContext.delegation.delegatorPkpInfo.ethAddress, amount),
+
+      // Validate token contract
+      Promise.resolve().then(async () => {
+        const tokenContract = new ethers.Contract(tokenAddress, ERC20_ABI, ethers.provider);
+        return {
+          symbol: await tokenContract.symbol(),
+          decimals: await tokenContract.decimals(),
+          totalSupply: await tokenContract.totalSupply(),
+        };
+      }),
+    ]);
+
+    // Validate results
+    if (!allowlistResult) {
+      return policyContext.deny({
+        reason: 'Token not on allowlist',
+        tokenAddress,
+        allowlistContract,
+      });
+    }
+
+    if (!spendingResult.allowed) {
+      return policyContext.deny({
+        reason: 'Spending not allowed',
+        currentSpending: ethers.utils.formatUnits(spendingResult.currentSpending, 6),
+        requestedAmount: amount,
+        reason: spendingResult.reason,
+      });
+    }
+
+    return policyContext.allow({
+      tokenAllowed: true,
+      spendingAllowed: true,
+      tokenInfo,
+      spendingInfo: {
+        currentSpending: ethers.utils.formatUnits(spendingResult.currentSpending, 6),
+        remainingLimit: ethers.utils.formatUnits(spendingResult.remainingLimit, 6),
+      },
+    });
+
+  } catch (error) {
+    return policyContext.deny({
+      reason: 'Multi-contract validation failed',
+      error: error.message,
+    });
+  }
+}
+```
+
+## Advanced Validation Patterns
+
+### Oracle Integration
+
+```typescript
+evaluate: async ({ abilityParams, userParams }, policyContext) => {
+  const { tokenAddress, amount } = abilityParams;
+  const { maxUsdValue, priceOracleAddress } = userParams;
+
+  try {
+    // Get token price from oracle
+    const oracle = new ethers.Contract(
+      priceOracleAddress,
+      PRICE_ORACLE_ABI,
+      ethers.provider
+    );
+
+    const priceData = await oracle.getPrice(tokenAddress);
+    const tokenPriceUsd = ethers.utils.formatUnits(priceData.price, priceData.decimals);
+    const usdValue = amount * parseFloat(tokenPriceUsd);
+
+    // Check if USD value exceeds limit
+    if (usdValue > maxUsdValue) {
+      return policyContext.deny({
+        reason: 'USD value exceeds limit',
+        tokenAmount: amount,
+        tokenPriceUsd,
+        usdValue,
+        maxUsdValue,
+      });
+    }
+
+    // Verify oracle freshness
+    const currentTime = Math.floor(Date.now() / 1000);
+    const priceAge = currentTime - priceData.updatedAt;
+
+    if (priceAge > 3600) { // 1 hour
+      return policyContext.deny({
+        reason: 'Price data too old',
+        priceAge: `${Math.floor(priceAge / 60)} minutes`,
+        lastUpdate: new Date(priceData.updatedAt * 1000).toISOString(),
+      });
+    }
+
+    return policyContext.allow({
+      validated: true,
+      tokenPriceUsd,
+      usdValue,
+      priceTimestamp: new Date(priceData.updatedAt * 1000).toISOString(),
+    });
+
+  } catch (error) {
+    return policyContext.deny({
+      reason: 'Oracle validation failed',
+      error: error.message,
+      oracleAddress: priceOracleAddress,
+    });
+  }
+}
+```
+
+### NFT-Based Access Control
+
+```typescript
+evaluate: async ({ abilityParams, userParams }, policyContext) => {
+  const { requiredNftContract, minimumBalance } = userParams;
+  const userAddress = policyContext.delegation.delegatorPkpInfo.ethAddress;
+
+  try {
+    const nftContract = new ethers.Contract(
+      requiredNftContract,
+      ERC721_ABI,
+      ethers.provider
+    );
+
+    // Check NFT balance
+    const balance = await nftContract.balanceOf(userAddress);
+
+    if (balance.lt(minimumBalance || 1)) {
+      return policyContext.deny({
+        reason: 'Insufficient NFT balance',
+        userAddress,
+        nftContract: requiredNftContract,
+        currentBalance: balance.toNumber(),
+        requiredBalance: minimumBalance || 1,
+      });
+    }
+
+    // Get additional NFT metadata for logging
+    const contractName = await nftContract.name();
+    const contractSymbol = await nftContract.symbol();
+
+    // Check if user has specific token IDs (optional)
+    const requiredTokenIds = userParams.requiredTokenIds;
+    if (requiredTokenIds && requiredTokenIds.length > 0) {
+      const ownedTokens = [];
+
+      for (const tokenId of requiredTokenIds) {
+        try {
+          const owner = await nftContract.ownerOf(tokenId);
+          if (owner.toLowerCase() === userAddress.toLowerCase()) {
+            ownedTokens.push(tokenId);
+          }
+        } catch (error) {
+          // Token doesn't exist or other error
+          continue;
+        }
+      }
+
+      if (ownedTokens.length === 0) {
+        return policyContext.deny({
+          reason: 'Required NFT token not owned',
+          requiredTokenIds,
+          ownedTokens,
+        });
+      }
+
+      return policyContext.allow({
+        accessGranted: true,
+        nftBalance: balance.toNumber(),
+        contractName,
+        contractSymbol,
+        ownedRequiredTokens: ownedTokens,
+      });
+    }
+
+    return policyContext.allow({
+      accessGranted: true,
+      nftBalance: balance.toNumber(),
+      contractName,
+      contractSymbol,
+    });
+
+  } catch (error) {
+    return policyContext.deny({
+      reason: 'NFT access validation failed',
+      error: error.message,
+      nftContract: requiredNftContract,
+    });
+  }
+}
+```
+
+### Cross-Chain Validation
+
+```typescript
+evaluate: async ({ abilityParams, userParams }, policyContext) => {
+  const { targetChainId } = abilityParams;
+  const { allowedChains, crossChainValidatorAddress } = userParams;
+
+  // Check if target chain is allowed
+  if (!allowedChains.includes(targetChainId)) {
+    return policyContext.deny({
+      reason: 'Target chain not allowed',
+      targetChainId,
+      allowedChains,
+    });
+  }
+
+  try {
+    // Use cross-chain validator contract
+    const validator = new ethers.Contract(
+      crossChainValidatorAddress,
+      CROSS_CHAIN_VALIDATOR_ABI,
+      ethers.provider
+    );
+
+    // Verify cross-chain state
+    const validation = await validator.validateCrossChainState(
+      targetChainId,
+      policyContext.delegation.delegatorPkpInfo.ethAddress,
+      abilityParams
+    );
+
+    if (!validation.isValid) {
+      return policyContext.deny({
+        reason: 'Cross-chain validation failed',
+        targetChainId,
+        validationReason: validation.reason,
+      });
+    }
+
+    return policyContext.allow({
+      crossChainValidated: true,
+      targetChainId,
+      validationProof: validation.proof,
+    });
+
+  } catch (error) {
+    return policyContext.deny({
+      reason: 'Cross-chain validator error',
+      error: error.message,
+      targetChainId,
+    });
+  }
+}
+```
+
+## State Management
+
+### Reading Current State
+
+```typescript
+evaluate: async ({ abilityParams, userParams }, policyContext) => {
+  const userAddress = policyContext.delegation.delegatorPkpInfo.ethAddress;
+  const { stateContract } = userParams;
+
+  try {
+    const stateContract = new ethers.Contract(
+      stateContractAddress,
+      STATE_CONTRACT_ABI,
+      ethers.provider
+    );
+
+    // Read current policy state
+    const policyState = await stateContract.getPolicyState(
+      userAddress,
+      policyContext.appId
+    );
+
+    // Perform validation based on current state
+    const validation = validateAgainstState(abilityParams, userParams, policyState);
+
+    if (!validation.allowed) {
+      return policyContext.deny(validation.error);
+    }
+
+    return policyContext.allow({
+      validated: true,
+      currentState: {
+        counter: policyState.counter.toNumber(),
+        lastExecution: new Date(policyState.lastExecution.toNumber() * 1000).toISOString(),
+        metadata: policyState.metadata,
+      },
+    });
+
+  } catch (error) {
+    return policyContext.deny({
+      reason: 'State reading failed',
+      error: error.message,
+    });
+  }
+}
+```
+
+## Error Handling and Recovery
+
+<Tabs>
+  <Tab title="Network Issues">
+    ```typescript
+    evaluate: async ({ abilityParams, userParams }, policyContext) => {
+      const MAX_RETRIES = 3;
+      const RETRY_DELAY = 1000;
+
+      for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        try {
+          const result = await performBlockchainValidation();
+          return policyContext.allow(result);
+        } catch (error) {
+          const isNetworkError = error.code === 'NETWORK_ERROR' ||
+                                error.code === 'SERVER_ERROR';
+
+          if (attempt === MAX_RETRIES || !isNetworkError) {
+            return policyContext.deny({
+              reason: 'Blockchain validation failed',
+              error: error.message,
+              attempts: attempt,
+            });
+          }
+
+          // Wait before retry
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * attempt));
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Contract Issues">
+    ```typescript
+    evaluate: async ({ abilityParams, userParams }, policyContext) => {
+      try {
+        const contract = new ethers.Contract(userParams.contractAddress, ABI, ethers.provider);
+        const result = await contract.validate(abilityParams);
+
+        return policyContext.allow(result);
+      } catch (error) {
+        if (error.reason === 'call revert exception') {
+          return policyContext.deny({
+            reason: 'Contract validation failed',
+            contractError: error.reason,
+            contractAddress: userParams.contractAddress,
+          });
+        }
+
+        if (error.code === 'CALL_EXCEPTION') {
+          return policyContext.deny({
+            reason: 'Contract call failed',
+            method: 'validate',
+            error: error.message,
+          });
+        }
+
+        // Re-throw unexpected errors
+        throw error;
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Fallback Strategies">
+    ```typescript
+    evaluate: async ({ abilityParams, userParams }, policyContext) => {
+      try {
+        // Try primary validation method
+        const primaryResult = await primaryValidation();
+        return policyContext.allow(primaryResult);
+      } catch (primaryError) {
+        try {
+          // Fallback to secondary method
+          const fallbackResult = await fallbackValidation();
+          return policyContext.allow({
+            ...fallbackResult,
+            usedFallback: true,
+            primaryError: primaryError.message,
+          });
+        } catch (fallbackError) {
+          return policyContext.deny({
+            reason: 'All validation methods failed',
+            primaryError: primaryError.message,
+            fallbackError: fallbackError.message,
+          });
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Response Schemas
+
+<Tabs>
+  <Tab title="Allow Schema">
+    ```typescript
+    evalAllowResultSchema: z.object({
+      validated: z.boolean(),
+
+      // Blockchain state information
+      blockNumber: z.number(),
+      blockTimestamp: z.number(),
+      gasUsed: z.number().optional(),
+
+      // Validation results
+      contractValidation: z.object({
+        address: z.string(),
+        result: z.any(),
+      }).optional(),
+
+      // State information
+      currentState: z.record(z.any()).optional(),
+      metadata: z.record(z.any()).optional(),
+    })
+    ```
+  </Tab>
+  <Tab title="Deny Schema">
+    ```typescript
+    evalDenyResultSchema: z.object({
+      reason: z.string(),
+
+      // Blockchain context
+      blockNumber: z.number().optional(),
+      contractAddress: z.string().optional(),
+
+      // Error details
+      errorCode: z.string().optional(),
+      errorMessage: z.string().optional(),
+
+      // Helpful context
+      currentValue: z.number().optional(),
+      limitValue: z.number().optional(),
+      retryAfter: z.string().optional(),
+    })
+    ```
+  </Tab>
+</Tabs>
+
+## Best Practices
+
+<Steps>
+  <Step title="Verify Data Freshness">
+    Check timestamps and block numbers to ensure data is current
+  </Step>
+
+  <Step title="Handle Reorgs Gracefully">
+    Account for potential blockchain reorganizations
+  </Step>
+
+  <Step title="Use Safe Math">
+    Prevent overflow/underflow errors in calculations
+  </Step>
+
+  <Step title="Validate Contract Addresses">
+    Ensure contract addresses are valid and expected
+  </Step>
+
+  <Step title="Implement Circuit Breakers">
+    Add emergency stops for unexpected conditions
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Commit Function" icon="database" href="/ability/policy/commit-function">
+    Update policy state after successful execution
+  </Card>
+  <Card title="Testing Policies" icon="flask" href="/ability/policy/testing">
+    Test your evaluate function thoroughly
+  </Card>
+</CardGroup>
