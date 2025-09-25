@@ -36,7 +36,7 @@ Vincent optimizes for security, interoperability, and user-control to redefine h
 
 If you're a developer looking to deploy your first Vincent-enabled application or ability, head on over to the [Getting Started](./Developers/Getting-Started.md) page.
 
-If you're looking to give Vincent a try as a user, check out the official demo showcasing [automated dollar-cost-averaging](https://demo.heyvincent.ai/).
+If you're looking to give Vincent a try as a user, check out the official demo showcasing [automated dollar-cost-averaging](https://dca.heyvincent.ai/).
 
 ## Support
 
