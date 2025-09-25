@@ -21,6 +21,43 @@ The execute function contains your Ability's core logic and runs in the Lit Acti
   </Card>
 </CardGroup>
 
+## Function Parameters
+
+The execute function receives two parameters:
+
+<ParamField path="params" type="object" required>
+  Object containing the ability parameters
+  <Expandable title="properties">
+    <ParamField path="abilityParams" type="object">
+      Parameters matching your `abilityParamsSchema` definition
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField path="abilityContext" type="object" required>
+  Context object with helpers and metadata
+  <Expandable title="properties">
+    <ParamField path="succeed" type="function">
+      Return a success result matching `executeSuccessSchema`
+    </ParamField>
+    <ParamField path="fail" type="function">
+      Return a failure result matching `executeFailSchema`
+    </ParamField>
+    <ParamField path="delegation" type="object">
+      Contains `delegatorPkpInfo` with the user's Vincent Wallet info
+    </ParamField>
+    <ParamField path="policiesContext" type="object">
+      Policy evaluation results and commit functions
+    </ParamField>
+    <ParamField path="appId" type="number">
+      ID of the Vincent App executing this Ability
+    </ParamField>
+    <ParamField path="appVersion" type="number">
+      Version of the Vincent App
+    </ParamField>
+  </Expandable>
+</ParamField>
+
 ## Function Structure
 
 ```typescript

@@ -10,7 +10,7 @@ Vincent Abilities execute in two phases to ensure reliability and security:
 
 <Steps>
   <Step title="Precheck">
-    Runs locally to validate that execution will likely succeed
+    Runs locally to validate that execution will likely succeed. This also runs `precheck` on the Vincent Policies to ensure they are valid as well
   </Step>
 
   <Step title="Execute">
@@ -18,13 +18,9 @@ Vincent Abilities execute in two phases to ensure reliability and security:
   </Step>
 </Steps>
 
-### Policy Integration
-
-Before each phase, Vincent Policies are evaluated:
-- **Precheck phase**: Policy `precheck` functions run first
-- **Execute phase**: Policy `evaluate` functions run first
-
+<Note>
 Only if all policies return `allow` results will your Ability's function execute.
+</Note>
 
 ## Defining Your Ability
 
@@ -54,243 +50,58 @@ export const vincentAbility = createVincentAbility({
 });
 ```
 
-## Ability Context
+### createVincentAbility Parameters
 
-The `abilityContext` object provides essential information and utilities:
-
-<ParamField path="abilityIpfsCid" type="string">
-  IPFS CID of the executing Ability
+<ParamField path="packageName" type="string" required>
+  The npm package name of your Ability (e.g., `@your-org/ability-name`)
 </ParamField>
 
-<ParamField path="appId" type="number">
-  ID of the Vincent App executing this Ability
+<ParamField path="abilityDescription" type="string" required>
+  A clear description of what your Ability does
 </ParamField>
 
-<ParamField path="appVersion" type="number">
-  Version of the Vincent App
+<ParamField path="abilityParamsSchema" type="ZodSchema" required>
+  Zod schema defining the input parameters your Ability requires
 </ParamField>
 
-<ParamField path="delegation" type="object">
-  Information about the execution delegation
-  <Expandable title="properties">
-    <ParamField path="delegateeAddress" type="string">
-      Ethereum address of the Ability executor
-    </ParamField>
-    <ParamField path="delegatorPkpInfo" type="object">
-      User's Vincent Wallet information (tokenId, ethAddress, publicKey)
-    </ParamField>
+<ParamField path="supportedPolicies" type="SupportedPolicies" required>
+  Array of supported Vincent Policies, created with `supportedPoliciesForAbility()`
+</ParamField>
+
+<ParamField path="precheckSuccessSchema" type="ZodSchema">
+  Zod schema for successful precheck return values
+</ParamField>
+
+<ParamField path="precheckFailSchema" type="ZodSchema">
+  Zod schema for failed precheck return values
+</ParamField>
+
+<ParamField path="precheck" type="function" required>
+  Async function that validates execution will likely succeed
+  <Expandable title="function signature">
+    ```typescript
+    (params: { abilityParams }, context: AbilityContext) => Promise<PrecheckResult>
+    ```
   </Expandable>
 </ParamField>
 
-<ParamField path="policiesContext" type="object">
-  Results and controls for evaluated Policies
-  <Expandable title="properties">
-    <ParamField path="allow" type="boolean">
-      Whether all Policies permit execution
-    </ParamField>
-    <ParamField path="allowedPolicies" type="object">
-      Policies that permitted execution and their commit functions
-    </ParamField>
-    <ParamField path="deniedPolicy" type="object">
-      First Policy that denied execution (if any)
-    </ParamField>
+<ParamField path="executeSuccessSchema" type="ZodSchema">
+  Zod schema for successful execution return values
+</ParamField>
+
+<ParamField path="executeFailSchema" type="ZodSchema">
+  Zod schema for failed execution return values
+</ParamField>
+
+<ParamField path="execute" type="function" required>
+  Async function that performs the actual Ability operation
+  <Expandable title="function signature">
+    ```typescript
+    (params: { abilityParams }, context: AbilityContext) => Promise<ExecuteResult>
+    ```
   </Expandable>
 </ParamField>
 
-<ParamField path="succeed" type="function">
-  Helper to return success results
-</ParamField>
-
-<ParamField path="fail" type="function">
-  Helper to return failure results
-</ParamField>
-
-## Parameter Schemas
-
-### abilityParamsSchema
-
-Define the input parameters your Ability requires using Zod schemas:
-
-```typescript
-import { z } from 'zod';
-
-const abilityParamsSchema = z.object({
-  tokenAddress: z.string(),
-  amountToSend: z.number(),
-  recipientAddress: z.string(),
-});
-```
-
-These parameters should include everything needed for:
-1. Your Ability's core functionality
-2. Any supported Vincent Policies
-
-## Supporting Policies
-
-To enable Policy support, create `VincentAbilityPolicy` objects that map your parameters to Policy requirements:
-
-```typescript
-import {
-  createVincentAbilityPolicy,
-  supportedPoliciesForAbility
-} from '@lit-protocol/vincent-ability-sdk';
-import { bundledVincentPolicy } from '@lit-protocol/vincent-policy-spending-limit';
-
-const SpendingLimitPolicy = createVincentAbilityPolicy({
-  abilityParamsSchema,
-  bundledVincentPolicy,
-  abilityParameterMappings: {
-    tokenAddress: 'tokenAddress',    // Your param -> Policy param
-    amountToSend: 'amount',          // Your param -> Policy param
-  },
-});
-
-const vincentAbility = createVincentAbility({
-  // ...
-  supportedPolicies: supportedPoliciesForAbility([SpendingLimitPolicy]),
-});
-```
-
-<Info>
-Supporting a Policy doesn't make it required - it makes it available for Vincent App Users to enable if they choose.
-</Info>
-
-## Precheck Function
-
-Validates that execution will likely succeed without using Lit network resources:
-
-```typescript
-precheck: async ({ abilityParams }, abilityContext) => {
-  const { tokenAddress, amountToSend, recipientAddress } = abilityParams;
-
-  // Check token balance
-  const tokenBalance = await getErc20TokenBalance(
-    abilityContext.delegation.delegatorPkpInfo.ethAddress,
-    tokenAddress
-  );
-
-  if (tokenBalance < amountToSend) {
-    return abilityContext.fail({
-      reason: 'Insufficient token balance',
-      currentBalance: tokenBalance,
-      requiredAmount: amountToSend,
-    });
-  }
-
-  // Check gas requirements
-  const estimatedGas = await estimateTransactionGas(/* ... */);
-
-  return abilityContext.succeed({
-    tokenBalance,
-    estimatedGas,
-  });
-}
-```
-
-### Precheck Schemas
-
-<Tabs>
-  <Tab title="Success Schema">
-    ```typescript
-    precheckSuccessSchema: z.object({
-      tokenBalance: z.number(),
-      estimatedGas: z.number(),
-    })
-    ```
-  </Tab>
-  <Tab title="Failure Schema">
-    ```typescript
-    precheckFailSchema: z.object({
-      reason: z.string(),
-      currentBalance: z.number().optional(),
-      requiredAmount: z.number().optional(),
-    })
-    ```
-  </Tab>
-</Tabs>
-
-## Execute Function
-
-Performs the actual Ability operation in the Lit Action environment with access to signing capabilities:
-
-```typescript
-execute: async ({ abilityParams }, abilityContext) => {
-  const { tokenAddress, amountToSend, recipientAddress } = abilityParams;
-
-  // Create and send transaction
-  const transferTransaction = createErc20TransferTransaction(
-    tokenAddress,
-    recipientAddress,
-    amountToSend
-  );
-
-  try {
-    const txHash = await transferTransaction.send();
-
-    // Execute Policy commit functions
-    const policyCommitResult = await executePolicyCommits(abilityContext);
-
-    return abilityContext.succeed({
-      transferTransactionHash: txHash,
-      policyTransactionHash: policyCommitResult?.txHash,
-    });
-  } catch (error) {
-    return abilityContext.fail({
-      error: error.message,
-      errorCode: error.code,
-    });
-  }
-}
-```
-
-### Execute Schemas
-
-<Tabs>
-  <Tab title="Success Schema">
-    ```typescript
-    executeSuccessSchema: z.object({
-      transferTransactionHash: z.string(),
-      policyTransactionHash: z.string().optional(),
-    })
-    ```
-  </Tab>
-  <Tab title="Failure Schema">
-    ```typescript
-    executeFailSchema: z.object({
-      error: z.string(),
-      errorCode: z.string().optional(),
-      revertReason: z.string().optional(),
-    })
-    ```
-  </Tab>
-</Tabs>
-
-## Policy Commit Functions
-
-After successful execution, call commit functions for stateful Policies:
-
-```typescript
-// After main execution logic
-const spendingLimitPolicy =
-  abilityContext.policiesContext.allowedPolicies['@lit-protocol/vincent-policy-spending-limit'];
-
-if (spendingLimitPolicy?.commit) {
-  const commitResult = await spendingLimitPolicy.commit({
-    spentAmount: amountToSend,
-    tokenAddress,
-  });
-
-  if (!commitResult.allow) {
-    return abilityContext.fail({
-      error: commitResult.error ?? 'Policy commit failed',
-    });
-  }
-}
-```
-
-<Warning>
-Always call commit functions for Policies that provide them. Failing to do so can cause Policies to operate incorrectly and may allow executions that should be denied.
-</Warning>
 
 ## Complete Example
 
@@ -357,6 +168,23 @@ export const vincentAbility = createVincentAbility({
 });
 ```
 </Accordion>
+
+## Deep Dive Guides
+
+<CardGroup cols={2}>
+  <Card title="Parameter Schemas" icon="code" href="/ability/parameter-schemas">
+    Define and validate your Ability's input parameters
+  </Card>
+  <Card title="Supporting Policies" icon="shield" href="/ability/supporting-policies">
+    Integrate Vincent Policies with your Ability
+  </Card>
+  <Card title="Precheck Function" icon="check-circle" href="/ability/precheck-function">
+    Implement validation logic before execution
+  </Card>
+  <Card title="Execute Function" icon="play" href="/ability/execute-function">
+    Write your main execution logic
+  </Card>
+</CardGroup>
 
 ## Next Steps
 

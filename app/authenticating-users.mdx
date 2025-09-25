@@ -252,8 +252,6 @@ The verify method will throw an error if the JWT is invalid, expired, or mis-sco
   </Accordion>
 
   <Accordion title="Can users revoke access to my App?" icon="user-x">
-    Yes, users can manage their App authorizations through their Vincent Wallet. If access is revoked, authentication will fail and they'll need to go through the Connect flow again as a new user.
+    Yes. If access is revoked, the user will need to repermit the app before they can generate a new JWT for it. Execution of Vincent Abilities on their behalf will also fail.
   </Accordion>
 </AccordionGroup>
-
-## Next Steps
