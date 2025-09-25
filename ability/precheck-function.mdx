@@ -8,15 +8,115 @@ The precheck function runs locally to validate that execution won't fail when th
 The Vincent Ability SDK runs Policy prechecks first. Your precheck only runs if all Policies return `allow`.
 </Note>
 
-## Example Implementation
+## Response Schemas
 
-For a token transfer ability, precheck validates balances and gas:
+### precheckSuccessSchema
+
+<ParamField path="precheckSuccessSchema" type="ZodSchema" required>
+  A Zod schema that defines the structure of successful precheck results. Include details that help the executor understand why the precheck passed, such as current balances and estimated costs.
+</ParamField>
+
+### precheckFailSchema
+
+<ParamField path="precheckFailSchema" type="ZodSchema" required>
+  A Zod schema that defines the structure of failed precheck results. Include details that help the executor understand why the precheck failed, such as error reasons and relevant values.
+</ParamField>
+
+<Tabs>
+  <Tab title="Success Schema">
+    ```typescript
+    import { createVincentAbility } from '@lit-protocol/vincent-ability-sdk';
+    import { z } from 'zod';
+
+    const vincentAbility = createVincentAbility({
+      // ... other ability definitions
+
+      precheckSuccessSchema: z.object({
+        erc20TokenBalance: z.number(),
+        nativeTokenBalance: z.number(),
+        estimatedGas: z.number(),
+      }),
+    });
+    ```
+  </Tab>
+  <Tab title="Failure Schema">
+    ```typescript
+    import { createVincentAbility } from '@lit-protocol/vincent-ability-sdk';
+    import { z } from 'zod';
+
+    const vincentAbility = createVincentAbility({
+      // ... other ability definitions
+
+      precheckFailSchema: z.object({
+        reason: z.string(),
+        currentBalance: z.number().optional(),
+        requiredAmount: z.number().optional(),
+      }),
+    });
+    ```
+  </Tab>
+</Tabs>
+
+<Note>
+If any unhandled error occurs during precheck, the Vincent Ability SDK automatically returns a fail result with the error message.
+</Note>
+
+## Function Parameters
+
+The precheck function receives two parameters:
+
+<ParamField path="params" type="object" required>
+  Object containing the ability parameters
+  <Expandable title="properties">
+    <ParamField path="abilityParams" type="object">
+      Parameters matching your `abilityParamsSchema` definition
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField path="abilityContext" type="object" required>
+  Context object provided by the SDK with helpers and metadata
+  <Expandable title="properties">
+    <ParamField path="succeed" type="function">
+      Helper function to return a success result matching your `precheckSuccessSchema`
+    </ParamField>
+    <ParamField path="fail" type="function">
+      Helper function to return a failure result matching your `precheckFailSchema`
+    </ParamField>
+    <ParamField path="delegation" type="object">
+      Contains `delegatorPkpInfo` with the Vincent Wallet address executing the ability
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Complete Example
+
+Here's a full example of a token transfer ability's precheck function:
 
 ```typescript
 import { createVincentAbility } from '@lit-protocol/vincent-ability-sdk';
+import { z } from 'zod';
+
+import {
+  createErc20TransferTransaction,
+  getErc20TokenBalance,
+  getNativeTokenBalance,
+} from './my-ability-code';
 
 const vincentAbility = createVincentAbility({
   // ... other ability definitions
+
+  precheckSuccessSchema: z.object({
+    erc20TokenBalance: z.number(),
+    nativeTokenBalance: z.number(),
+    estimatedGas: z.number(),
+  }),
+
+  precheckFailSchema: z.object({
+    reason: z.string(),
+    currentBalance: z.number().optional(),
+    requiredAmount: z.number().optional(),
+  }),
 
   precheck: async ({ abilityParams }, abilityContext) => {
     const { tokenAddress, amountToSend, recipientAddress } = abilityParams;
@@ -79,78 +179,6 @@ const vincentAbility = createVincentAbility({
   },
 });
 ```
-
-## Function Parameters
-
-The precheck function receives two parameters:
-
-<ParamField path="params" type="object" required>
-  Object containing the ability parameters
-  <Expandable title="properties">
-    <ParamField path="abilityParams" type="object">
-      Parameters matching your `abilityParamsSchema` definition
-    </ParamField>
-  </Expandable>
-</ParamField>
-
-<ParamField path="abilityContext" type="object" required>
-  Context object with helpers and metadata
-  <Expandable title="properties">
-    <ParamField path="succeed" type="function">
-      Return a success result matching `precheckSuccessSchema`
-    </ParamField>
-    <ParamField path="fail" type="function">
-      Return a failure result matching `precheckFailSchema`
-    </ParamField>
-    <ParamField path="delegation" type="object">
-      Contains `delegatorPkpInfo` with the user's Vincent Wallet address
-    </ParamField>
-  </Expandable>
-</ParamField>
-
-
-## precheckSuccessSchema
-
-Defines the structure of successful precheck results:
-
-```typescript
-import { createVincentAbility } from '@lit-protocol/vincent-ability-sdk';
-import { z } from 'zod';
-
-const vincentAbility = createVincentAbility({
-  // ... other ability definitions
-
-  precheckSuccessSchema: z.object({
-    erc20TokenBalance: z.number(),
-    nativeTokenBalance: z.number(),
-    estimatedGas: z.number(),
-  }),
-});
-```
-
-## precheckFailSchema
-
-Defines the structure of failed precheck results:
-
-```typescript
-import { createVincentAbility } from '@lit-protocol/vincent-ability-sdk';
-import { z } from 'zod';
-
-const vincentAbility = createVincentAbility({
-  // ... other ability definitions
-
-  precheckFailSchema: z.object({
-    reason: z.string(),
-    currentBalance: z.number().optional(),
-    requiredAmount: z.number().optional(),
-  }),
-});
-```
-
-<Note>
-If any unhandled error occurs during precheck, the Vincent Ability SDK automatically returns a fail result with the error message.
-</Note>
-
 
 ## Next Steps
 

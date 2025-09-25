@@ -67,12 +67,6 @@ The `tokenAddress` and `amountToSend` parameters serve dual purposes: they're us
     amount: z.string().regex(/^\d+$/, "Must be a valid number string")
     ```
   </Tab>
-  <Tab title="Optional Parameters">
-    ```typescript
-    gasLimit: z.number().min(21000).optional(),
-    deadline: z.number().optional(),
-    ```
-  </Tab>
 </Tabs>
 
 

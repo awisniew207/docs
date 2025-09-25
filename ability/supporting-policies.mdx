@@ -12,6 +12,12 @@ Supporting a Policy doesn't make it required - App Users choose which Policies t
 
 Map your Ability's parameters to Policy requirements:
 
+### Policy Configuration
+
+<ParamField path="createVincentAbilityPolicy" type="function" required>
+  Creates a policy object that maps your Ability's parameters to the Policy's requirements. This allows the Policy to access and validate the necessary parameters from your Ability.
+</ParamField>
+
 ```typescript
 import {
   createVincentAbility,

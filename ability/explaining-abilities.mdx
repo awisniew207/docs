@@ -24,34 +24,6 @@ Only if all policies return `allow` results will your Ability's function execute
 
 ## Defining Your Ability
 
-Vincent Abilities are created using `createVincentAbility` from the Vincent Ability SDK:
-
-```typescript
-import { createVincentAbility } from '@lit-protocol/vincent-ability-sdk';
-
-export const vincentAbility = createVincentAbility({
-  packageName: '@your-org/ability-name',
-  abilityDescription: 'What this ability does',
-
-  abilityParamsSchema,
-  supportedPolicies: supportedPoliciesForAbility([]),
-
-  precheckSuccessSchema,
-  precheckFailSchema,
-  precheck: async ({ abilityParams }, abilityContext) => {
-    // Validation logic
-  },
-
-  executeSuccessSchema,
-  executeFailSchema,
-  execute: async ({ abilityParams }, abilityContext) => {
-    // Main execution logic
-  },
-});
-```
-
-### createVincentAbility Parameters
-
 <ParamField path="packageName" type="string" required>
   The npm package name of your Ability (e.g., `@your-org/ability-name`)
 </ParamField>
@@ -102,6 +74,33 @@ export const vincentAbility = createVincentAbility({
   </Expandable>
 </ParamField>
 
+## Creating Vincent Abilities
+
+Vincent Abilities are created using `createVincentAbility` from the Vincent Ability SDK:
+
+```typescript
+import { createVincentAbility } from '@lit-protocol/vincent-ability-sdk';
+
+export const vincentAbility = createVincentAbility({
+  packageName: '@your-org/ability-name',
+  abilityDescription: 'What this ability does',
+
+  abilityParamsSchema,
+  supportedPolicies: supportedPoliciesForAbility([]),
+
+  precheckSuccessSchema,
+  precheckFailSchema,
+  precheck: async ({ abilityParams }, abilityContext) => {
+    // Validation logic
+  },
+
+  executeSuccessSchema,
+  executeFailSchema,
+  execute: async ({ abilityParams }, abilityContext) => {
+    // Main execution logic
+  },
+});
+```
 
 ## Complete Example
 
