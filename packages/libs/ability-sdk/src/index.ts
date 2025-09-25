@@ -29,4 +29,4 @@ export type {
 
 export type { BaseAbilityContext } from './lib/abilityCore/abilityConfig/context/types';
 
-export { populateTransaction } from './lib/abiltyHelpers';
+export { populateTransaction } from './lib/abilityHelpers';

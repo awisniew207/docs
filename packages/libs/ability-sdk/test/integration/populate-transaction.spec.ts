@@ -1,6 +1,6 @@
 import { VoidSigner, formatUnits, Interface } from 'ethers-v6';
 
-import { populateTransaction } from '../../src/lib/abiltyHelpers/populateTransaction';
+import { populateTransaction } from '../../src/lib/abilityHelpers/populateTransaction';
 import { BASE_RPC_URL } from '../helpers/test-variables';
 
 // Extend Jest timeout to 30 seconds for live RPC
