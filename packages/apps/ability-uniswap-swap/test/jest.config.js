@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  displayName: 'ability-uniswap-swap',
+  displayName: 'ability-sdk',
   preset: '../../../../jest.preset.js',
   testEnvironment: 'node',
   testMatch: ['<rootDir>/**/*.spec.ts'],
