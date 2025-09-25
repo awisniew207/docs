@@ -84,7 +84,8 @@
               "ability/parameter-schemas",
               "ability/supporting-policies",
               "ability/precheck-function",
-              "ability/execute-function"
+              "ability/execute-function",
+              "ability/publishing"
             ]
           },
           {
@@ -100,7 +101,8 @@
               "ability/policy/parameter-schemas",
               "ability/policy/precheck-function",
               "ability/policy/evaluate-function",
-              "ability/policy/commit-function"
+              "ability/policy/commit-function",
+              "ability/policy/publishing"
             ]
           }
         ]
