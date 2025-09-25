@@ -8,6 +8,7 @@ import {
 } from '@/components/user-dashboard/withdraw/WalletConnect/RequestHandler';
 import { getPKPWallet } from '@/components/user-dashboard/withdraw/WalletConnect/WalletConnectUtil';
 import { ethers } from 'ethers';
+import { JsonRpcProvider as V6JsonRpcProvider } from 'ethers-v6';
 
 export function useWalletConnectRequests(client: any, currentWalletAddress: string | null) {
   const [pendingSessionRequests, setPendingSessionRequests] = useState<any[]>([]);
@@ -222,21 +223,23 @@ async function handleSendTransaction(pkpWallet: PKPEthersWallet, methodParams: a
   await pkpWallet.setRpc(rpcUrl);
   tx.chainId = chainId;
 
+  // Create v6 provider for gas estimation and fee data
+  const v6Provider = new V6JsonRpcProvider(rpcUrl);
+
   // Check if this should be an EIP-1559 transaction and pre-populate fee fields
   // This prevents PKPEthersWallet from creating BigNumber objects internally
   if (!tx.gasPrice && !tx.maxFeePerGas && !tx.maxPriorityFeePerGas) {
     try {
-      const provider = pkpWallet.provider;
-      const feeData = await provider.getFeeData();
+      const feeData = await v6Provider.getFeeData();
 
       if (feeData.maxFeePerGas && feeData.maxPriorityFeePerGas) {
-        tx.maxFeePerGas = feeData.maxFeePerGas;
-        tx.maxPriorityFeePerGas = feeData.maxPriorityFeePerGas;
+        tx.maxFeePerGas = ethers.BigNumber.from(feeData.maxFeePerGas.toString());
+        tx.maxPriorityFeePerGas = ethers.BigNumber.from(feeData.maxPriorityFeePerGas.toString());
         tx.type = 2;
       } else {
         // Fallback to legacy gasPrice
         if (feeData.gasPrice) {
-          tx.gasPrice = feeData.gasPrice;
+          tx.gasPrice = ethers.BigNumber.from(feeData.gasPrice.toString());
         }
       }
     } catch (feeError) {
@@ -253,20 +256,26 @@ async function handleSendTransaction(pkpWallet: PKPEthersWallet, methodParams: a
   }
 
   if (!tx.gas && !tx.gasLimit) {
-    console.log('No gas limit specified, estimating gas...');
-    const estimateGasTx = { ...tx };
+    console.log('No gas limit specified, estimating gas with v6 provider...');
 
-    delete estimateGasTx.chainId;
-    if (isEIP1559) {
-      delete estimateGasTx.type;
-      delete estimateGasTx.maxFeePerGas;
-      delete estimateGasTx.maxPriorityFeePerGas;
+    // Prepare gas estimation transaction for v6
+    const estimateGasTx = {
+      to: tx.to,
+      data: tx.data || '0x',
+      value: tx.value ? BigInt(tx.value.toString()) : 0n,
+      from: await pkpWallet.getAddress(),
+    };
+
+    try {
+      const gasEstimate = await v6Provider.estimateGas(estimateGasTx);
+      const gasWithBuffer = ethers.BigNumber.from(gasEstimate.toString()).mul(120).div(100);
+      tx.gas = gasWithBuffer;
+      tx.gasLimit = gasWithBuffer;
+      console.log('Gas estimate with buffer:', gasWithBuffer.toString());
+    } catch (gasError) {
+      console.error('Failed to estimate gas:', gasError);
+      throw new Error('Failed to estimate gas for transaction');
     }
-
-    const gasEstimate = await pkpWallet.estimateGas(estimateGasTx);
-    const gasWithBuffer = gasEstimate.mul(120).div(100);
-    tx.gas = gasWithBuffer;
-    tx.gasLimit = gasWithBuffer;
   } else if (tx.gasLimit && !tx.gas) {
     tx.gas = tx.gasLimit;
   } else if (tx.gas && !tx.gasLimit) {
