@@ -4,7 +4,6 @@ import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
 import { CreateAppForm, type CreateAppFormData } from '../forms/CreateAppForm';
 import { getErrorMessage, navigateWithDelay } from '@/utils/developer-dashboard/app-forms';
-import { addPayee } from '@/utils/user-dashboard/addPayee';
 
 export function CreateAppWrapper() {
   // Mutation
