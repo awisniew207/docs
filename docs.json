@@ -73,48 +73,50 @@
         "groups": [
           {
             "group": "Abilities",
+            "expanded": true,
             "pages": [
               "ability/quickstart",
-              "ability/explaining-abilities"
-            ]
-          },
-          {
-            "group": "Creating Abilities",
-            "pages": [
-              "ability/parameter-schemas",
-              "ability/supporting-policies",
-              "ability/precheck-function",
-              "ability/execute-function"
-            ]
-          },
-          {
-            "group": "Publishing Abilities",
-            "pages": [
-              "ability/publishing",
-              "ability/updating-abilities"
+              "ability/explaining-abilities",
+              {
+                "group": "Creating Abilities",
+                "pages": [
+                  "ability/parameter-schemas",
+                  "ability/supporting-policies",
+                  "ability/precheck-function",
+                  "ability/execute-function"
+                ]
+              },
+              {
+                "group": "Publishing Abilities",
+                "pages": [
+                  "ability/publishing",
+                  "ability/updating-abilities"
+                ]
+              }
             ]
           },
           {
             "group": "Policies",
+            "expanded": true,
             "pages": [
               "ability/policy/quickstart",
-              "ability/policy/explaining-policies"
-            ]
-          },
-          {
-            "group": "Policy Guides",
-            "pages": [
-              "ability/policy/parameter-schemas",
-              "ability/policy/precheck-function",
-              "ability/policy/evaluate-function",
-              "ability/policy/commit-function"
-            ]
-          },
-          {
-            "group": "Publishing Policies",
-            "pages": [
-              "ability/policy/publishing",
-              "ability/policy/updating-policies"
+              "ability/policy/explaining-policies",
+              {
+                "group": "Policy Guides",
+                "pages": [
+                  "ability/policy/parameter-schemas",
+                  "ability/policy/precheck-function",
+                  "ability/policy/evaluate-function",
+                  "ability/policy/commit-function"
+                ]
+              },
+              {
+                "group": "Publishing Policies",
+                "pages": [
+                  "ability/policy/publishing",
+                  "ability/policy/updating-policies"
+                ]
+              }
             ]
           }
         ]
