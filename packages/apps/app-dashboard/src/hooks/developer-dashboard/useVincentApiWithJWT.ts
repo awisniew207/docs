@@ -84,7 +84,7 @@ export const getCurrentJwt = async (
     return jwt;
   } catch (error) {
     console.error('Error creating JWT token with PKP:', error);
-    await addPayee(authInfo.userPKP.ethAddress);
+    await addPayee(address);
     return null;
   }
 };
