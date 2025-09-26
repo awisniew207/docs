@@ -43,6 +43,7 @@
               "app/quickstart",
               "app/explaining-apps",
               "app/updating-apps",
+              "app/deprecating-app-versions",
               "app/authenticating-users"
             ]
           }
