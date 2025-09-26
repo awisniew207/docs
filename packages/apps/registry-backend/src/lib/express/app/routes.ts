@@ -131,24 +131,26 @@ export function registerRoutes(app: Express) {
           return;
         }
 
-        // Register delegatee addresses in the payment DB contract via the relayer
-        // so that the app dev doesn't have to think about RLI NFTs
-        const response = await fetch('https://datil-relayer.getlit.dev/add-users', {
-          method: 'POST',
-          headers: {
-            'api-key': LIT_RELAYER_API_KEY,
-            'payer-secret-key': LIT_PAYER_SECRET_KEY,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(delegateeAddresses),
-        });
-
-        if (!response.ok) {
-          const text = await response.text();
-          res.status(500).json({
-            error: `Failed to add delegatees as payees -- status: ${response.status} - ${text}`,
+        if (Array.isArray(delegateeAddresses) && delegateeAddresses.length > 0) {
+          // Register delegatee addresses in the payment DB contract via the relayer
+          // so that the app dev doesn't have to think about RLI NFTs
+          const response = await fetch('https://datil-relayer.getlit.dev/add-users', {
+            method: 'POST',
+            headers: {
+              'api-key': LIT_RELAYER_API_KEY,
+              'payer-secret-key': LIT_PAYER_SECRET_KEY,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(delegateeAddresses),
           });
-          return;
+
+          if (!response.ok) {
+            const text = await response.text();
+            res.status(500).json({
+              error: `Failed to add delegatees as payees -- status: ${response.status} - ${text}`,
+            });
+            return;
+          }
         }
 
         res.status(201).json(appDef);
