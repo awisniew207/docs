@@ -118,10 +118,19 @@ export function AppDetailsView({
           </div>
         )}
         {!selectedApp.activeVersion && (
-          <StatusMessage
-            message="Your app doesn’t have an active App version yet. Set the active version in the App Management section below to allow users to grant permissions to your App."
-            type="warning"
-          />
+          <div className="flex items-center p-3 mb-4 rounded-lg text-sm leading-normal w-full transition-all min-h-[48px] opacity-100 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-700/30">
+            <span className="ml-3 transition-opacity">
+              Your App version 1 is not published, and users cannot grant permissions to your App.
+              Go{' '}
+              <Link
+                to={`/developer/appId/${selectedApp.appId}/version/1`}
+                className="underline hover:no-underline font-medium"
+              >
+                here
+              </Link>{' '}
+              to publish the App version on-chain.
+            </span>
+          </div>
         )}
 
         {/* App Management Actions */}

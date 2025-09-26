@@ -36,6 +36,8 @@ export function PublishAppVersionWrapper({ isAppPublished }: { isAppPublished: b
     version: Number(versionId),
   });
 
+  const [setActiveVersion] = vincentApiClient.useSetAppActiveVersionMutation();
+
   // Lazy queries for fetching ability and policy versions
   const [
     triggerGetAbilityVersion,
@@ -263,6 +265,14 @@ export function PublishAppVersionWrapper({ isAppPublished }: { isAppPublished: b
           versionAbilities: {
             abilityIpfsCids: abilityIpfsCids,
             abilityPolicies: abilityPolicies,
+          },
+        });
+
+        // Set active version to 1 for the first version
+        await setActiveVersion({
+          appId: Number(appId),
+          appSetActiveVersion: {
+            activeVersion: 1,
           },
         });
       } else {

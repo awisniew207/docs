@@ -34,13 +34,13 @@ export const useConnectInfo = (
   useActiveVersion = true,
 ): ConnectInfoState => {
   const [isDataFetchingComplete, setIsDataFetchingComplete] = useState(false);
-  const [currentlyFetchingVersions, setCurrentlyFetchingVersions] = useState<string>('');
+  const [currentlyFetchingVersions, setCurrentlyFetchingVersions] = useState<string | null>(null);
   const versionsKey = versionsToFetch ? versionsToFetch.sort().join(',') : '';
 
   // Reset completion state when app changes
   useEffect(() => {
     setIsDataFetchingComplete(false);
-    setCurrentlyFetchingVersions('');
+    setCurrentlyFetchingVersions(null);
     setFetchErrors([]);
   }, [appId]);
 
@@ -172,7 +172,9 @@ export const useConnectInfo = (
               .catch((error) => {
                 console.error(`Failed to fetch ability version ${packageName}@${version}:`, error);
                 // Report to Sentry without breaking the promise chain
-                setTimeout(() => { throw error; }, 0);
+                setTimeout(() => {
+                  throw error;
+                }, 0);
                 return [abilityKey, null] as const;
               });
           },
@@ -188,7 +190,9 @@ export const useConnectInfo = (
             .catch((error) => {
               console.error(`Failed to fetch ability ${packageName}:`, error);
               // Report to Sentry without breaking the promise chain
-              setTimeout(() => { throw error; }, 0);
+              setTimeout(() => {
+                throw error;
+              }, 0);
               return [packageName, null] as const;
             });
         });
@@ -220,10 +224,10 @@ export const useConnectInfo = (
 
         setAbilityVersionsData(abilityVersions);
         setAbilitiesData(abilities);
-        
+
         // Update errors if any abilities failed to load
         if (errors.length > 0) {
-          setFetchErrors(prev => [...prev, ...errors]);
+          setFetchErrors((prev) => [...prev, ...errors]);
         }
 
         // Step 3: Fetch supported policies and parent policy info in parallel
@@ -261,7 +265,9 @@ export const useConnectInfo = (
               .catch((error) => {
                 console.error(`Failed to fetch policy version ${packageName}@${version}:`, error);
                 // Report to Sentry without breaking the promise chain
-                setTimeout(() => { throw error; }, 0);
+                setTimeout(() => {
+                  throw error;
+                }, 0);
                 return [packageName, version, null] as const;
               });
           },
@@ -277,7 +283,9 @@ export const useConnectInfo = (
             .catch((error) => {
               console.error(`Failed to fetch policy ${packageName}:`, error);
               // Report to Sentry without breaking the promise chain
-              setTimeout(() => { throw error; }, 0);
+              setTimeout(() => {
+                throw error;
+              }, 0);
               return [packageName, null] as const;
             });
         });
@@ -321,10 +329,10 @@ export const useConnectInfo = (
 
         setSupportedPoliciesData(supportedPoliciesData);
         setPoliciesData(policies);
-        
+
         // Update errors if any policies failed to load
         if (errors.length > 0) {
-          setFetchErrors(prev => [...prev, ...errors]);
+          setFetchErrors((prev) => [...prev, ...errors]);
         }
 
         // Mark data fetching as complete
