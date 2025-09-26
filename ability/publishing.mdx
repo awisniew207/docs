@@ -6,14 +6,34 @@ Vincent Abilities need to be published to our database before they can be access
 
 <Steps>
   <Step title="Log into the Vincent Developer Dashboard">
-    Go to the [Vincent Developer Dashboard](https://dashboard.heyvincent.ai) and log in with your preferred authentication method. [TODO: ADD IMAGE]
+    Go to the [Vincent Developer Dashboard](https://dashboard.heyvincent.ai) and log in with your preferred authentication method.
+
+    <img
+      src="/images/ability/publishing/image-1.png"
+      alt="Vincent Developer Dashboard login"
+      className="rounded-lg"
+    />
   </Step>
 
   <Step title="Create a New Vincent Ability">
-    After logging in, click the **Create an ability** button to access the [Create Ability Page](https://dashboard.heyvincent.ai/developer/create-ability) [TODO: ADD IMAGE]
+    After logging in, click the **Create an ability** button to access the [Create Ability Page](https://dashboard.heyvincent.ai/developer/create-ability)
+
+    <img
+      src="/images/ability/publishing/image-2.png"
+      alt="Create ability button"
+      className="rounded-lg"
+    />
   </Step>
 
   <Step title="Fill in the Ability Details">
+    Complete the form with your ability information:
+
+    <img
+      src="/images/ability/publishing/image-3.png"
+      alt="Ability details form"
+      className="rounded-lg"
+    />
+
     <ParamField path="Package Name" type="string" required>
       The published `npm` package name
     </ParamField>
@@ -37,7 +57,16 @@ Vincent Abilities need to be published to our database before they can be access
     <ParamField path="Deployment Status" type="string">
       The current status of the ability
     </ParamField>
+  </Step>
 
+  <Step title="Ability Successfully Created">
+    Your ability has been successfully published to the Vincent database and is now available for app developers to use.
+
+    <img
+      src="/images/ability/publishing/image-4.png"
+      alt="Ability creation success confirmation"
+      className="rounded-lg"
+    />
   </Step>
 </Steps>
 
