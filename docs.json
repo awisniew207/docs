@@ -73,6 +73,19 @@
                   "ability/publishing",
                   "ability/updating-abilities"
                 ]
+              },
+              {
+                "group": "Official Abilities",
+                "pages": [
+                  "ability/official-abilities/overview",
+                  "ability/official-abilities/aave",
+                  "ability/official-abilities/debridge",
+                  "ability/official-abilities/erc20-approval",
+                  "ability/official-abilities/erc20-transfer",
+                  "ability/official-abilities/evm-transaction-signer",
+                  "ability/official-abilities/morpho",
+                  "ability/official-abilities/uniswap-swap"
+                ]
               }
             ]
           },
