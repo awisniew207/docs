@@ -14,12 +14,12 @@ Vincent Abilities execute in two phases to ensure reliability and security:
   </Step>
 
   <Step title="Execute">
-    Runs in the Lit Action environment to perform the actual operation
+    Runs in the Lit Action environment to perform the actual operation. Policies also run their `evaluate` function here
   </Step>
 </Steps>
 
 <Note>
-Only if all policies return `allow` results will your Ability's function execute.
+Only if all policies return `allow` results will your Ability's function execute. After successful execution, the Ability can optionally call Policy commit functions to update state.
 </Note>
 
 ## Defining Your Ability
@@ -102,9 +102,7 @@ export const vincentAbility = createVincentAbility({
 });
 ```
 
-## Complete Example
-
-Here's a complete token transfer Ability:
+## Example Implementation
 
 <Accordion title="Full Token Transfer Ability">
 ```typescript
@@ -182,16 +180,5 @@ export const vincentAbility = createVincentAbility({
   </Card>
   <Card title="Execute Function" icon="play" href="/ability/execute-function">
     Write your main execution logic
-  </Card>
-</CardGroup>
-
-## Next Steps
-
-<CardGroup cols={2}>
-  <Card title="Quick Start" icon="rocket" href="/ability/quickstart">
-    Build your first Ability with the starter kit
-  </Card>
-  <Card title="Testing Abilities" icon="flask" href="/ability/testing">
-    Learn how to test your Abilities thoroughly
   </Card>
 </CardGroup>

@@ -43,13 +43,13 @@ The execute function receives two parameters:
 
 ## Response Schemas
 
-### executeSuccessSchema
+### Success Response
 
 <ParamField path="executeSuccessSchema" type="ZodSchema" required>
   A Zod schema that defines the structure of successful execution results. Include details about the completed operation, such as transaction hashes, amounts transferred, or other relevant outcomes.
 </ParamField>
 
-### executeFailSchema
+### Failure Response
 
 <ParamField path="executeFailSchema" type="ZodSchema" required>
   A Zod schema that defines the structure of failed execution results. Include error details to help the executor understand what went wrong, including error codes, reasons, and relevant context.
@@ -154,7 +154,7 @@ const vincentAbility = createVincentAbility({
 });
 ```
 
-## Complete Example
+## Example Implementation
 
 <Accordion title="Full token transfer ability implementation">
   ```typescript

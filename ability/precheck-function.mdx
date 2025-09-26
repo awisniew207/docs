@@ -8,15 +8,43 @@ The precheck function runs locally to validate that execution won't fail when th
 The Vincent Ability SDK runs Policy prechecks first. Your precheck only runs if all Policies return `allow`.
 </Note>
 
+## Function Parameters
+
+The precheck function receives two parameters:
+
+<ParamField path="params" type="object" required>
+  Object containing the ability parameters
+  <Expandable title="properties">
+    <ParamField path="abilityParams" type="object">
+      Parameters matching your `abilityParamsSchema` definition
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField path="abilityContext" type="object" required>
+  Context object provided by the SDK with helpers and metadata
+  <Expandable title="properties">
+    <ParamField path="succeed" type="function">
+      Helper function to return a success result matching your `precheckSuccessSchema`
+    </ParamField>
+    <ParamField path="fail" type="function">
+      Helper function to return a failure result matching your `precheckFailSchema`
+    </ParamField>
+    <ParamField path="delegation" type="object">
+      Contains `delegatorPkpInfo` with the Vincent Wallet address executing the ability
+    </ParamField>
+  </Expandable>
+</ParamField>
+
 ## Response Schemas
 
-### precheckSuccessSchema
+### Success Response
 
 <ParamField path="precheckSuccessSchema" type="ZodSchema" required>
   A Zod schema that defines the structure of successful precheck results. Include details that help the executor understand why the precheck passed, such as current balances and estimated costs.
 </ParamField>
 
-### precheckFailSchema
+### Failure Response
 
 <ParamField path="precheckFailSchema" type="ZodSchema" required>
   A Zod schema that defines the structure of failed precheck results. Include details that help the executor understand why the precheck failed, such as error reasons and relevant values.
@@ -61,37 +89,7 @@ The Vincent Ability SDK runs Policy prechecks first. Your precheck only runs if 
 If any unhandled error occurs during precheck, the Vincent Ability SDK automatically returns a fail result with the error message.
 </Note>
 
-## Function Parameters
-
-The precheck function receives two parameters:
-
-<ParamField path="params" type="object" required>
-  Object containing the ability parameters
-  <Expandable title="properties">
-    <ParamField path="abilityParams" type="object">
-      Parameters matching your `abilityParamsSchema` definition
-    </ParamField>
-  </Expandable>
-</ParamField>
-
-<ParamField path="abilityContext" type="object" required>
-  Context object provided by the SDK with helpers and metadata
-  <Expandable title="properties">
-    <ParamField path="succeed" type="function">
-      Helper function to return a success result matching your `precheckSuccessSchema`
-    </ParamField>
-    <ParamField path="fail" type="function">
-      Helper function to return a failure result matching your `precheckFailSchema`
-    </ParamField>
-    <ParamField path="delegation" type="object">
-      Contains `delegatorPkpInfo` with the Vincent Wallet address executing the ability
-    </ParamField>
-  </Expandable>
-</ParamField>
-
-## Complete Example
-
-Here's a full example of a token transfer ability's precheck function:
+## Example Implementation
 
 ```typescript
 import { createVincentAbility } from '@lit-protocol/vincent-ability-sdk';

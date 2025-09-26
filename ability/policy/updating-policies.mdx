@@ -1,0 +1,38 @@
+---
+title: Updating Policies
+---
+
+Updated Vincent Policies need to be added to our database before they can be accessible to application developers.
+
+<Steps>
+  <Step title="Log into the Vincent Developer Dashboard">
+    Go to the [Vincent Developer Dashboard](https://dashboard.heyvincent.ai) and log in with your preferred authentication method. [TODO: ADD IMAGE]
+  </Step>
+
+  <Step title="Access Your Vincent Policy">
+    After logging in, navigate to your policy through the sidebar menu. [TODO: ADD IMAGE]
+  </Step>
+
+  <Step title="Create a New Version">
+    <ParamField path="Version" type="string" required>
+      The new Policy version you'd like to add to the Vincent database.
+    </ParamField>
+
+    <ParamField path="Changes" type="string" required>
+      Changes made to the policy since the previous version.
+    </ParamField>
+
+    <Note>This version must be published to `npm`. The `changes` field is editable.</Note>
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Policy Quick Start" icon="rocket" href="/policy/quickstart">
+    Build your first Policy with the starter kit
+  </Card>
+  <Card title="Supporting Policies" icon="shield-check" href="/policy/supporting-policies">
+    Learn how to integrate Policies with your Policies
+  </Card>
+</CardGroup>

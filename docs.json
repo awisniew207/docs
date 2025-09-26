@@ -79,13 +79,19 @@
             ]
           },
           {
-            "group": "Ability Guides",
+            "group": "Creating Abilities",
             "pages": [
               "ability/parameter-schemas",
               "ability/supporting-policies",
               "ability/precheck-function",
-              "ability/execute-function",
-              "ability/publishing"
+              "ability/execute-function"
+            ]
+          },
+          {
+            "group": "Publishing Abilities",
+            "pages": [
+              "ability/publishing",
+              "ability/updating-abilities"
             ]
           },
           {
@@ -101,8 +107,14 @@
               "ability/policy/parameter-schemas",
               "ability/policy/precheck-function",
               "ability/policy/evaluate-function",
-              "ability/policy/commit-function",
-              "ability/policy/publishing"
+              "ability/policy/commit-function"
+            ]
+          },
+          {
+            "group": "Publishing Policies",
+            "pages": [
+              "ability/policy/publishing",
+              "ability/policy/updating-policies"
             ]
           }
         ]

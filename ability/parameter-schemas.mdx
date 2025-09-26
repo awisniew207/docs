@@ -1,14 +1,12 @@
 ---
-title: Parameter Schemas
+title: Defining Parameters
 ---
 
 Define the structure and validation for your Ability's input parameters using Zod schemas.
 
-## abilityParamsSchema
+## Ability Input Parameters
 
-The `abilityParamsSchema` defines what parameters executors must provide to your Ability. These should include:
-- Parameters required for your Ability's core functionality
-- Parameters required by any Vincent Policies your Ability supports
+The `abilityParamsSchema` defines what parameters executors must provide to your Ability. These should include parameters required for your Ability's core functionality, and parameters required by any Vincent Policies your Ability supports.
 
 ### Schema Parameters
 
@@ -72,23 +70,10 @@ The `tokenAddress` and `amountToSend` parameters serve dual purposes: they're us
 
 ## Best Practices
 
-<Steps>
-  <Step title="Keep It Simple">
-    Only require parameters you actually need for execution
-  </Step>
-
-  <Step title="Provide Clear Errors">
-    Use custom error messages that help developers fix issues
-  </Step>
-
-  <Step title="Consider Future Needs">
-    Make optional parameters for features you might add later
-  </Step>
-
-  <Step title="Document Complex Logic">
-    Use comments to explain conditional validation rules
-  </Step>
-</Steps>
+1. **Keep It Simple** - Only require parameters you actually need for execution
+2. **Provide Clear Errors** - Use custom error messages that help developers fix issues
+3. **Consider Future Needs** - Make optional parameters for features you might add later
+4. **Document Complex Logic** - Use comments to explain conditional validation rules
 
 ## Next Steps
 
