@@ -6,34 +6,73 @@ title: Quick Start
 
 This section of the Quick Start will cover the steps to create a new Vincent App and the minimum possible steps to execute an ability on behalf of a user.
 
-// DEV NOTE: The images aren't added since I'm wondering if we improve the UX here alongside the docs. It might sound like a waste of time since this is such a high priority, 
-// but the next best way to shorten these pages WILL be making a smoother devX on the Developer Dashboard. I'm going to take notes on areas for improvement as I work on these pages
-
 <Steps>
   <Step title="Log into the Vincent Developer Dashboard">
-    Go to the [Vincent Developer Dashboard](https://dashboard.heyvincent.ai) and log in with your preferred authentication method. [TODO: ADD IMAGE]
+    Go to the [Vincent Developer Dashboard](https://dashboard.heyvincent.ai/developer/dashboard) and log in with your preferred authentication method.
+
+    <img
+      src="/images/app/image-1.png"
+      alt="Vincent Developer Dashboard login page"
+      className="rounded-lg"
+    />
   </Step>
 
   <Step title="Create a New Vincent App">
-    After logging in, click the **Create an app** button to access the [Create App Page](https://dashboard.heyvincent.ai/developer/create-app) [TODO: ADD IMAGE]
+    After logging in, click the **Create an app** button to access the [Create App Page](https://dashboard.heyvincent.ai/developer/create-app)
+
+    <img
+      src="/images/app/image-2.png"
+      alt="Create an app button in Vincent Dashboard"
+      className="rounded-lg"
+    />
   </Step>
 
   <Step title="Fill in the App Details">
-    You can use test values for:
-    - App Name
-    - Contact Email
-    - Description
-    - App User URL
-    - Redirect URIs
+    <Tabs>
+      <Tab title="Required Values">
+        The following field requires a specific value:
 
-    The following field requires specific values:
-    - **Delegatee Addresses**: This can be any EOA you have access to the private key of.
+        <ParamField path="Delegatee Addresses" type="string" required>
+          This can be any EOA you have access to the private key of
+        </ParamField>
+      </Tab>
+
+      <Tab title="Test Values">
+        You can use test values for these fields:
+
+        <ParamField path="App Name" type="string" required>
+          The name of your Vincent App
+        </ParamField>
+
+        <ParamField path="Contact Email" type="string" required>
+          Email address for app-related communications
+        </ParamField>
+
+        <ParamField path="Description" type="string" required>
+          Brief description of what your app does
+        </ParamField>
+
+        <ParamField path="App User URL" type="string" required>
+          The URL where users will access your app
+        </ParamField>
+
+        <ParamField path="Redirect URIs" type="string" required>
+          OAuth redirect URIs for your app
+        </ParamField>
+      </Tab>
+    </Tabs>
 
     Once you've filled in the required fields, click the **Create App** button to create your new Vincent App.
 
     <Info>
     If you misinput any of these, don't worry. These are editable after app creation as well.
     </Info>
+
+    <img
+      src="/images/app/image-3.png"
+      alt="App details form"
+      className="rounded-lg"
+    />
   </Step>
 
   <Step title="Add Vincent Abilities">
@@ -41,26 +80,60 @@ This section of the Quick Start will cover the steps to create a new Vincent App
     - **ERC20 Approval**
     - **Uniswap Swap**
 
-    to add them to your Vincent App. [TODO: ADD IMAGE]
+    to add them to your Vincent App.
+
+    <img
+      src="/images/app/image-4.png"
+      alt="Add Abilities to Version interface"
+      className="rounded-lg"
+    />
   </Step>
 
   <Step title="Set Version 1 as Active">
-    Set version 1 of your application as the active version. This is not set as a default to prevent users from seeing your app before you're ready to release it. [TODO: ADD IMAGE]
+    Set Version 1 of your application as the active version. This is not set as a default to prevent users from seeing your app before you're ready to release it.
+
+    <img
+      src="/images/app/image-5.png"
+      alt="Set active version interface"
+      className="rounded-lg"
+    />
   </Step>
 
   <Step title="Publish the App Version">
-    On the left sidebar, click **Apps**, then **App Versions**, and **Version 1** to navigate to the App Version management page. Click the **Publish App Version** button to register the App Version as published in the Vincent Registry smart contract. [TODO: ADD IMAGE]
+    On the left sidebar, click **Apps**, then **App Versions**, and **Version 1** to navigate to the App Version management page. Click the **Publish App Version** button to register the App Version as published in the Vincent Registry smart contract.
+
+    <img
+      src="/images/app/image-6.png"
+      alt="Publish App Version button"
+      className="rounded-lg"
+    />
   </Step>
 
-  <Step title="Permit your App">
-    On your App page, click the share button to view the Connect Page URL. Navigate to your App's connect page, and grant permissions to your application. [TODO: ADD IMAGE]
+  <Step title="Permit Your App">
+    On your app page, click the share button to view the Connect Page URL. Navigate to your app's Connect Page and grant permissions to your application.
+
+    <img
+      src="/images/app/image-7-1.png"
+      alt="Share button to get Connect Page URL"
+      className="rounded-lg"
+    />
+
+    <img
+      src="/images/app/image-7-2.png"
+      alt="Connect Page with app permissions"
+      className="rounded-lg"
+    />
+
+    <img
+      src="/images/app/image-7-3.png"
+      alt="Grant permissions interface"
+      className="rounded-lg"
+    />
   </Step>
 
-  <Step title="Execute Code on Behalf of your User">
+  <Step title="Execute Code on Behalf of Your User">
     Once permissions are granted, you can execute abilities on behalf of the user:
 
-    // DEV NOTE: I'm not sure about the example-org here, or why it exists. 
-    // FIXME
     ```typescript
     import { ethers } from 'ethers';
     import { getVincentAbilityClient } from '@lit-protocol/vincent-app-sdk/abilityClient';
@@ -86,5 +159,21 @@ This section of the Quick Start will cover the steps to create a new Vincent App
       },
     });
     ```
+
+    Congratulations! You've successfully executed your first Vincent Ability on behalf of a user. Your app can now perform ERC20 approvals and Uniswap swaps within the permissions granted by the user.
   </Step>
 </Steps>
+
+## Next Steps
+
+<Columns cols={3}>
+  <Card title="Explaining Apps" icon="book" href="/app/explaining-apps" color="#FF4205">
+    Learn the fundamentals of Vincent App development
+  </Card>
+  <Card title="Updating Apps" icon="rotate" href="/app/updating-apps" color="#FF4205">
+    Learn how to update and version your Vincent Apps
+  </Card>
+  <Card title="Authenticating Users" icon="lock" href="/app/authenticating-users" color="#FF4205">
+    Implement secure user authentication in your app
+  </Card>
+</Columns>
