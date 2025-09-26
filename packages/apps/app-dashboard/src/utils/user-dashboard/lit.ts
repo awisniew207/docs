@@ -301,13 +301,20 @@ export async function mintPKP(authMethod: AuthMethod): Promise<IRelayPKP> {
     throw new Error('Minting failed');
   }
 
-  const newPKP: IRelayPKP = {
+  const userPKP: IRelayPKP = {
     tokenId: response.pkpTokenId,
     publicKey: response.pkpPublicKey,
     ethAddress: response.pkpEthAddress,
   };
 
-  return newPKP;
+  try {
+    await addPayee(userPKP.ethAddress);
+  } catch (err) {
+    console.warn('Failed to add payee', err);
+    throw err;
+  }
+
+  return userPKP;
 }
 
 /**
