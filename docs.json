@@ -14,41 +14,21 @@
         "tab": "Concepts",
         "groups": [
           {
-            "group": "Introduction",
+            "group": "Overview",
             "pages": [
               "concepts/introduction/about",
-              "concepts/introduction/security"
-            ]
-          },
-          {
-            "group": "Apps",
-            "pages" : [
-              "concepts/apps/about"
-            ]
-          },
-          {
-            "group": "Abilities",
-            "pages" : [
-              "concepts/abilities/about"
-            ]
-          },
-          {
-            "group": "Policies",
-            "pages" : [
-              "concepts/policies/about"
-            ]
-          },
-          {
-            "group": "Wallets",
-            "pages" : [
-              "concepts/wallets/about",
-              "concepts/wallets/user-accounts",
-              "concepts/wallets/agent-wallets"
-            ]
-          },
-          {
-            "group": "AI Agents",
-            "pages" : [
+              "concepts/introduction/security",
+              "concepts/apps/about",
+              "concepts/abilities/about",
+              "concepts/policies/about",
+              {
+                "group": "Wallets",
+                "pages": [
+                  "concepts/wallets/about",
+                  "concepts/wallets/user-accounts",
+                  "concepts/wallets/agent-wallets"
+                ]
+              },
               "concepts/ai-agents/about"
             ]
           }
