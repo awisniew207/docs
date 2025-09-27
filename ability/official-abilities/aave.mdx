@@ -41,7 +41,7 @@ The Aave Ability is built using the Vincent Ability SDK and operates in two phas
 Depending on your role in the Vincent Ecosystem, you'll be interacting with this Ability in different ways. Click on the link below that matches your role to see how to get started:
 
 - **Vincent App Developers**: If you're building a Vincent App that needs to interact with Aave, go [here](#adding-the-ability-to-your-vincent-app).
-- **Vincent App Delegatees**: If you're executing this ability on behalf of Vincent App Users, go [here](#executing-the-ability-as-a-delegatee).
+- **Vincent App Delegatees**: If you're executing this ability on behalf of Vincent App Users, go [here](#executing-the-ability-as-a-vincent-app-delegatee).
 
 ## Adding the Ability to your Vincent App
 
@@ -51,25 +51,21 @@ Adding Abilities to your Vincent App is done using the [Vincent App Dashboard](h
 
 ## Executing the Ability as a Vincent App Delegatee
 
-<Info>
-To learn more about executing Vincent Abilities, see the [Executing Abilities](/app/executing-abilities) guide.
-</Info>
-
-### Prerequisites
-
 Before executing Aave operations, the following conditions must be met. You can use the Ability's `precheck` function to check if these conditions are met, or you can check them manually.
 
-#### Native Token Balance for Gas Fees
+- **Native Token Balance for Gas Fees**: The Vincent App User's Vincent Wallet must have enough native tokens (ETH, MATIC, etc.) to cover the transaction gas fees for the Aave operation.
 
-The Vincent App User's Vincent Wallet must have enough native tokens (ETH, MATIC, etc.) to cover the transaction gas fees for the Aave operation.
+- **ERC20 Token Approval**: For supply and repay operations, the Vincent App User's Vincent Wallet must have approved the Aave Pool contract to spend the tokens.
 
-#### ERC20 Token Approval
+<Info>
+To learn more about executing Vincent Abilities, see the [Executing Abilities](/ability/explaining-abilities) guide.
+</Info>
 
-For supply and repay operations, the Vincent App User's Vincent Wallet must have approved the Aave Pool contract to spend the tokens.
-
+<Note>
 If your Vincent App has enabled the [ERC20 Approval Ability](./erc20-approval), you can use it to handle submitting the approval transaction using the Vincent Wallet.
+</Note>
 
-#### Operation-Specific Requirements
+### Operation-Specific Requirements
 
 Each Aave operation has specific validation requirements that are checked during the precheck phase:
 
@@ -393,61 +389,45 @@ This Ability's `execute` function performs the actual Aave protocol operation.
 
 The Aave Ability supports operations on the following networks where Aave V3 is deployed:
 
-### Mainnets
-
-- `ethereum`
-- `polygon`
-- `avalanche`
-- `arbitrum`
-- `optimism`
-- `base`
-- `fantom`
-- `bnb`
-- `gnosis`
-- `scroll`
-- `metis`
-- `linea`
-- `zksync`
-
-### Testnets
-
-- `sepolia`
-- `basesepolia`
-- `arbitrumsepolia`
-- `optimismsepolia`
-- `avalanchefuji`
-- `scrollsepolia`
+| Network Type | Supported Chains |
+|--------------|------------------|
+| **Mainnets** | `ethereum`, `polygon`, `avalanche`, `arbitrum`, `optimism`, `base`, `fantom`, `bnb`, `gnosis`, `scroll`, `metis`, `linea`, `zksync` |
+| **Testnets** | `sepolia`, `basesepolia`, `arbitrumsepolia`, `optimismsepolia`, `avalanchefuji`, `scrollsepolia` |
 
 ## Important Considerations
 
-### Amount Format
+<AccordionGroup>
+  <Accordion title="Amount Format" icon="calculator">
+    The `amount` parameter should be specified in human-readable format (e.g., "1.5" for 1.5 tokens), not in wei or smallest units.
+  </Accordion>
 
-The `amount` parameter should be specified in human-readable format (e.g., "1.5" for 1.5 tokens), not in wei or smallest units.
+  <Accordion title="Chain Parameter vs RPC URL" icon="link">
+    - For `precheck`: You can provide either `chain` or `rpcUrl`
+    - For `execute`: Only `chain` is allowed, `rpcUrl` will cause an error
 
-### Chain Parameter vs RPC URL
+    This is a security feature to prevent RPC URL injection attacks.
+  </Accordion>
 
-- For `precheck`: You can provide either `chain` or `rpcUrl`
-- For `execute`: Only `chain` is allowed, `rpcUrl` will cause an error
+  <Accordion title="Gas Estimation" icon="gas-pump">
+    The precheck function provides gas estimation, but actual gas usage may vary depending on network conditions.
+  </Accordion>
 
-This is a security feature to prevent RPC URL injection attacks.
+  <Accordion title="Health Factor Management" icon="heart-pulse">
+    Monitor your health factor when borrowing. A health factor below 1.0 triggers liquidation.
 
-### Gas Estimation
-
-The precheck function provides gas estimation, but actual gas usage may vary depending on network conditions.
-
-### Health Factor Management
-
-Monitor your health factor when borrowing. A health factor below 1.0 triggers liquidation.
-
-**Important**: The Vincent Aave Ability does not validate health factor during the precheck phase. While the ability fetches the Vincent App User's Vincent Wallet's account data (including health factor), it only validates borrowing capacity and does not proactively check if a borrow operation would result in an unhealthy position. Health factor validation occurs at the Aave protocol level during transaction execution, and may result in failed transactions.
+    **Important**: The Vincent Aave Ability does not validate health factor during the precheck phase. While the ability fetches the Vincent App User's Vincent Wallet's account data (including health factor), it only validates borrowing capacity and does not proactively check if a borrow operation would result in an unhealthy position. Health factor validation occurs at the Aave protocol level during transaction execution, and may result in failed transactions.
+  </Accordion>
+</AccordionGroup>
 
 ## Error Handling
 
-Common failure scenarios include:
-
-- **Insufficient Balance**: Not enough tokens for supply/repay operations
-- **Missing Approval**: Token not approved for Aave contract spending
-- **Insufficient Borrowing Capacity**: Attempting to borrow more than collateral allows
-- **Invalid Chain**: Chain not supported by Aave V3
-- **Health Factor Risk**: Operation would result in unhealthy position
-- **Invalid Asset**: Token not supported on the specified Aave market
+<AccordionGroup>
+  <Accordion title="Common Failure Scenarios" icon="bug">
+    - **Insufficient Balance**: Not enough tokens for supply/repay operations
+    - **Missing Approval**: Token not approved for Aave contract spending
+    - **Insufficient Borrowing Capacity**: Attempting to borrow more than collateral allows
+    - **Invalid Chain**: Chain not supported by Aave V3
+    - **Health Factor Risk**: Operation would result in unhealthy position
+    - **Invalid Asset**: Token not supported on the specified Aave market
+  </Accordion>
+</AccordionGroup>

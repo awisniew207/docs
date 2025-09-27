@@ -110,6 +110,14 @@
                   "ability/policy/publishing",
                   "ability/policy/updating-policies"
                 ]
+              },
+              {
+                "group": "Official Policies",
+                "pages": [
+                  "ability/policy/official-policies/overview",
+                  "ability/policy/official-policies/contract-whitelist",
+                  "ability/policy/official-policies/spending-limit"
+                ]
               }
             ]
           }
