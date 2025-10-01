@@ -19,12 +19,7 @@ import { litNodeClient, mintPKPToExistingPKP } from '@/utils/user-dashboard/lit'
 import { useJwtRedirect } from '@/hooks/user-dashboard/connect/useJwtRedirect';
 import { BigNumber } from 'ethers';
 import { addPayee } from '@/utils/user-dashboard/addPayee';
-import {
-  getApprovalState,
-  savePkpToApprovalState,
-  updateApprovalStep,
-  clearApprovalState,
-} from '@/utils/user-dashboard/approvalStateStorage';
+import { usePendingAppConnectPkp } from '@/hooks/user-dashboard/connect/usePendingAppConnectPkp';
 
 interface ConnectPageProps {
   connectInfoMap: ConnectInfoMap;
@@ -43,6 +38,9 @@ export function ConnectPage({
   const [isConnectProcessing, setIsConnectProcessing] = useState(false);
   const [agentPKP, setAgentPKP] = useState<IRelayPKP | null>(null);
   const formRefs = useRef<Record<string, PolicyFormRef>>({});
+  const { pendingPKP, setPendingPKP, clearPendingPKP } = usePendingAppConnectPkp(
+    connectInfoMap.app.appId,
+  );
 
   const {
     formData,
@@ -128,35 +126,16 @@ export function ConnectPage({
       await userPkpWallet.init();
 
       let agentPKP: IRelayPKP | undefined;
-      let shouldMintNewPKP = true;
-      let shouldAddPermittedActions = true;
 
-      // Check localStorage for existing approval state
-      const existingState = getApprovalState(connectInfoMap.app.appId);
-
-      if (existingState) {
-        console.log('Found existing approval state:', existingState);
-        agentPKP = existingState.pkp;
-        shouldMintNewPKP = false;
-
-        // Check what step we completed last
-        if (existingState.lastCompletedStep === 'minted') {
-          // PKP was minted but actions weren't added
-          shouldAddPermittedActions = true;
-        } else if (existingState.lastCompletedStep === 'actions') {
-          // Actions were added, only need to permit app
-          shouldAddPermittedActions = false;
-        }
-        console.log(`Resuming from step: ${existingState.lastCompletedStep}`);
+      // Check for pending PKP or use previously permitted PKP
+      if (pendingPKP) {
+        console.log('Found pending PKP from previous attempt:', pendingPKP.ethAddress);
+        agentPKP = pendingPKP;
       } else if (previouslyPermittedPKP) {
-        // Reuse the previously permitted PKP
+        console.log('Reusing previously permitted PKP:', previouslyPermittedPKP.ethAddress);
         agentPKP = previouslyPermittedPKP;
-        shouldMintNewPKP = false;
-        console.log('Reusing previously permitted PKP:', agentPKP.ethAddress);
-      }
-
-      // Step 1: Mint PKP if needed
-      if (shouldMintNewPKP) {
+      } else {
+        // Step 1: Mint new PKP
         try {
           const tokenIdString = BigNumber.from(readAuthInfo.authInfo.userPKP.tokenId).toHexString();
           agentPKP = await mintPKPToExistingPKP({
@@ -165,8 +144,8 @@ export function ConnectPage({
           });
           console.log('Minted new PKP:', agentPKP.ethAddress);
 
-          // Save to localStorage
-          savePkpToApprovalState(connectInfoMap.app.appId, agentPKP);
+          // Save to localStorage in case we fail in subsequent steps
+          setPendingPKP(agentPKP);
         } catch (error) {
           setLocalError(error instanceof Error ? error.message : 'Failed to mint PKP');
           setIsConnectProcessing(false);
@@ -184,65 +163,55 @@ export function ConnectPage({
 
       const client = getClient({ signer: userPkpWallet });
 
-      // Step 2: Add permitted actions if needed
-      if (shouldAddPermittedActions) {
-        try {
-          await addPermittedActions({
-            wallet: userPkpWallet,
-            agentPKPTokenId: agentPKP.tokenId,
-            abilityIpfsCids: Object.keys(selectedFormData),
-          });
+      // Step 2: Add permitted actions (idempotent - adding them again is safe)
+      try {
+        await addPermittedActions({
+          wallet: userPkpWallet,
+          agentPKPTokenId: agentPKP.tokenId,
+          abilityIpfsCids: Object.keys(selectedFormData),
+        });
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
 
-          // Update state to mark actions as completed
-          updateApprovalStep(connectInfoMap.app.appId, 'actions');
-        } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : String(error);
+        // Check if this is a rate limit related error that addPayee might fix
+        const isRateLimitError = errorMessage.toLowerCase().includes('rate limit exceeded');
+        const isInsufficientFunds = errorMessage.toLowerCase().includes('insufficient funds');
 
-          // Check if this is a rate limit related error that addPayee might fix
-          const isRateLimitError = errorMessage.toLowerCase().includes('rate limit exceeded');
-          const isInsufficientFunds = errorMessage.toLowerCase().includes('insufficient funds');
+        if (isRateLimitError) {
+          console.warn(
+            'addPermittedActions failed with rate limit error, attempting addPayee retry',
+            error,
+          );
+          try {
+            await addPayee(readAuthInfo.authInfo.userPKP.ethAddress);
+            console.log('Successfully added payee, retrying addPermittedActions');
 
-          if (isRateLimitError) {
-            console.warn(
-              'addPermittedActions failed with rate limit error, attempting addPayee retry',
-              error,
-            );
-            try {
-              await addPayee(readAuthInfo.authInfo.userPKP.ethAddress);
-              console.log('Successfully added payee, retrying addPermittedActions');
-
-              // Retry only addPermittedActions
-              await addPermittedActions({
-                wallet: userPkpWallet,
-                agentPKPTokenId: agentPKP.tokenId,
-                abilityIpfsCids: Object.keys(selectedFormData),
-              });
-
-              // Update state to mark actions as completed after retry
-              updateApprovalStep(connectInfoMap.app.appId, 'actions');
-            } catch (retryError) {
-              setLocalError(
-                retryError instanceof Error
-                  ? `Failed after addPayee attempt: ${retryError.message}`
-                  : 'Failed after addPayee attempt',
-              );
-              setIsConnectProcessing(false);
-              throw retryError;
-            }
-          } else if (isInsufficientFunds) {
-            // Insufficient funds - show helpful message with faucet link
-            const customMessage = `Insufficient testnet funds. Authentication Address (testnet only): ${readAuthInfo.authInfo.userPKP.ethAddress}. Please fund it with the faucet here:`;
-            setLocalError(customMessage);
-            setIsConnectProcessing(false);
-            throw new Error(customMessage);
-          } else {
-            // Other error - log to Sentry and fail
+            // Retry addPermittedActions
+            await addPermittedActions({
+              wallet: userPkpWallet,
+              agentPKPTokenId: agentPKP.tokenId,
+              abilityIpfsCids: Object.keys(selectedFormData),
+            });
+          } catch (retryError) {
             setLocalError(
-              error instanceof Error ? error.message : 'Failed to add permitted actions',
+              retryError instanceof Error
+                ? `Failed after addPayee attempt: ${retryError.message}`
+                : 'Failed after addPayee attempt',
             );
             setIsConnectProcessing(false);
-            throw error;
+            throw retryError;
           }
+        } else if (isInsufficientFunds) {
+          // Insufficient funds - show helpful message with faucet link
+          const customMessage = `Insufficient testnet funds. Authentication Address (testnet only): ${readAuthInfo.authInfo.userPKP.ethAddress}. Please fund it with the faucet here:`;
+          setLocalError(customMessage);
+          setIsConnectProcessing(false);
+          throw new Error(customMessage);
+        } else {
+          // Other error - log to Sentry and fail
+          setLocalError(error instanceof Error ? error.message : 'Failed to add permitted actions');
+          setIsConnectProcessing(false);
+          throw error;
         }
       }
 
@@ -255,8 +224,8 @@ export function ConnectPage({
           permissionData: selectedFormData,
         });
 
-        // Clear the approval state on success
-        clearApprovalState(connectInfoMap.app.appId);
+        // Clear the pending PKP on success
+        clearPendingPKP();
 
         setIsConnectProcessing(false);
         setLocalSuccess('Permissions granted successfully!');
