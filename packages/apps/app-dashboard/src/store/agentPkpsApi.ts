@@ -16,7 +16,12 @@ export const agentPkpsApi = createApi({
           return { data: result };
         } catch (error) {
           console.error('Failed to fetch agent PKPs:', error);
-          Sentry.captureException(error);
+          Sentry.captureException(error, {
+            extra: {
+              context: 'agentPkpsApi.getAgentPkps',
+              userAddress,
+            },
+          });
           return {
             error: {
               status: 'FETCH_ERROR',
@@ -34,7 +39,12 @@ export const agentPkpsApi = createApi({
           return { data: result.permitted };
         } catch (error) {
           console.error('Failed to fetch permitted agent apps:', error);
-          Sentry.captureException(error);
+          Sentry.captureException(error, {
+            extra: {
+              context: 'agentPkpsApi.getPermittedAgentApps',
+              userAddress,
+            },
+          });
           return {
             error: {
               status: 'FETCH_ERROR',
@@ -53,7 +63,12 @@ export const agentPkpsApi = createApi({
           return { data: result.unpermitted };
         } catch (error) {
           console.error('Failed to fetch unpermitted agent apps:', error);
-          Sentry.captureException(error);
+          Sentry.captureException(error, {
+            extra: {
+              context: 'agentPkpsApi.getUnpermittedAgentApps',
+              userAddress,
+            },
+          });
           return {
             error: {
               status: 'FETCH_ERROR',

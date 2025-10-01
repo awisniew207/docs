@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { AuthMethod } from '@lit-protocol/types';
+import * as Sentry from '@sentry/react';
 import {
   authenticateWithWebAuthn,
   authenticateWithStytch,
@@ -47,6 +48,11 @@ export default function useAuthenticate() {
           !err.message.includes('privacy-considerations-client'))
       ) {
         setError(err as Error);
+        Sentry.captureException(err, {
+          extra: {
+            context: 'useAuthenticate.authWithWebAuthn',
+          },
+        });
       }
     } finally {
       setLoading(false);
@@ -79,6 +85,13 @@ export default function useAuthenticate() {
         });
       } catch (err) {
         setError(err as Error);
+        Sentry.captureException(err, {
+          extra: {
+            context: 'useAuthenticate.authWithStytch',
+            method,
+            userId,
+          },
+        });
       } finally {
         setLoading(false);
       }
@@ -108,6 +121,12 @@ export default function useAuthenticate() {
           (!err.message.includes('User rejected') && !err.message.includes('user rejected'))
         ) {
           setError(err as Error);
+          Sentry.captureException(err, {
+            extra: {
+              context: 'useAuthenticate.authWithEthWallet',
+              address,
+            },
+          });
         }
       } finally {
         setLoading(false);

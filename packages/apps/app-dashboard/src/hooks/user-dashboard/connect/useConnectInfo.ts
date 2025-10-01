@@ -172,7 +172,13 @@ export const useConnectInfo = (
               .then((data) => [abilityKey, data] as const)
               .catch((error) => {
                 console.error(`Failed to fetch ability version ${packageName}@${version}:`, error);
-                Sentry.captureException(error);
+                Sentry.captureException(error, {
+                  extra: {
+                    context: 'useConnectInfo.fetchAbilityVersion',
+                    packageName,
+                    version,
+                  },
+                });
                 return [abilityKey, null] as const;
               });
           },
@@ -187,7 +193,12 @@ export const useConnectInfo = (
             .then((data) => [packageName, data] as const)
             .catch((error) => {
               console.error(`Failed to fetch ability ${packageName}:`, error);
-              Sentry.captureException(error);
+              Sentry.captureException(error, {
+                extra: {
+                  context: 'useConnectInfo.fetchParentAbility',
+                  packageName,
+                },
+              });
               return [packageName, null] as const;
             });
         });
@@ -261,7 +272,13 @@ export const useConnectInfo = (
               .then((data) => [packageName, version, data] as const)
               .catch((error) => {
                 console.error(`Failed to fetch policy version ${packageName}@${version}:`, error);
-                Sentry.captureException(error);
+                Sentry.captureException(error, {
+                  extra: {
+                    context: 'useConnectInfo.fetchPolicyVersion',
+                    packageName,
+                    version,
+                  },
+                });
                 return [packageName, version, null] as const;
               });
           },
@@ -276,7 +293,12 @@ export const useConnectInfo = (
             .then((data) => [packageName, data] as const)
             .catch((error) => {
               console.error(`Failed to fetch policy ${packageName}:`, error);
-              Sentry.captureException(error);
+              Sentry.captureException(error, {
+                extra: {
+                  context: 'useConnectInfo.fetchParentPolicy',
+                  packageName,
+                },
+              });
               return [packageName, null] as const;
             });
         });

@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { IRelayPKP, SessionSigs } from '@lit-protocol/types';
+import * as Sentry from '@sentry/react';
 import { getValidSessionSigs } from '../../utils/user-dashboard/getValidSessionSigs';
 import { disconnectWeb3 } from '@lit-protocol/auth-browser';
 
@@ -66,6 +67,12 @@ export const useReadAuthInfo = (): ReadAuthInfo => {
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         console.error('Error retrieving auth info:', error);
+        Sentry.captureException(error, {
+          extra: {
+            context: 'useAuthInfo.loadAuthInfo',
+            hasStoredAuthInfo: !!localStorage.getItem(AUTH_INFO_KEY),
+          },
+        });
         setError(errorMessage);
 
         // Clear state but keep localStorage for retry
@@ -123,6 +130,7 @@ export const useSetAuthInfo = (): UseSetAuthInfo => {
     } catch (err) {
       const error = err as Error;
       console.error('Error storing auth info:', error);
+      Sentry.captureException(error);
       setError(error);
 
       throw error;
@@ -155,6 +163,7 @@ export const useSetAuthInfo = (): UseSetAuthInfo => {
     } catch (err) {
       const error = err as Error;
       console.error('Error updating auth info:', error);
+      Sentry.captureException(error);
       setError(error);
 
       throw error;

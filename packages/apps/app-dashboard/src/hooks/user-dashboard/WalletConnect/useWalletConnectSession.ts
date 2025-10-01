@@ -188,7 +188,14 @@ export function useWalletConnectSession(agentPKP?: IRelayPKP, sessionSigs?: Sess
       refreshSessions();
     } catch (error) {
       console.error('Failed to approve session:', error);
-      Sentry.captureException(error);
+      Sentry.captureException(error, {
+        extra: {
+          context: 'useWalletConnectSession.handleApproveSession',
+          proposalId: pendingProposal?.id,
+          agentPkpAddress: agentPKP?.ethAddress,
+          requiredNamespaces: pendingProposal?.params.requiredNamespaces,
+        },
+      });
 
       setStatus({
         message: error instanceof Error ? error.message : 'Failed to approve session',
@@ -218,7 +225,12 @@ export function useWalletConnectSession(agentPKP?: IRelayPKP, sessionSigs?: Sess
       setPendingProposal(null);
     } catch (error) {
       console.error('Failed to reject session:', error);
-      Sentry.captureException(error);
+      Sentry.captureException(error, {
+        extra: {
+          context: 'useWalletConnectSession.handleRejectSession',
+          proposalId: pendingProposal?.id,
+        },
+      });
       setStatus({
         message: error instanceof Error ? error.message : 'Failed to reject session',
         type: 'error',
@@ -238,7 +250,12 @@ export function useWalletConnectSession(agentPKP?: IRelayPKP, sessionSigs?: Sess
         await disconnectSession(topic, refreshSessions);
       } catch (error) {
         console.error('Failed to disconnect session:', error);
-        Sentry.captureException(error);
+        Sentry.captureException(error, {
+          extra: {
+            context: 'useWalletConnectSession.handleDisconnect',
+            sessionTopic: topic,
+          },
+        });
         setStatus({
           message: error instanceof Error ? error.message : 'Failed to disconnect session.',
           type: 'error',
@@ -306,7 +323,12 @@ export function useWalletConnectSession(agentPKP?: IRelayPKP, sessionSigs?: Sess
                 console.log(`Disconnected session: ${topic.slice(0, 8)}...`);
               } catch (error) {
                 console.error(`Failed to disconnect session ${topic}:`, error);
-                Sentry.captureException(error);
+                Sentry.captureException(error, {
+                  extra: {
+                    context: 'useWalletConnectSession.disconnectOldSessions',
+                    sessionTopic: topic,
+                  },
+                });
               }
             }
 
@@ -318,7 +340,12 @@ export function useWalletConnectSession(agentPKP?: IRelayPKP, sessionSigs?: Sess
           }
         } catch (error) {
           console.error('Failed to disconnect sessions on wallet change:', error);
-          Sentry.captureException(error);
+          Sentry.captureException(error, {
+            extra: {
+              context: 'useWalletConnectSession.walletChangeCleanup',
+              agentPkpAddress: agentPKP?.ethAddress,
+            },
+          });
         }
       };
 
