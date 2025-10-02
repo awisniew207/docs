@@ -11,10 +11,11 @@ import { AgentAppPermission } from '@/utils/user-dashboard/getAgentPkps';
 type PermittedAppCardProps = {
   app: App;
   permission: AgentAppPermission | undefined;
+  isUnpermitted?: boolean;
   index?: number;
 };
 
-export function PermittedAppCard({ app, permission, index = 0 }: PermittedAppCardProps) {
+export function PermittedAppCard({ app, permission, isUnpermitted = false, index = 0 }: PermittedAppCardProps) {
   const navigate = useNavigate();
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
 
@@ -108,10 +109,14 @@ export function PermittedAppCard({ app, permission, index = 0 }: PermittedAppCar
               </button>
               <button
                 onClick={handleManageClick}
-                className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg border ${theme.cardBorder} ${theme.cardBg} hover:${theme.itemBg} ${theme.text} text-sm font-medium transition-colors`}
+                className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg ${
+                  isUnpermitted
+                    ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                    : `border ${theme.cardBorder} ${theme.cardBg} hover:${theme.itemBg} ${theme.text}`
+                } text-sm font-medium transition-colors`}
               >
                 <Settings className="w-4 h-4" />
-                <span>Manage Permissions</span>
+                <span>{isUnpermitted ? 'Repermit App' : 'Manage Permissions'}</span>
               </button>
             </div>
           </div>
