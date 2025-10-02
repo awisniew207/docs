@@ -48,9 +48,12 @@ export default function useAuthenticate() {
           !err.message.includes('privacy-considerations-client'))
       ) {
         setError(err as Error);
-        Sentry.captureException(err, {
-          extra: {
-            context: 'useAuthenticate.authWithWebAuthn',
+        Sentry.addBreadcrumb({
+          category: 'auth.webauthn',
+          message: 'WebAuthn authentication failed',
+          level: 'error',
+          data: {
+            error: err instanceof Error ? err.message : String(err),
           },
         });
       }
@@ -85,11 +88,14 @@ export default function useAuthenticate() {
         });
       } catch (err) {
         setError(err as Error);
-        Sentry.captureException(err, {
-          extra: {
-            context: 'useAuthenticate.authWithStytch',
+        Sentry.addBreadcrumb({
+          category: 'auth.stytch',
+          message: 'Stytch authentication failed',
+          level: 'error',
+          data: {
             method,
             userId,
+            error: err instanceof Error ? err.message : String(err),
           },
         });
       } finally {
@@ -121,10 +127,13 @@ export default function useAuthenticate() {
           (!err.message.includes('User rejected') && !err.message.includes('user rejected'))
         ) {
           setError(err as Error);
-          Sentry.captureException(err, {
-            extra: {
-              context: 'useAuthenticate.authWithEthWallet',
+          Sentry.addBreadcrumb({
+            category: 'auth.wallet',
+            message: 'Ethereum wallet authentication failed',
+            level: 'error',
+            data: {
               address,
+              error: err instanceof Error ? err.message : String(err),
             },
           });
         }

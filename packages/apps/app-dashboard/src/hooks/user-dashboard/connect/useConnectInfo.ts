@@ -172,11 +172,14 @@ export const useConnectInfo = (
               .then((data) => [abilityKey, data] as const)
               .catch((error) => {
                 console.error(`Failed to fetch ability version ${packageName}@${version}:`, error);
-                Sentry.captureException(error, {
-                  extra: {
-                    context: 'useConnectInfo.fetchAbilityVersion',
+                Sentry.addBreadcrumb({
+                  category: 'api.vincent',
+                  message: `Failed to fetch ability version ${packageName}@${version}`,
+                  level: 'error',
+                  data: {
                     packageName,
                     version,
+                    error: error instanceof Error ? error.message : String(error),
                   },
                 });
                 return [abilityKey, null] as const;
@@ -193,10 +196,13 @@ export const useConnectInfo = (
             .then((data) => [packageName, data] as const)
             .catch((error) => {
               console.error(`Failed to fetch ability ${packageName}:`, error);
-              Sentry.captureException(error, {
-                extra: {
-                  context: 'useConnectInfo.fetchParentAbility',
+              Sentry.addBreadcrumb({
+                category: 'api.vincent',
+                message: `Failed to fetch ability ${packageName}`,
+                level: 'error',
+                data: {
                   packageName,
+                  error: error instanceof Error ? error.message : String(error),
                 },
               });
               return [packageName, null] as const;
@@ -230,7 +236,6 @@ export const useConnectInfo = (
 
         setAbilityVersionsData(abilityVersions);
         setAbilitiesData(abilities);
-
 
         // Update errors if any abilities failed to load
         if (errors.length > 0) {
@@ -272,11 +277,14 @@ export const useConnectInfo = (
               .then((data) => [packageName, version, data] as const)
               .catch((error) => {
                 console.error(`Failed to fetch policy version ${packageName}@${version}:`, error);
-                Sentry.captureException(error, {
-                  extra: {
-                    context: 'useConnectInfo.fetchPolicyVersion',
+                Sentry.addBreadcrumb({
+                  category: 'api.vincent',
+                  message: `Failed to fetch policy version ${packageName}@${version}`,
+                  level: 'error',
+                  data: {
                     packageName,
                     version,
+                    error: error instanceof Error ? error.message : String(error),
                   },
                 });
                 return [packageName, version, null] as const;
@@ -293,10 +301,13 @@ export const useConnectInfo = (
             .then((data) => [packageName, data] as const)
             .catch((error) => {
               console.error(`Failed to fetch policy ${packageName}:`, error);
-              Sentry.captureException(error, {
-                extra: {
-                  context: 'useConnectInfo.fetchParentPolicy',
+              Sentry.addBreadcrumb({
+                category: 'api.vincent',
+                message: `Failed to fetch policy ${packageName}`,
+                level: 'error',
+                data: {
                   packageName,
+                  error: error instanceof Error ? error.message : String(error),
                 },
               });
               return [packageName, null] as const;
@@ -342,7 +353,6 @@ export const useConnectInfo = (
 
         setSupportedPoliciesData(supportedPoliciesData);
         setPoliciesData(policies);
-
 
         // Update errors if any policies failed to load
         if (errors.length > 0) {

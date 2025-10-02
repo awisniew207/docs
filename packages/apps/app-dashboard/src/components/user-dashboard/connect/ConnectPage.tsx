@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import * as Sentry from '@sentry/react';
 import { getClient } from '@lit-protocol/vincent-contracts-sdk';
 import { IRelayPKP } from '@lit-protocol/types';
 import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
@@ -209,6 +210,12 @@ export function ConnectPage({
           throw new Error(customMessage);
         } else {
           // Other error - log to Sentry and fail
+          Sentry.captureException(error, {
+            extra: {
+              context: 'ConnectPage.addPermittedActions',
+              agentPKPTokenId: agentPKP.tokenId,
+            },
+          });
           setLocalError(error instanceof Error ? error.message : 'Failed to add permitted actions');
           setIsConnectProcessing(false);
           throw error;
@@ -231,6 +238,14 @@ export function ConnectPage({
         setLocalSuccess('Permissions granted successfully!');
         console.log('agentPKP:', agentPKP);
       } catch (error) {
+        Sentry.captureException(error, {
+          extra: {
+            context: 'ConnectPage.permitApp',
+            agentPKPAddress: agentPKP.ethAddress,
+            appId: connectInfoMap.app.appId,
+            appVersion: connectInfoMap.app.activeVersion,
+          },
+        });
         setLocalError(error instanceof Error ? error.message : 'Failed to permit app');
         setIsConnectProcessing(false);
         throw error;

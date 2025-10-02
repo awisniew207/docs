@@ -67,10 +67,13 @@ export const useReadAuthInfo = (): ReadAuthInfo => {
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         console.error('Error retrieving auth info:', error);
-        Sentry.captureException(error, {
-          extra: {
-            context: 'useAuthInfo.loadAuthInfo',
+        Sentry.addBreadcrumb({
+          category: 'auth',
+          message: 'Failed to load auth info from localStorage',
+          level: 'error',
+          data: {
             hasStoredAuthInfo: !!localStorage.getItem(AUTH_INFO_KEY),
+            error: errorMessage,
           },
         });
         setError(errorMessage);
@@ -130,7 +133,14 @@ export const useSetAuthInfo = (): UseSetAuthInfo => {
     } catch (err) {
       const error = err as Error;
       console.error('Error storing auth info:', error);
-      Sentry.captureException(error);
+      Sentry.addBreadcrumb({
+        category: 'auth',
+        message: 'Failed to store auth info in localStorage',
+        level: 'error',
+        data: {
+          error: error.message,
+        },
+      });
       setError(error);
 
       throw error;
@@ -163,7 +173,14 @@ export const useSetAuthInfo = (): UseSetAuthInfo => {
     } catch (err) {
       const error = err as Error;
       console.error('Error updating auth info:', error);
-      Sentry.captureException(error);
+      Sentry.addBreadcrumb({
+        category: 'auth',
+        message: 'Failed to update auth info in localStorage',
+        level: 'error',
+        data: {
+          error: error.message,
+        },
+      });
       setError(error);
 
       throw error;

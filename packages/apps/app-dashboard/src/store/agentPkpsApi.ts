@@ -16,10 +16,13 @@ export const agentPkpsApi = createApi({
           return { data: result };
         } catch (error) {
           console.error('Failed to fetch agent PKPs:', error);
-          Sentry.captureException(error, {
-            extra: {
-              context: 'agentPkpsApi.getAgentPkps',
+          Sentry.addBreadcrumb({
+            category: 'api.agentPkps',
+            message: 'Failed to fetch agent PKPs',
+            level: 'error',
+            data: {
               userAddress,
+              error: error instanceof Error ? error.message : String(error),
             },
           });
           return {
@@ -39,10 +42,13 @@ export const agentPkpsApi = createApi({
           return { data: result.permitted };
         } catch (error) {
           console.error('Failed to fetch permitted agent apps:', error);
-          Sentry.captureException(error, {
-            extra: {
-              context: 'agentPkpsApi.getPermittedAgentApps',
+          Sentry.addBreadcrumb({
+            category: 'api.agentPkps',
+            message: 'Failed to fetch permitted agent apps',
+            level: 'error',
+            data: {
               userAddress,
+              error: error instanceof Error ? error.message : String(error),
             },
           });
           return {
@@ -63,10 +69,13 @@ export const agentPkpsApi = createApi({
           return { data: result.unpermitted };
         } catch (error) {
           console.error('Failed to fetch unpermitted agent apps:', error);
-          Sentry.captureException(error, {
-            extra: {
-              context: 'agentPkpsApi.getUnpermittedAgentApps',
+          Sentry.addBreadcrumb({
+            category: 'api.agentPkps',
+            message: 'Failed to fetch unpermitted agent apps',
+            level: 'error',
+            data: {
               userAddress,
+              error: error instanceof Error ? error.message : String(error),
             },
           });
           return {
