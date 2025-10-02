@@ -240,7 +240,6 @@ export const useConnectInfo = (
         // Update errors if any abilities failed to load
         if (errors.length > 0) {
           setFetchErrors((prev) => [...prev, ...errors]);
-          setFetchErrors((prev) => [...prev, ...errors]);
         }
 
         // Step 3: Fetch supported policies and parent policy info in parallel
@@ -356,7 +355,6 @@ export const useConnectInfo = (
 
         // Update errors if any policies failed to load
         if (errors.length > 0) {
-          setFetchErrors((prev) => [...prev, ...errors]);
           setFetchErrors((prev) => [...prev, ...errors]);
         }
 
