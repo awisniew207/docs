@@ -16,7 +16,7 @@ import {
   User,
   Code,
 } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useParams, useNavigate } from 'react-router-dom';
 import { theme } from '@/components/user-dashboard/connect/ui/theme';
 import { toggleTheme } from '@/lib/theme';
@@ -56,19 +56,6 @@ export function Sidebar({ userApps, userAbilities, userPolicies }: SidebarProps)
   // Simple state for user interactions (like user sidebar)
   const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
   const [hasInitialized, setHasInitialized] = useState(false);
-  const [showDashboardMenu, setShowDashboardMenu] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowDashboardMenu(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   // Get the currently active app, ability, policy from route params
   const activeAppId = params.appId ? parseInt(params.appId) : null;
@@ -708,83 +695,13 @@ export function Sidebar({ userApps, userAbilities, userPolicies }: SidebarProps)
     <SidebarComponent variant="sidebar" collapsible="offcanvas" className="border-r-0">
       <SidebarHeader className="border-b border-sidebar-border h-16">
         <div className="flex items-center px-6 py-4 h-full">
-          <div className="relative flex-1" ref={dropdownRef}>
-            <button
-              onClick={() => setShowDashboardMenu(!showDashboardMenu)}
-              className={`flex items-center gap-1.5 px-2 py-1 rounded-md transition-all ${
-                showDashboardMenu
-                  ? isDark
-                    ? 'bg-white/10'
-                    : 'bg-gray-900/5'
-                  : isDark
-                    ? 'hover:bg-white/5'
-                    : 'hover:bg-gray-900/5'
-              }`}
-              aria-label="Switch dashboard"
-            >
-              <img
-                src={isDark ? '/vincent-main-logo-white.png' : '/vincent-main-logo.png'}
-                alt="Vincent by Lit Protocol"
-                className="h-6 object-contain"
-              />
-              <ChevronDown
-                className={`h-3.5 w-3.5 transition-transform duration-200 ${
-                  showDashboardMenu ? 'rotate-180' : ''
-                } ${isDark ? 'text-white/60' : 'text-gray-900/60'}`}
-              />
-            </button>
-
-            {/* Dashboard Switcher Dropdown */}
-            {showDashboardMenu && (
-              <div
-                className={`absolute top-full left-0 mt-2 w-48 rounded-lg shadow-lg border ${
-                  isDark ? 'bg-neutral-900 border-white/10' : 'bg-white border-gray-200'
-                } z-50`}
-              >
-                <div className="p-1">
-                  <button
-                    onClick={() => {
-                      navigate('/user/apps');
-                      setShowDashboardMenu(false);
-                    }}
-                    className={`w-full flex items-center gap-2 px-2 py-2 rounded-md transition-colors ${
-                      location.pathname.startsWith('/user')
-                        ? `${theme.itemBg} text-orange-500`
-                        : `${theme.itemHoverBg} ${theme.text}`
-                    }`}
-                  >
-                    <User className="h-3.5 w-3.5 flex-shrink-0" />
-                    <div className="text-left flex-1 min-w-0">
-                      <div className="text-sm font-medium truncate">User Dashboard</div>
-                      <div className={`text-[10px] ${theme.textMuted} truncate`}>
-                        Manage your apps
-                      </div>
-                    </div>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      navigate('/developer/dashboard');
-                      setShowDashboardMenu(false);
-                    }}
-                    className={`w-full flex items-center gap-2 px-2 py-2 rounded-md transition-colors ${
-                      location.pathname.startsWith('/developer')
-                        ? `${theme.itemBg} text-orange-500`
-                        : `${theme.itemHoverBg} ${theme.text}`
-                    }`}
-                  >
-                    <Code className="h-3.5 w-3.5 flex-shrink-0" />
-                    <div className="text-left flex-1 min-w-0">
-                      <div className="text-sm font-medium truncate">Developer Dashboard</div>
-                      <div className={`text-[10px] ${theme.textMuted} truncate`}>
-                        Build apps & abilities
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+          <Link to="/">
+            <img
+              src={isDark ? '/vincent-main-logo-white.png' : '/vincent-main-logo.png'}
+              alt="Vincent by Lit Protocol"
+              className="h-6 object-contain cursor-pointer"
+            />
+          </Link>
         </div>
       </SidebarHeader>
 
@@ -900,6 +817,71 @@ export function Sidebar({ userApps, userAbilities, userPolicies }: SidebarProps)
       <SidebarFooter className="border-t border-sidebar-border">
         <div className="p-4 space-y-2">
           <SidebarMenu>
+            {/* Dashboard Switcher */}
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={location.pathname.startsWith('/user')}
+                className={`h-10 px-3 rounded-lg transition-all duration-200 ${
+                  location.pathname.startsWith('/user')
+                    ? `${theme.itemBg} text-orange-500`
+                    : `${theme.text} ${theme.itemHoverBg}`
+                }`}
+              >
+                <Link to="/user/apps">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={
+                        location.pathname.startsWith('/user') ? 'text-orange-500' : theme.textMuted
+                      }
+                    >
+                      <User className="h-4 w-4" />
+                    </div>
+                    <span
+                      className={`font-medium ${location.pathname.startsWith('/user') ? 'text-orange-500' : theme.text}`}
+                    >
+                      User Dashboard
+                    </span>
+                  </div>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={location.pathname.startsWith('/developer')}
+                className={`h-10 px-3 rounded-lg transition-all duration-200 ${
+                  location.pathname.startsWith('/developer')
+                    ? `${theme.itemBg} text-orange-500`
+                    : `${theme.text} ${theme.itemHoverBg}`
+                }`}
+              >
+                <Link to="/developer/dashboard">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={
+                        location.pathname.startsWith('/developer')
+                          ? 'text-orange-500'
+                          : theme.textMuted
+                      }
+                    >
+                      <Code className="h-4 w-4" />
+                    </div>
+                    <span
+                      className={`font-medium ${location.pathname.startsWith('/developer') ? 'text-orange-500' : theme.text}`}
+                    >
+                      Developer Dashboard
+                    </span>
+                  </div>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <div
+              className={`border-t ${isDark ? 'border-white/10' : 'border-neutral-800/10'} my-2`}
+            />
+
             {/* My Account */}
             <SidebarMenuItem>
               <AccountTooltip theme={theme} />
@@ -929,9 +911,7 @@ export function Sidebar({ userApps, userAbilities, userPolicies }: SidebarProps)
             {/* Documentation */}
             <SidebarMenuItem>
               <SidebarMenuButton
-                onClick={() =>
-                  window.open('https://docs.heyvincent.ai/documents/Getting_Started.html', '_blank')
-                }
+                onClick={() => window.open('https://docs.heyvincent.ai', '_blank')}
                 className={`h-10 px-3 rounded-lg transition-all duration-200 ${theme.text} ${theme.itemHoverBg}`}
               >
                 <div className="flex items-center gap-3">

@@ -237,10 +237,8 @@ export const useConnectInfo = (
         setAbilityVersionsData(abilityVersions);
         setAbilitiesData(abilities);
 
-
         // Update errors if any abilities failed to load
         if (errors.length > 0) {
-          setFetchErrors((prev) => [...prev, ...errors]);
           setFetchErrors((prev) => [...prev, ...errors]);
         }
 
@@ -355,10 +353,8 @@ export const useConnectInfo = (
         setSupportedPoliciesData(supportedPoliciesData);
         setPoliciesData(policies);
 
-
         // Update errors if any policies failed to load
         if (errors.length > 0) {
-          setFetchErrors((prev) => [...prev, ...errors]);
           setFetchErrors((prev) => [...prev, ...errors]);
         }
 

@@ -24,8 +24,8 @@ export function PermittedAppsWrapper() {
 
   // Fetch all agent app permissions
   const {
-    permittedPkps: permittedPKPs,
-    unPermittedPkps,
+    permittedPkps,
+    unpermittedPkps,
     loading: permissionsLoading,
     error: permissionsError,
   } = useAllAgentApps(userAddress);
@@ -42,14 +42,14 @@ export function PermittedAppsWrapper() {
   const { permittedApps, unpermittedApps } = useMemo(() => {
     if (!allApps) return { permittedApps: [], unpermittedApps: [] };
 
-    const permittedAppIds = new Set(permittedPKPs.map((p) => p.appId));
-    const unpermittedAppIds = new Set(unPermittedPkps.map((p) => p.appId));
+    const permittedAppIds = new Set(permittedPkps.map((p) => p.appId));
+    const unpermittedAppIds = new Set(unpermittedPkps.map((p) => p.appId));
 
     const permitted = allApps.filter((app) => permittedAppIds.has(app.appId));
     const unpermitted = allApps.filter((app) => unpermittedAppIds.has(app.appId));
 
     return { permittedApps: permitted, unpermittedApps: unpermitted };
-  }, [allApps, permittedPKPs, unPermittedPkps]);
+  }, [allApps, permittedPkps, unpermittedPkps]);
 
   // Filter apps based on filter state
   const filteredApps = useMemo(() => {
@@ -68,12 +68,12 @@ export function PermittedAppsWrapper() {
   const isUserAuthed = authInfo?.userPKP && sessionSigs;
 
   // Find the agent PKP that's permitted for Vincent Yield
-  const vincentYieldPKP = permittedPKPs.find(
+  const vincentYieldPKP = permittedPkps.find(
     (pkp) => pkp.appId === Number(env.VITE_VINCENT_YIELD_APPID),
   );
 
   // Find PKPs with appId = -1 (unconnected PKPs)
-  const unconnectedPKP = permittedPKPs.find((pkp) => pkp.appId === -1);
+  const unconnectedPKP = permittedPkps.find((pkp) => pkp.appId === -1);
 
   // Show Vincent Yield modal when user has no Vincent Yield PKP
   React.useEffect(() => {
@@ -89,11 +89,11 @@ export function PermittedAppsWrapper() {
       !showConnectModal &&
       unconnectedPKP &&
       !vincentYieldPKP &&
-      permittedPKPs.length > 0
+      permittedPkps.length > 0
     ) {
       setShowConnectModal(true);
     }
-  }, [isUserAuthed, showConnectModal, unconnectedPKP, vincentYieldPKP, permittedPKPs.length]);
+  }, [isUserAuthed, showConnectModal, unconnectedPKP, vincentYieldPKP, permittedPkps.length]);
 
   // Show skeleton while auth is processing
   if (isProcessing) {
@@ -129,8 +129,8 @@ export function PermittedAppsWrapper() {
     <>
       <PermittedAppsPage
         apps={filteredApps}
-        permittedPkps={permittedPKPs}
-        unpermittedPkps={unPermittedPkps}
+        permittedPkps={permittedPkps}
+        unpermittedPkps={unpermittedPkps}
         filterState={filterState}
         setFilterState={setFilterState}
       />
