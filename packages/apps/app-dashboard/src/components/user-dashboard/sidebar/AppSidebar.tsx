@@ -1,6 +1,17 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { Package, Loader2, Sun, Moon, LogOut, TriangleAlert, HelpCircle } from 'lucide-react';
+import {
+  Package,
+  Loader2,
+  Sun,
+  Moon,
+  LogOut,
+  TriangleAlert,
+  HelpCircle,
+  ChevronDown,
+  User,
+  Code,
+} from 'lucide-react';
 import { theme } from '@/components/user-dashboard/connect/ui/theme';
 import { toggleTheme } from '@/lib/theme';
 import { useTheme } from '@/hooks/useTheme';
@@ -144,6 +155,19 @@ export function AppSidebar({
   const navigate = useNavigate();
   const { clearAuthInfo } = useClearAuthInfo();
   const isDark = useTheme();
+  const [showDashboardMenu, setShowDashboardMenu] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDashboardMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const menuItems = getMainMenuItems(apps, isLoadingApps, permittedAppVersions, appVersionsMap);
 
@@ -163,13 +187,83 @@ export function AppSidebar({
     <Sidebar variant="sidebar" collapsible="offcanvas" className="border-r-0">
       <SidebarHeader className="border-b border-sidebar-border h-16">
         <div className="flex items-center px-6 py-4 h-full">
-          <Link to="/" className="flex items-center">
-            <img
-              src={isDark ? '/vincent-main-logo-white.png' : '/vincent-main-logo.png'}
-              alt="Vincent by Lit Protocol"
-              className="h-6 object-contain cursor-pointer hover:opacity-80 transition-opacity"
-            />
-          </Link>
+          <div className="relative flex-1" ref={dropdownRef}>
+            <button
+              onClick={() => setShowDashboardMenu(!showDashboardMenu)}
+              className={`flex items-center gap-1.5 px-2 py-1 rounded-md transition-all ${
+                showDashboardMenu
+                  ? isDark
+                    ? 'bg-white/10'
+                    : 'bg-gray-900/5'
+                  : isDark
+                    ? 'hover:bg-white/5'
+                    : 'hover:bg-gray-900/5'
+              }`}
+              aria-label="Switch dashboard"
+            >
+              <img
+                src={isDark ? '/vincent-main-logo-white.png' : '/vincent-main-logo.png'}
+                alt="Vincent by Lit Protocol"
+                className="h-6 object-contain"
+              />
+              <ChevronDown
+                className={`h-3.5 w-3.5 transition-transform duration-200 ${
+                  showDashboardMenu ? 'rotate-180' : ''
+                } ${isDark ? 'text-white/60' : 'text-gray-900/60'}`}
+              />
+            </button>
+
+            {/* Dashboard Switcher Dropdown */}
+            {showDashboardMenu && (
+              <div
+                className={`absolute top-full left-0 mt-2 w-48 rounded-lg shadow-lg border ${
+                  isDark ? 'bg-neutral-900 border-white/10' : 'bg-white border-gray-200'
+                } z-50`}
+              >
+                <div className="p-1">
+                  <button
+                    onClick={() => {
+                      navigate('/user/apps');
+                      setShowDashboardMenu(false);
+                    }}
+                    className={`w-full flex items-center gap-2 px-2 py-2 rounded-md transition-colors ${
+                      location.pathname.startsWith('/user')
+                        ? `${theme.itemBg} text-orange-500`
+                        : `${theme.itemHoverBg} ${theme.text}`
+                    }`}
+                  >
+                    <User className="h-3.5 w-3.5 flex-shrink-0" />
+                    <div className="text-left flex-1 min-w-0">
+                      <div className="text-sm font-medium truncate">User Dashboard</div>
+                      <div className={`text-[10px] ${theme.textMuted} truncate`}>
+                        Manage your apps
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      navigate('/developer/dashboard');
+                      setShowDashboardMenu(false);
+                    }}
+                    className={`w-full flex items-center gap-2 px-2 py-2 rounded-md transition-colors ${
+                      location.pathname.startsWith('/developer')
+                        ? `${theme.itemBg} text-orange-500`
+                        : `${theme.itemHoverBg} ${theme.text}`
+                    }`}
+                  >
+                    <Code className="h-3.5 w-3.5 flex-shrink-0" />
+                    <div className="text-left flex-1 min-w-0">
+                      <div className="text-sm font-medium truncate">Developer Dashboard</div>
+                      <div className={`text-[10px] ${theme.textMuted} truncate`}>
+                        Build apps & abilities
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </SidebarHeader>
 
