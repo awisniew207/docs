@@ -13,7 +13,6 @@ import { useWalletConnectSession } from '@/hooks/user-dashboard/WalletConnect/us
 import { useWalletConnectRequests } from '@/hooks/user-dashboard/WalletConnect/useWalletConnectRequests';
 
 // UI Components
-import { SessionProposal } from './SessionProposal';
 import { ActiveSessions } from './ActiveSessions';
 import { PendingRequests } from './PendingRequests';
 
@@ -39,7 +38,6 @@ export default function WalletConnectPage(params: {
     status,
     setStatus,
     handleApproveSession,
-    handleRejectSession,
     handleDisconnect,
   } = useWalletConnectSession(agentPKP, sessionSigs);
 
@@ -99,12 +97,39 @@ export default function WalletConnectPage(params: {
     [client, agentPKP, walletRegistered, setStatus],
   );
 
+  // Handle URI input change and auto-connect on paste
+  const handleUriChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newUri = e.target.value;
+      setUri(newUri);
+
+      // Auto-connect if a valid WalletConnect URI is pasted
+      if (
+        newUri.startsWith('wc:') &&
+        !loading &&
+        !isInitializing &&
+        client &&
+        (!agentPKP || walletRegistered)
+      ) {
+        onConnect(newUri);
+      }
+    },
+    [loading, isInitializing, client, agentPKP, walletRegistered, onConnect],
+  );
+
   // Handle deepLink
   useEffect(() => {
     if (deepLink && client) {
       onConnect(deepLink);
     }
   }, [deepLink, client, onConnect]);
+
+  // Auto-approve session proposals
+  useEffect(() => {
+    if (pendingProposal && !processingProposal && walletRegistered) {
+      handleApproveSession();
+    }
+  }, [pendingProposal, processingProposal, walletRegistered, handleApproveSession]);
 
   // Enhanced request handlers with status updates
   const handleApproveWithStatus = useCallback(
@@ -176,26 +201,15 @@ export default function WalletConnectPage(params: {
           </div>
 
           {/* Manual URI input */}
-          <div className="flex w-full mb-4">
+          <div className="w-full mb-4">
             <Input
-              className={`w-full rounded-r-none ${theme.cardBg} ${theme.cardBorder} ${theme.text}`}
-              placeholder="e.g. wc:a281567bb3e4..."
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUri(e.target.value)}
+              className={`w-full ${theme.cardBg} ${theme.cardBorder} ${theme.text}`}
+              placeholder="Paste WalletConnect URI (e.g. wc:a281567bb3e4...)"
+              onChange={handleUriChange}
               value={uri}
               data-testid="uri-input"
               disabled={isInitializing || !client}
             />
-            <Button
-              variant="outline"
-              className={`rounded-l-none ${theme.text} border ${theme.cardBorder} hover:${theme.itemHoverBg}`}
-              disabled={
-                !uri || loading || isInitializing || !client || (agentPKP && !walletRegistered)
-              }
-              onClick={() => onConnect(uri)}
-              data-testid="uri-connect-button"
-            >
-              {loading ? 'Connecting...' : 'Connect'}
-            </Button>
           </div>
 
           {/* Manual Withdraw Button */}
@@ -213,16 +227,7 @@ export default function WalletConnectPage(params: {
             </Button>
           </div>
 
-          {/* Session Proposal */}
-          {pendingProposal && !loading && (
-            <SessionProposal
-              proposal={pendingProposal}
-              onApprove={handleApproveSession}
-              onReject={handleRejectSession}
-              processing={processingProposal}
-              walletRegistered={walletRegistered}
-            />
-          )}
+          {/* Session Proposal - Auto-approved, no UI shown */}
 
           {/* Active Sessions */}
           <ActiveSessions
