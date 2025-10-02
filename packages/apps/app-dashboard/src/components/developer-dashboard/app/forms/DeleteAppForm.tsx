@@ -5,10 +5,7 @@ import { Form } from '@/components/shared/ui/form';
 import { Button } from '@/components/shared/ui/button';
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  CardContent
 } from '@/components/shared/ui/card';
 import { TextField } from '../../form-fields';
 
@@ -55,12 +52,6 @@ export function DeleteAppForm({ appName, onSubmit, isSubmitting = false }: Delet
 
   return (
     <Card className="w-full max-w-2xl mx-auto dark:bg-neutral-800 dark:border-white/10">
-      <CardHeader>
-        <CardTitle className="text-red-600 dark:text-red-400">Delete App</CardTitle>
-        <CardDescription>
-          Please make sure you're absolutely certain you want to delete this app.
-        </CardDescription>
-      </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

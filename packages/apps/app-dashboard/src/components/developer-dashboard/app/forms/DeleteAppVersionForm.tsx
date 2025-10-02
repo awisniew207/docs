@@ -5,10 +5,7 @@ import { Form } from '@/components/shared/ui/form';
 import { Button } from '@/components/shared/ui/button';
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  CardContent
 } from '@/components/shared/ui/card';
 import { NumberSelectField, TextField } from '../../form-fields';
 import { App, AppVersion } from '@/types/developer-dashboard/appTypes';
@@ -90,12 +87,6 @@ export function DeleteAppVersionForm({
 
   return (
     <Card className="w-full max-w-2xl mx-auto dark:bg-neutral-800 dark:border-white/10">
-      <CardHeader>
-        <CardTitle className="text-red-600 dark:text-red-400">Delete App Version</CardTitle>
-        <CardDescription>
-          Please make sure you're absolutely certain you want to delete this app version.
-        </CardDescription>
-      </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

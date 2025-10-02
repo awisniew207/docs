@@ -5,10 +5,7 @@ import { Form } from '@/components/shared/ui/form';
 import { Button } from '@/components/shared/ui/button';
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  CardContent
 } from '@/components/shared/ui/card';
 import { TextField } from '../../form-fields';
 
@@ -59,12 +56,6 @@ export function DeleteAbilityForm({
 
   return (
     <Card className="w-full max-w-2xl mx-auto dark:bg-neutral-800 dark:border-white/10">
-      <CardHeader>
-        <CardTitle className="text-red-600 dark:text-red-400">Delete Ability</CardTitle>
-        <CardDescription className="text-gray-600 dark:text-white/60">
-          Please make sure you're absolutely certain you want to delete this ability.
-        </CardDescription>
-      </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
