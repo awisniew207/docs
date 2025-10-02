@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import * as Sentry from '@sentry/react';
 import { getClient } from '@lit-protocol/vincent-contracts-sdk';
 import { IRelayPKP } from '@lit-protocol/types';
 import { ConnectInfoMap } from '@/hooks/user-dashboard/connect/useConnectInfo';
@@ -149,7 +150,13 @@ export function ConnectPage({
         } catch (error) {
           setLocalError(error instanceof Error ? error.message : 'Failed to mint PKP');
           setIsConnectProcessing(false);
-          throw error;
+          Sentry.captureException(error, {
+            extra: {
+              context: 'ConnectPage.mintPKPToExistingPKP',
+              userPKPTokenId: readAuthInfo.authInfo.userPKP.tokenId,
+            },
+          });
+          return;
         }
       }
 
@@ -199,19 +206,31 @@ export function ConnectPage({
                 : 'Failed after addPayee attempt',
             );
             setIsConnectProcessing(false);
-            throw retryError;
+            Sentry.captureException(retryError, {
+              extra: {
+                context: 'ConnectPage.addPermittedActions.retryAfterAddPayee',
+                agentPKPTokenId: agentPKP.tokenId,
+              },
+            });
+            return;
           }
         } else if (isInsufficientFunds) {
-          // Insufficient funds - show helpful message with faucet link
+          // Insufficient funds - show helpful message with faucet link (don't log to Sentry - expected)
           const customMessage = `Insufficient testnet funds. Authentication Address (testnet only): ${readAuthInfo.authInfo.userPKP.ethAddress}. Please fund it with the faucet here:`;
           setLocalError(customMessage);
           setIsConnectProcessing(false);
-          throw new Error(customMessage);
+          return;
         } else {
           // Other error - log to Sentry and fail
+          Sentry.captureException(error, {
+            extra: {
+              context: 'ConnectPage.addPermittedActions',
+              agentPKPTokenId: agentPKP.tokenId,
+            },
+          });
           setLocalError(error instanceof Error ? error.message : 'Failed to add permitted actions');
           setIsConnectProcessing(false);
-          throw error;
+          return;
         }
       }
 
@@ -231,9 +250,17 @@ export function ConnectPage({
         setLocalSuccess('Permissions granted successfully!');
         console.log('agentPKP:', agentPKP);
       } catch (error) {
+        Sentry.captureException(error, {
+          extra: {
+            context: 'ConnectPage.permitApp',
+            agentPKPAddress: agentPKP.ethAddress,
+            appId: connectInfoMap.app.appId,
+            appVersion: connectInfoMap.app.activeVersion,
+          },
+        });
         setLocalError(error instanceof Error ? error.message : 'Failed to permit app');
         setIsConnectProcessing(false);
-        throw error;
+        return;
       }
     } else {
       setLocalError('Some of your permissions are not valid. Please check the form and try again.');

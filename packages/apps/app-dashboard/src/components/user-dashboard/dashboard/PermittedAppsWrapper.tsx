@@ -64,8 +64,8 @@ export function PermittedAppsWrapper() {
 
   // Handle errors
   if (appsError || permissionsError) {
-    const errorMessage = String(permissionsError || appsError || 'An error occurred');
-    return <GeneralErrorScreen errorDetails={errorMessage} />;
+    const error = permissionsError || appsError || new Error('An error occurred');
+    return <GeneralErrorScreen errorDetails={String(error)} />;
   }
 
   const isUserAuthed = authInfo?.userPKP && sessionSigs;
