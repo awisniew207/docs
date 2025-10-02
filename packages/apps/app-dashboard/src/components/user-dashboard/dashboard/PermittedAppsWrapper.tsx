@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import * as Sentry from '@sentry/react';
 import { PermittedAppsPage } from './PermittedAppsPage';
 import { useAllAgentApps } from '@/hooks/user-dashboard/useAllAgentApps';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
@@ -66,7 +65,6 @@ export function PermittedAppsWrapper() {
   // Handle errors
   if (appsError || permissionsError) {
     const error = permissionsError || appsError || new Error('An error occurred');
-    Sentry.captureException(error);
     return <GeneralErrorScreen errorDetails={String(error)} />;
   }
 

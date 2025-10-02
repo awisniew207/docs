@@ -364,6 +364,20 @@ export const useConnectInfo = (
         setIsDataFetchingComplete(true);
       } catch (error) {
         console.error('Error fetching connect info:', error);
+
+        // Capture to Sentry (skip 404s as those are expected)
+        const is404 =
+          typeof error === 'object' && error !== null && 'status' in error && error.status === 404;
+        if (!is404) {
+          Sentry.captureException(error, {
+            extra: {
+              context: 'useConnectInfo.fetchAllData',
+              appId,
+              useActiveVersion,
+            },
+          });
+        }
+
         // Still mark as complete even if there was an error
         setIsDataFetchingComplete(true);
       }

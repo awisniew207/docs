@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react';
 import { AppSidebar } from './AppSidebar';
 import { SidebarSkeleton } from './SidebarSkeleton';
 import { StatusMessage } from '@/components/shared/ui/statusMessage';
@@ -42,12 +41,6 @@ function SidebarWithData({ userAddress }: { userAddress: string }) {
 
   // Handle errors
   if (error) {
-    Sentry.captureException(new Error(error), {
-      extra: {
-        context: 'SidebarWithData.loadSidebarData',
-        userAddress,
-      },
-    });
     return <SidebarError error={error || 'An error has occurred'} />;
   }
 
