@@ -563,7 +563,7 @@ describe('Uniswap Swap Ability E2E Tests', () => {
     });
   });
 
-  describe.skip('Precheck and Execute with Alchemy Gas Sponsorship', () => {
+  describe('Precheck and Execute with Alchemy Gas Sponsorship', () => {
     let SMART_ACCOUNT_CLIENT: SmartAccountClient;
 
     beforeAll(async () => {
