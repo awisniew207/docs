@@ -61,7 +61,7 @@ export function DeletePolicyWrapper() {
           <div className="flex-1">
             <h1 className="text-3xl font-bold text-neutral-800 dark:text-white">Delete Policy</h1>
             <p className="text-gray-600 dark:text-white/60 mt-2">
-              Delete "{policy.title}" and all its data.
+              Delete "{policy.title}"?
             </p>
           </div>
         </div>

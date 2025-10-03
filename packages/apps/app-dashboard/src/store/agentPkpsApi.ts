@@ -108,5 +108,6 @@ export const agentPkpsApi = createApi({
 export const {
   useGetAgentPkpsQuery,
   useGetPermittedAgentAppsQuery,
+  useGetUnpermittedAgentAppsQuery,
   useInvalidateAgentPkpsCacheMutation,
 } = agentPkpsApi;
