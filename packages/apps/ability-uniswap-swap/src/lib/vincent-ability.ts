@@ -163,7 +163,17 @@ export const vincentAbility = createVincentAbility({
         requiredAllowance: requiredTokenInAmount,
       });
 
-      if (!checkErc20AllowanceResult.success) {
+      if (checkErc20AllowanceResult.success) {
+        console.log(
+          `Sufficient allowance already exists for spender ${quote.to}, skipping approval transaction. Current allowance: ${checkErc20AllowanceResult.currentAllowance.toString()}`,
+        );
+
+        if (action === AbilityAction.Approve) {
+          return succeed({
+            currentAllowance: checkErc20AllowanceResult.currentAllowance.toString(),
+          });
+        }
+      } else {
         if (checkErc20AllowanceResult.reason.includes('insufficient ERC20 allowance for spender')) {
           const txHash = await sendErc20ApprovalTx({
             rpcUrl: rpcUrlForUniswap,
@@ -186,16 +196,6 @@ export const vincentAbility = createVincentAbility({
         } else {
           return fail({
             reason: checkErc20AllowanceResult.reason,
-          });
-        }
-      } else {
-        console.log(
-          `Sufficient allowance already exists for spender ${quote.to}, skipping approval transaction. Current allowance: ${checkErc20AllowanceResult.currentAllowance.toString()}`,
-        );
-
-        if (action === AbilityAction.Approve) {
-          return succeed({
-            currentAllowance: checkErc20AllowanceResult.currentAllowance.toString(),
           });
         }
       }
