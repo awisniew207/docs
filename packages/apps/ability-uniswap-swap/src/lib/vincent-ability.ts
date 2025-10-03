@@ -192,9 +192,12 @@ export const vincentAbility = createVincentAbility({
         console.log(
           `Sufficient allowance already exists for spender ${quote.to}, skipping approval transaction. Current allowance: ${checkErc20AllowanceResult.currentAllowance.toString()}`,
         );
-        return succeed({
-          currentAllowance: checkErc20AllowanceResult.currentAllowance.toString(),
-        });
+
+        if (action === AbilityAction.Approve) {
+          return succeed({
+            currentAllowance: checkErc20AllowanceResult.currentAllowance.toString(),
+          });
+        }
       }
     }
 

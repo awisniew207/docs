@@ -70,32 +70,20 @@ export const precheckFailSchema = z.object({
   reason: z.string().describe('The reason the precheck failed'),
   spenderAddress: z
     .string()
-    .optional()
     .describe('The Uniswap router address that will be used to spend the ERC20 token')
     .optional(),
-  tokenAddress: z
-    .string()
-    .optional()
-    .describe('The address of the input token for the swap')
-    .optional(),
+  tokenAddress: z.string().describe('The address of the input token for the swap').optional(),
   requiredTokenAmount: z
     .string()
-    .optional()
     .describe('The required amount of the input token for the swap')
     .optional(),
-  tokenBalance: z
-    .string()
-    .optional()
-    .describe('The balance of the input token used for the swap')
-    .optional(),
+  tokenBalance: z.string().describe('The balance of the input token used for the swap').optional(),
   currentAllowance: z
     .string()
-    .optional()
     .describe('The current allowance of the input token used for the swap for the ERC20 spender')
     .optional(),
   requiredAllowance: z
     .string()
-    .optional()
     .describe('The required allowance of the input token used for the swap for the ERC20 spender')
     .optional(),
 });
@@ -122,7 +110,6 @@ export const executeSuccessSchema = z.object({
     .describe('The hash of the user operation that was executed'),
   currentAllowance: z
     .string()
-    .optional()
     .describe('The current allowance of the input token used for the swap for the ERC20 spender')
     .optional(),
 });
