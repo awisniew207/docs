@@ -5,8 +5,7 @@ export const abilityParamsSchema = z.object({
     .enum(['approve', 'swap', 'approveAndSwap'])
     .describe(
       'Dictates whether to perform an ERC20 approval, a swap, or both using the signed Uniswap quote',
-    )
-    .optional(),
+    ),
   rpcUrlForUniswap: z
     .string()
     .describe(
