@@ -8,7 +8,6 @@
     "@lit-protocol/lit-node-client": "^7.2.3",
     "@lit-protocol/vincent-ability-sdk": "workspace:*",
     "@lit-protocol/vincent-app-sdk": "workspace:*",
-    "@lit-protocol/vincent-scaffold-sdk": "^2.0.0",
     "@uniswap/sdk-core": "^7.7.2",
     "@uniswap/smart-order-router": "^4.22.9",
     "ethers": "^5.8.0",

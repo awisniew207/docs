@@ -106,12 +106,20 @@ export const executeFailSchema = z.object({
 
 export const executeSuccessSchema = z.object({
   swapTxHash: z.string().describe('The hash of the swapping transaction on uniswap').optional(),
+  swapTxUserOperationHash: z
+    .string()
+    .optional()
+    .describe('The hash of the user operation that was executed'),
   approvalTxHash: z
     .string()
     .optional()
     .describe(
       'Transaction hash if a new approval was created, undefined if existing approval was used',
     ),
+  approvalTxUserOperationHash: z
+    .string()
+    .optional()
+    .describe('The hash of the user operation that was executed'),
   currentAllowance: z
     .string()
     .optional()

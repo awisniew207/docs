@@ -149,6 +149,7 @@ export const vincentAbility = createVincentAbility({
     }
 
     let approvalTxHash: string | undefined;
+    let approvalTxUserOperationHash: string | undefined;
     if (action === AbilityAction.Approve || action === AbilityAction.ApproveAndSwap) {
       const provider = new ethers.providers.StaticJsonRpcProvider(rpcUrlForUniswap);
 
@@ -164,7 +165,7 @@ export const vincentAbility = createVincentAbility({
 
       if (!checkErc20AllowanceResult.success) {
         if (checkErc20AllowanceResult.reason.includes('insufficient ERC20 allowance for spender')) {
-          approvalTxHash = await sendErc20ApprovalTx({
+          const txHash = await sendErc20ApprovalTx({
             rpcUrl: rpcUrlForUniswap,
             chainId: quote.chainId,
             pkpEthAddress: delegatorPkpInfo.ethAddress,
@@ -176,6 +177,12 @@ export const vincentAbility = createVincentAbility({
             alchemyGasSponsorApiKey,
             alchemyGasSponsorPolicyId,
           });
+
+          if (alchemyGasSponsor) {
+            approvalTxUserOperationHash = txHash;
+          } else {
+            approvalTxHash = txHash;
+          }
         } else {
           return fail({
             reason: checkErc20AllowanceResult.reason,
@@ -192,8 +199,9 @@ export const vincentAbility = createVincentAbility({
     }
 
     let swapTxHash: string | undefined;
+    let swapTxUserOperationHash: string | undefined;
     if (action === AbilityAction.Swap || action === AbilityAction.ApproveAndSwap) {
-      swapTxHash = await sendUniswapTx({
+      const txHash = await sendUniswapTx({
         rpcUrl: rpcUrlForUniswap,
         chainId: quote.chainId,
         pkpEthAddress: delegatorPkpInfo.ethAddress,
@@ -203,9 +211,23 @@ export const vincentAbility = createVincentAbility({
         calldata: quote.calldata,
         gasBufferPercentage,
         baseFeePerGasBufferPercentage,
+        alchemyGasSponsor,
+        alchemyGasSponsorApiKey,
+        alchemyGasSponsorPolicyId,
       });
+
+      if (alchemyGasSponsor) {
+        swapTxUserOperationHash = txHash;
+      } else {
+        swapTxHash = txHash;
+      }
     }
 
-    return succeed({ approvalTxHash, swapTxHash });
+    return succeed({
+      approvalTxHash,
+      approvalTxUserOperationHash,
+      swapTxHash,
+      swapTxUserOperationHash,
+    });
   },
 });

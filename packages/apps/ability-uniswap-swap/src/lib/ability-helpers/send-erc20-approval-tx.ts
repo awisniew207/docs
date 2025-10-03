@@ -1,6 +1,5 @@
 import { ethers, type UnsignedTransaction } from 'ethers';
-import { laUtils } from '@lit-protocol/vincent-scaffold-sdk';
-import { populateTransaction } from '@lit-protocol/vincent-ability-sdk';
+import { populateTransaction, sponsoredGasContractCall } from '@lit-protocol/vincent-ability-sdk';
 
 import { ERC20_ABI } from './get-erc20-contract';
 import { signTx } from './sign-tx';
@@ -52,7 +51,7 @@ export const sendErc20ApprovalTx = async ({
         '[sendErc20ApprovalTx] Alchemy gas sponsor is enabled, but API key or policy ID is not provided.',
       );
     }
-    return await laUtils.transaction.handler.sponsoredGasContractCall({
+    return await sponsoredGasContractCall({
       pkpPublicKey,
       abi: ERC20_ABI,
       contractAddress: erc20TokenAddress,
