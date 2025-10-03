@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import * as Sentry from '@sentry/react';
 import { Plus, Users, Trash2, Edit, RotateCcw } from 'lucide-react';
 import { getClient } from '@lit-protocol/vincent-contracts-sdk';
 import { reactClient as vincentApiClient } from '@lit-protocol/vincent-registry-sdk';
@@ -36,7 +37,7 @@ export function AppPublishedButtons({
 
   // Determine if there's a mismatch (only when not processing)
   const hasMismatch = !isProcessing && registryDeleted !== onChainDeleted;
-  
+
   // Handler for app undelete
   const handleUndelete = async () => {
     setError(null);
@@ -66,6 +67,12 @@ export function AppPublishedButtons({
         setError('Transaction rejected.');
       } else {
         setError(error.message || `Failed to undelete app. Please try again.`);
+        Sentry.captureException(error, {
+          extra: {
+            context: 'AppPublishedButtons.undeleteApp',
+            userPkp: authInfo?.userPKP?.ethAddress,
+          },
+        });
       }
     } finally {
       setIsProcessing(false);
@@ -84,10 +91,7 @@ export function AppPublishedButtons({
   const isLoading = isProcessing || isUndeletingInRegistry;
 
   if (error || undeleteAppError) {
-    const errorMessage =
-      error ||
-      (undeleteAppError as any)?.message ||
-      'Failed to update app.';
+    const errorMessage = error || (undeleteAppError as any)?.message || 'Failed to update app.';
     return <MutationButtonStates type="error" errorMessage={errorMessage} />;
   }
 

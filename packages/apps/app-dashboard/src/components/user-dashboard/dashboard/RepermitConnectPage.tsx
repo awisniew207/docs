@@ -69,6 +69,10 @@ export function RepermitConnectPage({
     if (!readAuthInfo.authInfo?.userPKP || !readAuthInfo.sessionSigs) {
       setLocalError('Missing authentication information. Please try refreshing the page.');
       setIsConnectProcessing(false);
+      Sentry.captureMessage(
+        'Missing authentication information in the permitted apps page',
+        'warning',
+      );
       return;
     }
 

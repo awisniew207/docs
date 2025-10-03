@@ -13,6 +13,7 @@ import { useWalletConnectSession } from '@/hooks/user-dashboard/WalletConnect/us
 import { useWalletConnectRequests } from '@/hooks/user-dashboard/WalletConnect/useWalletConnectRequests';
 
 // UI Components
+import { SessionProposal } from './SessionProposal';
 import { ActiveSessions } from './ActiveSessions';
 import { PendingRequests } from './PendingRequests';
 
@@ -38,6 +39,7 @@ export default function WalletConnectPage(params: {
     status,
     setStatus,
     handleApproveSession,
+    handleRejectSession,
     handleDisconnect,
   } = useWalletConnectSession(agentPKP, sessionSigs);
 
@@ -123,13 +125,6 @@ export default function WalletConnectPage(params: {
       onConnect(deepLink);
     }
   }, [deepLink, client, onConnect]);
-
-  // Auto-approve session proposals
-  useEffect(() => {
-    if (pendingProposal && !processingProposal && walletRegistered) {
-      handleApproveSession();
-    }
-  }, [pendingProposal, processingProposal, walletRegistered, handleApproveSession]);
 
   // Enhanced request handlers with status updates
   const handleApproveWithStatus = useCallback(
@@ -227,7 +222,16 @@ export default function WalletConnectPage(params: {
             </Button>
           </div>
 
-          {/* Session Proposal - Auto-approved, no UI shown */}
+          {/* Session Proposal */}
+          {pendingProposal && !loading && (
+            <SessionProposal
+              proposal={pendingProposal}
+              onApprove={handleApproveSession}
+              onReject={handleRejectSession}
+              processing={processingProposal}
+              walletRegistered={walletRegistered}
+            />
+          )}
 
           {/* Active Sessions */}
           <ActiveSessions

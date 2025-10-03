@@ -75,9 +75,6 @@ export function DeleteAppWrapper() {
           appId: Number(app.appId),
         });
       }
-    } catch (error) {
-      console.error('Failed to delete app:', error);
-      throw error;
     } finally {
       setIsProcessing(false);
     }
@@ -88,14 +85,16 @@ export function DeleteAppWrapper() {
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <h1 className="text-3xl font-bold text-neutral-800 dark:text-white">Delete App</h1>
-            <p className="text-gray-600 dark:text-white/60 mt-2">
-              Delete "{app.name}"?
-            </p>
+            <p className="text-gray-600 dark:text-white/60 mt-2">Delete "{app.name}"?</p>
           </div>
         </div>
       </div>
 
-      <DeleteAppForm appName={app.name} onSubmit={handleSubmit} isSubmitting={isLoading || isProcessing} />
+      <DeleteAppForm
+        appName={app.name}
+        onSubmit={handleSubmit}
+        isSubmitting={isLoading || isProcessing}
+      />
     </div>
   );
 }

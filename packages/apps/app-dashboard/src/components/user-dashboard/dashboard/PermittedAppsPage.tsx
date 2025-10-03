@@ -39,42 +39,37 @@ export function PermittedAppsPage({
   }, []);
 
   const getFilterLabel = () => {
-    switch (filterState) {
-      case 'permitted':
-        return 'Permitted';
-      case 'unpermitted':
-        return 'Unpermitted';
-      case 'all':
-        return 'All Apps';
-      default:
-        return 'Permitted';
-    }
+    const labels = {
+      permitted: 'Permitted',
+      unpermitted: 'Unpermitted',
+      all: 'All Apps',
+    };
+    return labels[filterState] || 'Permitted';
   };
 
   const getEmptyStateMessage = () => {
-    switch (filterState) {
-      case 'permitted':
-        return {
-          title: 'No permitted applications',
-          description:
-            "You haven't granted permissions to any applications yet. Once you authorize apps, they'll appear here.",
-        };
-      case 'unpermitted':
-        return {
-          title: 'No unpermitted applications',
-          description: 'All available applications have been granted permissions.',
-        };
-      case 'all':
-        return {
-          title: 'No applications found',
-          description: 'There are no applications available at this time.',
-        };
-      default:
-        return {
-          title: 'No applications found',
-          description: 'There are no applications available at this time.',
-        };
-    }
+    const labels = {
+      permitted: {
+        title: 'No permitted applications',
+        description:
+          "You haven't granted permissions to any applications yet. Once you authorize apps, they'll appear here.",
+      },
+      unpermitted: {
+        title: 'No unpermitted applications',
+        description: 'All available applications have been granted permissions.',
+      },
+      all: {
+        title: 'No applications found',
+        description: 'There are no applications available at this time',
+      },
+    };
+    return (
+      labels[filterState] || {
+        title: 'No permitted applications',
+        description:
+          "You haven't granted permissions to any applications yet. Once you authorize apps, they'll appear here.",
+      }
+    );
   };
 
   const emptyState = getEmptyStateMessage();
