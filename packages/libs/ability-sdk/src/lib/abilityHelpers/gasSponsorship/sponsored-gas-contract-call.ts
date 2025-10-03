@@ -178,7 +178,7 @@ export const sponsoredGasContractCall = async ({
         );
 
         console.log(
-          `[@lit-protocol/vincent-ability-morpho/executeOperationWithGasSponsorship] User operation sent`,
+          `[@lit-protocol/ability-sdk/sponsoredGasContractCall] User operation sent`,
           { userOpHash: userOpResult },
         );
 
