@@ -1,5 +1,8 @@
 import { formatEther } from 'viem';
 import { bundledVincentAbility as solTransactionSignerBundledAbility } from '@lit-protocol/vincent-ability-sol-transaction-signer';
+import { constants } from '@lit-protocol/vincent-wrapped-keys';
+
+const { LIT_PREFIX } = constants;
 
 import {
   disconnectVincentAbilityClients,
@@ -50,7 +53,7 @@ import { LIT_NETWORK } from '@lit-protocol/constants';
 import { api } from '@lit-protocol/vincent-wrapped-keys';
 const { getVincentRegistryAccessControlCondition } = api;
 
-const SOLANA_CLUSTER = 'mainnet-beta';
+const SOLANA_CLUSTER = 'devnet';
 
 // Extend Jest timeout to 4 minutes
 jest.setTimeout(240000);
@@ -300,7 +303,7 @@ describe('Solana Transaction Signer Ability E2E Tests', () => {
     await LIT_NODE_CLIENT.connect();
 
     EVM_CONTRACT_CONDITION = await getVincentRegistryAccessControlCondition({
-      agentWalletAddress: TEST_CONFIG.userPkp!.ethAddress!,
+      delegatorAddress: TEST_CONFIG.userPkp!.ethAddress!,
     });
 
     TEST_SOLANA_KEYPAIR = Keypair.generate();
@@ -339,7 +342,7 @@ describe('Solana Transaction Signer Ability E2E Tests', () => {
     const { ciphertext, dataToEncryptHash } = await LIT_NODE_CLIENT.encrypt({
       evmContractConditions: [EVM_CONTRACT_CONDITION],
       dataToEncrypt: new TextEncoder().encode(
-        `vincent_${Buffer.from(TEST_SOLANA_KEYPAIR.secretKey).toString('hex')}`,
+        `${LIT_PREFIX}${Buffer.from(TEST_SOLANA_KEYPAIR.secretKey).toString('hex')}`,
       ),
     });
     CIPHERTEXT = ciphertext;

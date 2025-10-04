@@ -68,7 +68,6 @@
       "ability-aave",
       "ability-debridge",
       "policy-send-counter",
-      "wrapped-keys",
       "ability-sol-transaction-signer"
     ],
     "projectsRelationship": "independent",
