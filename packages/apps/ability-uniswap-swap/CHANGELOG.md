@@ -1,3 +1,18 @@
+# 6.0.0 (2025-10-06)
+
+### ⚠️ Breaking Changes
+
+- Adds new Ability parameters that dictate what the Ability does (e.g. ERC20 allowance approvals, Uniswap Swaps, or both). Additionally, adds support for Alchemy gas sponsorship of both ERC20 approval and Uniswap swap txs. The Ability now returns failure reponses for known errors like insufficient balances or allowances ([39b5e217](https://github.com/LIT-Protocol/Vincent/commit/39b5e217))
+
+### 🧱 Updated Dependencies
+
+- Updated ability-sdk to 2.3.0
+- Updated app-sdk to 2.2.2
+
+### ❤️ Thank You
+
+- Wyatt Barnes @spacesailor24
+
 # 5.0.0 (2025-09-25)
 
 ### ⚠️ Breaking Changes
