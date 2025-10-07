@@ -1,3 +1,13 @@
+## 2.3.0 (2025-10-06)
+
+### 🚀 Features
+
+- Export new methods: sponsoredGasContractCall and sponsoredGasRawTransaction to allow for Alchemy gas sponsorship of broadcast transaction from a Vincent Ability ([39b5e217](https://github.com/LIT-Protocol/Vincent/commit/39b5e217))
+
+### ❤️ Thank You
+
+- Wyatt Barnes @spacesailor24
+
 ## 2.2.0 (2025-09-25)
 
 ### 🚀 Features

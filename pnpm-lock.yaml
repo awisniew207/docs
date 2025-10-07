@@ -963,8 +963,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
       '@lit-protocol/vincent-app-sdk':
-        specifier: ^2.2.1
-        version: 2.2.1(bufferutil@4.0.9)(react@19.2.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        specifier: ^2.2.2
+        version: 2.2.2(bufferutil@4.0.9)(debug@4.4.3)(react@19.2.0)(typescript@5.8.3)(utf-8-validate@5.0.10)(viem@2.37.12(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64))
       '@lit-protocol/vincent-contracts-sdk':
         specifier: ^1.3.0
         version: 1.3.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -1065,6 +1065,12 @@ importers:
 
   packages/libs/ability-sdk:
     dependencies:
+      '@account-kit/infra':
+        specifier: ^4.53.1
+        version: 4.66.4(bufferutil@4.0.9)(debug@4.4.3)(typescript@5.8.3)(utf-8-validate@5.0.10)(viem@2.37.12(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64))
+      '@account-kit/smart-contracts':
+        specifier: ^4.53.1
+        version: 4.66.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(viem@2.37.12(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64))
       '@lit-protocol/vincent-contracts-sdk':
         specifier: workspace:*
         version: link:../contracts-sdk
@@ -2888,11 +2894,11 @@ packages:
   '@lit-protocol/uint8arrays@7.3.1':
     resolution: {integrity: sha512-Y591CUPt17GzlDeQmcjCgMS77gGatHebIgEAgk7oV0oH2I1w6MooHLy6zWwXIlXh/8O5ZY6G6gcdzgmjz6f+Ng==}
 
-  '@lit-protocol/vincent-ability-sdk@2.2.0':
-    resolution: {integrity: sha512-y2jgEKQThG0Ew5jvbwcT+n6Q0APQAn7uQjO4WQ5MKEkGLa8HCy8g4PJpFFG1LtyfVomV5EmbQP/ZLCvegBEQJQ==}
+  '@lit-protocol/vincent-ability-sdk@2.3.0':
+    resolution: {integrity: sha512-HEHQDxzfqab7taptNH+GgQVtki+kzj4bU2seI0yc06+4S7X2JRJCTR9be2SEaKtuffAhZ6Fsl7NdE7oSW+klGw==}
 
-  '@lit-protocol/vincent-app-sdk@2.2.1':
-    resolution: {integrity: sha512-Yr9uPOnKVIf7v+ktXE4We7s/pHFCFlOrHIUlfSY3hvrVDaM3pxpTxqDO6JaZYVkH182oA2owxyDRYK60cGau0g==}
+  '@lit-protocol/vincent-app-sdk@2.2.2':
+    resolution: {integrity: sha512-IXY/q+fCgh1PeNvMToKwcQtHoZ5bVZRHXQsL3hHiMPyUvk6VCTFOEvqIN2zGlsheRbFcoiHIPCCGb0CUKp2Y0Q==}
     engines: {node: ^20.11.1, pnpm: 10.7.0}
     peerDependencies:
       react: ^19.0.0
@@ -12583,6 +12589,23 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
+  '@account-kit/infra@4.66.4(bufferutil@4.0.9)(debug@4.4.3)(typescript@5.8.3)(utf-8-validate@5.0.10)(viem@2.37.12(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64))':
+    dependencies:
+      '@aa-sdk/core': 4.66.4(typescript@5.8.3)(viem@2.37.12(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64))
+      '@account-kit/logging': 4.66.4
+      eventemitter3: 5.0.1
+      viem: 2.37.12(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64)
+      zod: 3.25.64
+    optionalDependencies:
+      alchemy-sdk: 3.6.5(bufferutil@4.0.9)(debug@4.4.3)(typescript@5.8.3)(utf-8-validate@5.0.10)
+    transitivePeerDependencies:
+      - bufferutil
+      - debug
+      - encoding
+      - supports-color
+      - typescript
+      - utf-8-validate
+
   '@account-kit/infra@4.66.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(viem@2.29.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64))':
     dependencies:
       '@aa-sdk/core': 4.66.4(typescript@5.8.3)(viem@2.29.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64))
@@ -12591,7 +12614,7 @@ snapshots:
       viem: 2.29.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64)
       zod: 3.25.64
     optionalDependencies:
-      alchemy-sdk: 3.6.5(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      alchemy-sdk: 3.6.5(bufferutil@4.0.9)(debug@4.4.3)(typescript@5.8.3)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -12608,7 +12631,7 @@ snapshots:
       viem: 2.37.12(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64)
       zod: 3.25.64
     optionalDependencies:
-      alchemy-sdk: 3.6.5(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      alchemy-sdk: 3.6.5(bufferutil@4.0.9)(debug@4.4.3)(typescript@5.8.3)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -12623,6 +12646,20 @@ snapshots:
       uuid: 11.1.0
     transitivePeerDependencies:
       - encoding
+
+  '@account-kit/smart-contracts@4.66.4(bufferutil@4.0.9)(debug@4.4.3)(typescript@5.8.3)(utf-8-validate@5.0.10)(viem@2.37.12(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64))':
+    dependencies:
+      '@aa-sdk/core': 4.66.4(typescript@5.8.3)(viem@2.37.12(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64))
+      '@account-kit/infra': 4.66.4(bufferutil@4.0.9)(debug@4.4.3)(typescript@5.8.3)(utf-8-validate@5.0.10)(viem@2.37.12(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64))
+      viem: 2.37.12(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64)
+      webauthn-p256: 0.0.10
+    transitivePeerDependencies:
+      - bufferutil
+      - debug
+      - encoding
+      - supports-color
+      - typescript
+      - utf-8-validate
 
   '@account-kit/smart-contracts@4.66.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(viem@2.29.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64))':
     dependencies:
@@ -15443,8 +15480,10 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@lit-protocol/vincent-ability-sdk@2.2.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
+  '@lit-protocol/vincent-ability-sdk@2.3.0(bufferutil@4.0.9)(debug@4.4.3)(typescript@5.8.3)(utf-8-validate@5.0.10)(viem@2.37.12(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64))':
     dependencies:
+      '@account-kit/infra': 4.66.4(bufferutil@4.0.9)(debug@4.4.3)(typescript@5.8.3)(utf-8-validate@5.0.10)(viem@2.37.12(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64))
+      '@account-kit/smart-contracts': 4.66.4(bufferutil@4.0.9)(debug@4.4.3)(typescript@5.8.3)(utf-8-validate@5.0.10)(viem@2.37.12(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64))
       '@lit-protocol/vincent-contracts-sdk': 1.3.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       ethers: 5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       ethers-v6: ethers@6.15.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -15453,14 +15492,19 @@ snapshots:
       zod: 3.25.64
     transitivePeerDependencies:
       - bufferutil
+      - debug
+      - encoding
+      - supports-color
+      - typescript
       - utf-8-validate
+      - viem
 
-  '@lit-protocol/vincent-app-sdk@2.2.1(bufferutil@4.0.9)(react@19.2.0)(typescript@5.8.3)(utf-8-validate@5.0.10)':
+  '@lit-protocol/vincent-app-sdk@2.2.2(bufferutil@4.0.9)(debug@4.4.3)(react@19.2.0)(typescript@5.8.3)(utf-8-validate@5.0.10)(viem@2.37.12(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64))':
     dependencies:
       '@lit-protocol/auth-helpers': 7.3.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/constants': 7.3.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@lit-protocol/lit-node-client': 7.3.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
-      '@lit-protocol/vincent-ability-sdk': 2.2.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@lit-protocol/vincent-ability-sdk': 2.3.0(bufferutil@4.0.9)(debug@4.4.3)(typescript@5.8.3)(utf-8-validate@5.0.10)(viem@2.37.12(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.64))
       '@lit-protocol/vincent-contracts-sdk': 1.3.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@noble/secp256k1': 2.3.0
       ethers: 5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -15488,12 +15532,14 @@ snapshots:
       - aws4fetch
       - bufferutil
       - db0
+      - debug
       - encoding
       - ioredis
       - supports-color
       - typescript
       - uploadthing
       - utf-8-validate
+      - viem
 
   '@lit-protocol/vincent-contracts-sdk@1.3.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:
@@ -20184,7 +20230,7 @@ snapshots:
       require-from-string: 2.0.2
       uri-js: 4.4.1
 
-  alchemy-sdk@3.6.5(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10):
+  alchemy-sdk@3.6.5(bufferutil@4.0.9)(debug@4.4.3)(typescript@5.8.3)(utf-8-validate@5.0.10):
     dependencies:
       '@ethersproject/abi': 5.8.0
       '@ethersproject/abstract-provider': 5.8.0
@@ -20198,7 +20244,7 @@ snapshots:
       '@ethersproject/wallet': 5.8.0
       '@ethersproject/web': 5.8.0
       '@solana/web3.js': 1.98.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
-      axios: 1.12.2
+      axios: 1.12.2(debug@4.4.3)
       sturdy-websocket: 0.2.1
       websocket: 1.0.35
     transitivePeerDependencies:
@@ -20421,7 +20467,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  axios@1.12.2:
+  axios@1.12.2(debug@4.4.3):
     dependencies:
       follow-redirects: 1.15.11(debug@4.4.3)
       form-data: 4.0.4
@@ -25258,7 +25304,7 @@ snapshots:
       '@yarnpkg/lockfile': 1.1.0
       '@yarnpkg/parsers': 3.0.2
       '@zkochan/js-yaml': 0.0.7
-      axios: 1.12.2
+      axios: 1.12.2(debug@4.4.3)
       chalk: 4.1.2
       cli-cursor: 3.1.0
       cli-spinners: 2.6.1
