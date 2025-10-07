@@ -2,7 +2,7 @@ import { encryptPrivateKey } from '../../internal/common/encryptKey';
 import { generateSolanaPrivateKey } from '../../internal/solana/generatePrivateKey';
 
 interface Action {
-  network: 'evm' | 'solana';
+  network: 'solana';
   generateKeyParams: {
     memo: string;
   };
