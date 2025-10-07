@@ -6,6 +6,7 @@ import { LIT_RPC } from '@lit-protocol/constants';
 import {
   VINCENT_DIAMOND_CONTRACT_ADDRESS_PROD,
   getPkpTokenId,
+  COMBINED_ABI,
 } from '@lit-protocol/vincent-contracts-sdk';
 
 import type { KeyType, Network } from '../types';
@@ -57,58 +58,37 @@ export function getFirstSessionSig(pkpSessionSigs: SessionSigsMap): AuthSig {
  */
 export async function getVincentRegistryAccessControlCondition({
   delegatorAddress,
-  delegatorPkpTokenId,
 }: {
-  delegatorAddress?: string;
-  delegatorPkpTokenId?: string;
+  delegatorAddress: string;
 }): Promise<AccsEVMParams> {
-  let _delegatorPkpTokenId = delegatorPkpTokenId;
-
-  if (delegatorAddress) {
-    if (!ethers.utils.isAddress(delegatorAddress)) {
-      throw new Error(`delegatorAddress is not a valid Ethereum Address: ${delegatorAddress}`);
-    }
-
-    _delegatorPkpTokenId = (
-      await getPkpTokenId({
-        pkpEthAddress: delegatorAddress,
-        signer: ethers.Wallet.createRandom().connect(
-          new ethers.providers.StaticJsonRpcProvider(LIT_RPC.CHRONICLE_YELLOWSTONE),
-        ),
-      })
-    ).toString();
+  if (!ethers.utils.isAddress(delegatorAddress)) {
+    throw new Error(`delegatorAddress is not a valid Ethereum Address: ${delegatorAddress}`);
   }
 
-  if (!_delegatorPkpTokenId) {
-    throw new Error(
-      'The delegator address or PKP token ID is required to create an access control conditions',
-    );
-  }
+  const delegatorPkpTokenId = (
+    await getPkpTokenId({
+      pkpEthAddress: delegatorAddress,
+      signer: ethers.Wallet.createRandom().connect(
+        new ethers.providers.StaticJsonRpcProvider(LIT_RPC.CHRONICLE_YELLOWSTONE),
+      ),
+    })
+  ).toString();
+
+  const contractInterface = new ethers.utils.Interface(COMBINED_ABI.fragments);
+  const fragment = contractInterface.getFunction('isDelegateePermitted');
 
   const functionAbi = {
     type: 'function',
-    name: 'isDelegateePermitted',
-    inputs: [
-      {
-        name: 'delegatee',
-        type: 'address',
-      },
-      {
-        name: 'pkpTokenId',
-        type: 'uint256',
-      },
-      {
-        name: 'abilityIpfsCid',
-        type: 'string',
-      },
-    ],
-    outputs: [
-      {
-        name: 'isPermitted',
-        type: 'bool',
-      },
-    ],
-    stateMutability: 'view',
+    name: fragment.name,
+    inputs: fragment.inputs.map((input) => ({
+      name: input.name,
+      type: input.type,
+    })),
+    outputs: fragment.outputs?.map((output) => ({
+      name: output.name,
+      type: output.type,
+    })),
+    stateMutability: fragment.stateMutability,
   };
 
   return {
@@ -116,7 +96,7 @@ export async function getVincentRegistryAccessControlCondition({
     functionAbi,
     chain: CHAIN_YELLOWSTONE,
     functionName: 'isDelegateePermitted',
-    functionParams: [':userAddress', _delegatorPkpTokenId, ':currentActionIpfsId'],
+    functionParams: [':userAddress', delegatorPkpTokenId, ':currentActionIpfsId'],
     returnValueTest: {
       key: 'isPermitted',
       comparator: '=',

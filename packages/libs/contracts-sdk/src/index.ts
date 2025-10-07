@@ -45,4 +45,4 @@ export { createContract } from './utils';
 
 export { getPkpTokenId } from './utils/pkpInfo';
 
-export { VINCENT_DIAMOND_CONTRACT_ADDRESS_PROD } from './constants';
+export { VINCENT_DIAMOND_CONTRACT_ADDRESS_PROD, COMBINED_ABI } from './constants';

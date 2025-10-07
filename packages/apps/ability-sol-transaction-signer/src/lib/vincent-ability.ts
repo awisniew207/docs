@@ -77,11 +77,11 @@ export const vincentAbility = createVincentAbility({
       dataToEncryptHash,
       legacyTransactionOptions,
     } = abilityParams;
-    const { tokenId } = delegatorPkpInfo;
+    const { ethAddress } = delegatorPkpInfo;
 
     try {
       const solanaKeypair = await getSolanaKeyPairFromWrappedKey({
-        delegatorPkpTokenId: tokenId,
+        delegatorAddress: ethAddress,
         ciphertext,
         dataToEncryptHash,
       });
