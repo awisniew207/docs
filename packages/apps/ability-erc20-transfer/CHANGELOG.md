@@ -1,3 +1,11 @@
+## 0.1.3 (2025-10-06)
+
+### 🧱 Updated Dependencies
+
+- Updated ability-sdk to 2.3.0
+- Updated app-sdk to 2.2.2
+- Updated policy-send-counter to 0.2.3
+
 ## 0.1.2 (2025-09-25)
 
 ### 🧱 Updated Dependencies
