@@ -1,0 +1,99 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.29;
+
+
+import "../LibFeeStorage.sol";
+import { ERC4626 } from "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+
+/**
+ * @title MorphoPerfFeeFacet
+ * @notice A facet of the Fee Diamond that manages Morpho performance fees
+ * @dev This contract simply tracks morpho deposits and takes a performance fee from the withdrawals
+ */
+contract MorphoPerfFeeFacet {
+    using EnumerableSet for EnumerableSet.AddressSet;
+    /* ========== ERRORS ========== */
+
+    // thrown when a deposit is not found on withdrawal
+    error DepositNotFound(address user, address vaultAddress);
+
+    // thrown when a withdrawal is not from a Morpho vault
+    error NotMorphoVault(address user, address vaultAddress);
+
+
+     /* ========== MUTATIVE FUNCTIONS ========== */
+
+    function depositToMorpho(address user, address vaultAddress, uint256 assetAmount) external {
+        // get the vault and asset
+        ERC4626 vault = ERC4626(vaultAddress);
+        IERC20 asset = IERC20(vault.asset());
+
+        // approve morpho
+        asset.approve(vaultAddress, assetAmount);
+
+        // send it into morpho
+        uint256 vaultShares = vault.deposit(assetAmount, user);
+
+        // track the deposit
+        LibFeeStorage.getStorage().deposits[user][vaultAddress] = LibFeeStorage.Deposit(
+            assetAmount,
+            vaultShares,
+            block.timestamp,
+            1
+        );
+    }
+
+    // @notice Withdraws funds from Morpho.  Only supports full withdrawals.
+    // @param user the user who is withdrawing
+    // @param vaultAddress the address of the vault to withdraw from
+    function withdrawFromMorpho(address user, address vaultAddress) external {
+        // lookup the corresponding deposit
+        LibFeeStorage.Deposit memory deposit = LibFeeStorage.getStorage().deposits[user][vaultAddress];
+        if (deposit.assetAmount == 0) revert DepositNotFound(user, vaultAddress);
+
+        // 1 = Morpho
+        if (deposit.vaultProvider != 1) revert NotMorphoVault(user, vaultAddress);
+
+        uint256 depositAssetAmount = deposit.assetAmount;
+        uint256 depositVaultShares = deposit.vaultShares;
+
+        // zero out the struct now before we call any other
+        // contracts to prevent reentrancy attacks
+        delete LibFeeStorage.getStorage().deposits[user][vaultAddress];
+
+        // get the vault and asset
+        ERC4626 vault = ERC4626(vaultAddress);
+        IERC20 asset = IERC20(vault.asset());
+
+        // calculate the assets that will come out of the vault
+        uint256 withdrawAssetAmount = vault.convertToAssets(depositVaultShares);
+
+        uint256 performanceFeeAmount = 0;
+        if (withdrawAssetAmount > depositAssetAmount) {
+            // there's a profit, calculate fee
+            // performance fee is in basis points
+            // so divide by 10000 to use it as a percentage
+            performanceFeeAmount = (withdrawAssetAmount - depositAssetAmount) * LibFeeStorage.getStorage().performanceFeePercentage / 10000;
+        }
+
+        // approve the vault to spend the shares
+        vault.approve(vaultAddress, depositVaultShares);
+
+        // perform the withdrawal with morpho
+        // and send the assets to this contract
+        vault.redeem(depositVaultShares, address(this), address(this));
+
+        // add the token to the set of tokens that have collected fees
+        LibFeeStorage.getStorage().tokensWithCollectedFees.add(address(asset));
+
+        // no need to send the performance fee anywhere
+        // because it's collected in this contract, and
+        // at this point this contract already has the whole token amount
+        // so we can just transfer the difference without the perf fee to
+        // the user
+        asset.transfer(user, withdrawAssetAmount - performanceFeeAmount);
+    }
+        
+}
