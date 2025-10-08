@@ -1,3 +1,13 @@
+# 8.0.0 (2025-10-08)
+
+### ⚠️ Breaking Changes
+
+- Remove the ApproveAndSwap Ability Action from the Uniswap Swap Ability, and format returned tokenIn allowances and balances as decimal strings ([0b80ad90](https://github.com/LIT-Protocol/Vincent/commit/0b80ad90))
+
+### ❤️ Thank You
+
+- Wyatt Barnes @spacesailor24
+
 # 7.0.0 (2025-10-08)
 
 ### ⚠️ Breaking Changes

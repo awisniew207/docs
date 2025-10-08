@@ -1,3 +1,9 @@
+## 1.1.5 (2025-10-08)
+
+### 🧱 Updated Dependencies
+
+- Updated ability-uniswap-swap to 8.0.0
+
 ## 1.1.4 (2025-10-08)
 
 ### 🧱 Updated Dependencies
