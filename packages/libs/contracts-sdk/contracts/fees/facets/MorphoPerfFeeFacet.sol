@@ -28,6 +28,9 @@ contract MorphoPerfFeeFacet {
 
      /* ========== MUTATIVE FUNCTIONS ========== */
 
+    // @notice Deposits assets into Morpho
+    // @param vaultAddress the address of the vault to deposit into
+    // @param assetAmount the amount of assets to deposit
     function depositToMorpho(address vaultAddress, uint256 assetAmount) external {
         // get the vault and asset
         ERC4626 vault = ERC4626(vaultAddress);
@@ -52,7 +55,6 @@ contract MorphoPerfFeeFacet {
     }
 
     // @notice Withdraws funds from Morpho.  Only supports full withdrawals.
-    // @param user the user who is withdrawing
     // @param vaultAddress the address of the vault to withdraw from
     function withdrawFromMorpho(address vaultAddress) external {
         // lookup the corresponding deposit
