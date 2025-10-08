@@ -25,11 +25,22 @@ contract DeployFeeDiamond is Script {
     /** @notice Error thrown when required environment variables are missing */
     error MissingEnvironmentVariable(string name);
 
-    function contractToFacetCutAdd(address contractAddress) internal returns (IDiamondCut.FacetCut memory) {
+    function getFunctionSelectors(string memory contractName) internal returns (bytes4[] memory) {
+        string[] memory inputs = new string[](3);
+        inputs[0] = "node";
+        inputs[1] = "scripts/getFunctionSelectors.mjs";
+        inputs[2] = contractName;
+        bytes4[] memory selectors = new bytes4[](0);
+        bytes memory output = vm.ffi(inputs);
+        selectors = abi.decode(output, (bytes4[]));
+        return selectors;
+    }
+
+    function contractToFacetCutAdd(string memory contractName, address contractAddress) internal returns (IDiamondCut.FacetCut memory) {
         return IDiamondCut.FacetCut({
             facetAddress: contractAddress,
             action: IDiamondCut.FacetCutAction.Add,
-            functionSelectors: getContractSelectors(contractAddress)
+            functionSelectors: getFunctionSelectors(contractName)
         });
     }
 
@@ -51,33 +62,31 @@ contract DeployFeeDiamond is Script {
         // Start broadcasting transactions
         vm.startBroadcast(deployerPrivateKey);
 
-
-        // diamond cut facet is speciial, so we deploy it first
-        // and don't include it in the facetAddresses array
-        DiamondCutFacet diamondCutFacet = new DiamondCutFacet();
-
         // Deploy the facets
         IDiamondCut.FacetCut[] memory cuts = new IDiamondCut.FacetCut[](5);
 
         // core diamond lib facets
         DiamondLoupeFacet diamondLoupeFacet = new DiamondLoupeFacet();
-        cuts[0] = contractToFacetCutAdd(address(diamondLoupeFacet));
+        cuts[0] = contractToFacetCutAdd("DiamondLoupeFacet", address(diamondLoupeFacet));
         OwnershipFacet ownershipFacet = new OwnershipFacet();
-        cuts[1] = contractToFacetCutAdd(address(ownershipFacet));
+        cuts[1] = contractToFacetCutAdd("OwnershipFacet", address(ownershipFacet));
 
         // fee facets
         FeeViewsFacet feeViewsFacet = new FeeViewsFacet();
-        cuts[2] = contractToFacetCutAdd(address(feeViewsFacet));
+        cuts[2] = contractToFacetCutAdd("FeeViewsFacet", address(feeViewsFacet));
         FeeAdminFacet feeAdminFacet = new FeeAdminFacet();
-        cuts[3] = contractToFacetCutAdd(address(feeAdminFacet));
+        cuts[3] = contractToFacetCutAdd("FeeAdminFacet", address(feeAdminFacet));
         MorphoPerfFeeFacet morphoPerfFeeFacet = new MorphoPerfFeeFacet();
-        cuts[4] = contractToFacetCutAdd(address(morphoPerfFeeFacet));
+        cuts[4] = contractToFacetCutAdd("MorphoPerfFeeFacet", address(morphoPerfFeeFacet));
 
         // Deploy the Diamond with the diamondCut facet and all other facets in one transaction
         Fee diamond = new Fee(
-            deployerAddress, // contract owner
-            address(diamondCutFacet), // diamond cut facet
-            cuts
+            cuts,
+            FeeArgs({
+                owner: deployerAddress,
+                init: address(0),
+                initCalldata: bytes("")
+            })
         );
 
         
