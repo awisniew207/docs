@@ -22,6 +22,9 @@ contract MorphoPerfFeeFacet {
     // thrown when a withdrawal is not from a Morpho vault
     error NotMorphoVault(address user, address vaultAddress);
 
+    // thrown when a deposit already exists with another provider
+    error DepositAlreadyExistsWithAnotherProvider(address user, address vaultAddress);
+
 
      /* ========== MUTATIVE FUNCTIONS ========== */
 
@@ -37,15 +40,15 @@ contract MorphoPerfFeeFacet {
         asset.approve(vaultAddress, assetAmount);
 
         // send it into morpho
-        uint256 vaultShares = vault.deposit(assetAmount, msg.sender);
+        uint256 vaultShares = vault.deposit(assetAmount, address(this));
 
         // track the deposit
-        LibFeeStorage.getStorage().deposits[msg.sender][vaultAddress] = LibFeeStorage.Deposit(
-            assetAmount,
-            vaultShares,
-            block.timestamp,
-            1
-        );
+        LibFeeStorage.Deposit storage deposit = LibFeeStorage.getStorage().deposits[msg.sender][vaultAddress];
+        if (deposit.vaultProvider != 0 && deposit.vaultProvider != 1) revert DepositAlreadyExistsWithAnotherProvider(msg.sender, vaultAddress);
+        
+        deposit.assetAmount += assetAmount;
+        deposit.vaultShares += vaultShares;
+        deposit.vaultProvider = 1;
     }
 
     // @notice Withdraws funds from Morpho.  Only supports full withdrawals.
@@ -80,9 +83,6 @@ contract MorphoPerfFeeFacet {
             // so divide by 10000 to use it as a percentage
             performanceFeeAmount = (withdrawAssetAmount - depositAssetAmount) * LibFeeStorage.getStorage().performanceFeePercentage / 10000;
         }
-
-        // approve the vault to spend the shares
-        vault.approve(vaultAddress, depositVaultShares);
 
         // perform the withdrawal with morpho
         // and send the assets to this contract

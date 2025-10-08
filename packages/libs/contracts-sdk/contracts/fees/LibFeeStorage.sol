@@ -12,7 +12,6 @@ library LibFeeStorage {
     struct Deposit {
         uint256 assetAmount;
         uint256 vaultShares;
-        uint256 timestamp;
         uint256 vaultProvider; // 1 = Morpho, 2 = Aave
     }
 
