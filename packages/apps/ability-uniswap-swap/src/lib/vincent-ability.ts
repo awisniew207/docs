@@ -42,18 +42,6 @@ export const vincentAbility = createVincentAbility({
     const { action, alchemyGasSponsor, rpcUrlForUniswap, signedUniswapQuote } = abilityParams;
     const { quote } = signedUniswapQuote;
 
-    if (!action) {
-      return fail({
-        reason: `The action parameter is required. Please use one of the following: ${Object.values(AbilityAction).join(', ')}`,
-      });
-    }
-
-    if (!Object.values(AbilityAction).includes(action as AbilityAction)) {
-      return fail({
-        reason: `The provided action: ${action} is not supported. Please use one of the following: ${Object.values(AbilityAction).join(', ')}`,
-      });
-    }
-
     try {
       validateSignedUniswapQuote({
         prepareSuccessResult: signedUniswapQuote,
@@ -69,7 +57,7 @@ export const vincentAbility = createVincentAbility({
     const delegatorPkpAddress = delegatorPkpInfo.ethAddress;
     const provider = new ethers.providers.StaticJsonRpcProvider(rpcUrlForUniswap);
 
-    // 1. If alchemyGasSponsor is not enabled, we need to check if the delegator has enough native token balance to pay for gas fees
+    // 1. If alchemyGasSponsor is not enabled, we need to check if the delegator has a non-zero amount of native token balance to pay for gas fees
     let checkNativeTokenBalanceResultSuccess: CheckNativeTokenBalanceResultSuccess | undefined;
     if (!alchemyGasSponsor) {
       const checkNativeTokenBalanceResult = await checkNativeTokenBalance({
@@ -96,7 +84,7 @@ export const vincentAbility = createVincentAbility({
     });
 
     // 3. If the ability action is approve, we return the current allowance since all
-    // precheck is concerned with is whether the delegatee can call approve which just needs to know if
+    // precheck is concerned with is whether the delegatee can call execute with the approve ability action which just needs to know if
     // the gas for the approval transaction can be paid for (whether by gas sponsorship, or by the delegator).
     // We return the current allowance out of convenience, so the delegatee can know if
     // the current allowance is sufficient without having to call execute.
@@ -120,9 +108,7 @@ export const vincentAbility = createVincentAbility({
       });
     }
 
-    // 5. At this point, the ability action is either:
-    // - Swap and the current allowance is sufficient
-    // - ApproveAndSwap and the gas for the approval transaction can be paid for if the current allowance is insufficient.
+    // 5. At this point, the ability action is swap, and the current allowance is sufficient.
     // We now need to check if the current delegator balance of tokenIn is sufficient to perform the swap.
     const checkErc20BalanceResult = await checkErc20Balance({
       provider,
@@ -139,9 +125,8 @@ export const vincentAbility = createVincentAbility({
       });
     }
 
-    // 6. At this point, we know that:
-    // - The current allowance is either sufficient, or the gas for a new approval transaction can be paid for
-    // - The current delegator balance of tokenIn is sufficient to perform the swap
+    // 6. At this point, we know that the current allowance and
+    // the delegator's balance of tokenIn are sufficient to perform the swap
     return succeed({
       nativeTokenBalance: checkNativeTokenBalanceResultSuccess?.ethBalance.toString(),
       tokenInAddress: checkErc20BalanceResult.tokenAddress,
@@ -165,18 +150,6 @@ export const vincentAbility = createVincentAbility({
     } = abilityParams;
     const { quote } = signedUniswapQuote;
 
-    if (!action) {
-      return fail({
-        reason: `The action parameter is required. Please use one of the following: ${Object.values(AbilityAction).join(', ')}`,
-      });
-    }
-
-    if (!Object.values(AbilityAction).includes(action as AbilityAction)) {
-      return fail({
-        reason: `The provided action: ${action} is not supported. Please use one of the following: ${Object.values(AbilityAction).join(', ')}`,
-      });
-    }
-
     try {
       validateSignedUniswapQuote({
         prepareSuccessResult: signedUniswapQuote,
@@ -189,14 +162,10 @@ export const vincentAbility = createVincentAbility({
       });
     }
 
-    // 1. If the ability action is approve or approveAndSwap, we need to check if the current allowance is sufficient.
-    // If the ability action is:
-    // - Approve, we return success if allowance is sufficient, otherwise we send a new approval transaction
-    // - ApproveAndSwap, and the current allowance is sufficient, we continue to create the swap transaction. Otherwise,
-    // we send a new approval transaction and then continue to create the swap transaction
+    // 1. If the ability action is approve, we return success if allowance is sufficient, otherwise we send a new approval transaction
     let approvalTxHash: string | undefined;
     let approvalTxUserOperationHash: string | undefined;
-    if (action === AbilityAction.Approve || action === AbilityAction.ApproveAndSwap) {
+    if (action === AbilityAction.Approve) {
       const provider = new ethers.providers.StaticJsonRpcProvider(rpcUrlForUniswap);
 
       const requiredTokenInAmount = ethers.utils.parseUnits(quote.amountIn, quote.tokenInDecimals);
@@ -214,13 +183,11 @@ export const vincentAbility = createVincentAbility({
           `Sufficient allowance already exists for spender ${quote.to}, skipping approval transaction. Current allowance: ${checkErc20AllowanceResult.currentAllowance.toString()}`,
         );
 
-        if (action === AbilityAction.Approve) {
-          // 1.1 If the ability action is approve, we return success since the current allowance is sufficient,
-          // and a new approval transaction is not needed.
-          return succeed({
-            currentAllowance: checkErc20AllowanceResult.currentAllowance.toString(),
-          });
-        }
+        // 1.1 Because the ability action is approve, we return success since the current allowance is sufficient,
+        // and a new approval transaction is not needed.
+        return succeed({
+          currentAllowance: checkErc20AllowanceResult.currentAllowance.toString(),
+        });
       } else {
         if (checkErc20AllowanceResult.reason.includes('insufficient ERC20 allowance for spender')) {
           // 1.2 The current allowance is insufficient, so we need to send a new approval transaction
@@ -253,8 +220,8 @@ export const vincentAbility = createVincentAbility({
 
     let swapTxHash: string | undefined;
     let swapTxUserOperationHash: string | undefined;
-    if (action === AbilityAction.Swap || action === AbilityAction.ApproveAndSwap) {
-      // 2. The ability action is swap or approveAndSwap, so we send the swap transaction
+    if (action === AbilityAction.Swap) {
+      // 2. The ability action is swap, so we send the swap transaction
       const txHash = await sendUniswapTx({
         rpcUrl: rpcUrlForUniswap,
         chainId: quote.chainId,
@@ -280,7 +247,6 @@ export const vincentAbility = createVincentAbility({
     // 3. If the ability action is:
     // - Approve, we return the approval transaction hash.
     // - Swap, we return the swap transaction hash.
-    // - ApproveAndSwap, we return the approval and swap transaction hashes.
     return succeed({
       approvalTxHash,
       approvalTxUserOperationHash,

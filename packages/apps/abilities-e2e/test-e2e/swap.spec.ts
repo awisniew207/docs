@@ -359,6 +359,41 @@ describe('Uniswap Swap Ability E2E Tests', () => {
   });
 
   describe('Precheck and Execute without Alchemy Gas Sponsorship', () => {
+    it('should fail precheck because of invalid ability action', async () => {
+      const signedUniswapQuote = await validateSignedUniswapQuoteIsDefined(SIGNED_UNISWAP_QUOTE);
+      const uniswapSwapAbilityClient = getUniswapSwapAbilityClient();
+
+      // Try to precheck with the malicious quote
+      const precheckResult = await uniswapSwapAbilityClient.precheck(
+        {
+          // @ts-expect-error - invalid ability action
+          action: 'invalid',
+          rpcUrlForUniswap: RPC_URL,
+          signedUniswapQuote: {
+            quote: signedUniswapQuote.quote,
+            signature: signedUniswapQuote.signature,
+          },
+          alchemyGasSponsor: false,
+        },
+        {
+          delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+        },
+      );
+      console.log(
+        '[should fail precheck because of invalid ability action]',
+        util.inspect(precheckResult, { depth: 10 }),
+      );
+
+      // Precheck should fail with recipient validation error
+      expect(precheckResult).toBeDefined();
+      expect(precheckResult.success).toBe(false);
+
+      if (precheckResult.success === false) {
+        expect(precheckResult.runtimeError).toContain('Invalid precheck parameters.');
+        expect(precheckResult.schemaValidationError).toBeTruthy();
+      }
+    });
+
     it('should fail precheck because of insufficient tokenIn allowance', async () => {
       const signedUniswapQuote = await validateSignedUniswapQuoteIsDefined(SIGNED_UNISWAP_QUOTE);
       const uniswapSwapAbilityClient = getUniswapSwapAbilityClient();
@@ -398,6 +433,36 @@ describe('Uniswap Swap Ability E2E Tests', () => {
         ethers.utils.parseUnits(SWAP_AMOUNT.toString(), SWAP_TOKEN_IN_DECIMALS).toString(),
       );
       expect(innerResult.currentAllowance).toBe('0');
+    });
+
+    it('should fail execute because of invalid ability action', async () => {
+      const signedUniswapQuote = await validateSignedUniswapQuoteIsDefined(SIGNED_UNISWAP_QUOTE);
+      const uniswapSwapAbilityClient = getUniswapSwapAbilityClient();
+
+      const executeResult = await uniswapSwapAbilityClient.execute(
+        {
+          // @ts-expect-error - invalid ability action
+          action: 'invalid',
+          rpcUrlForUniswap: RPC_URL,
+          signedUniswapQuote: signedUniswapQuote,
+          alchemyGasSponsor: false,
+        },
+        {
+          delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+        },
+      );
+      console.log(
+        '[should fail execute because of invalid ability action]',
+        util.inspect(executeResult, { depth: 10 }),
+      );
+
+      expect(executeResult).toBeDefined();
+      expect(executeResult.success).toBe(false);
+
+      if (executeResult.success === false) {
+        expect(executeResult.runtimeError).toContain('Invalid execute parameters.');
+        expect(executeResult.schemaValidationError).toBeTruthy();
+      }
     });
 
     it('should make a new ERC20 approval transaction for the Uniswap router', async () => {

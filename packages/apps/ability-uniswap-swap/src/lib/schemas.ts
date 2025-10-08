@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const abilityParamsSchema = z.object({
   action: z
-    .enum(['approve', 'swap', 'approveAndSwap'])
+    .enum(['approve', 'swap'])
     .describe(
       'Dictates whether to perform an ERC20 approval, a swap, or both using the signed Uniswap quote',
     ),

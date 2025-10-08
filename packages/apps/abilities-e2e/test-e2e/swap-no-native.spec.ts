@@ -46,24 +46,24 @@ import {
 const ALCHEMY_GAS_SPONSOR_API_KEY = getEnv('ALCHEMY_GAS_SPONSOR_API_KEY');
 const ALCHEMY_GAS_SPONSOR_POLICY_ID = getEnv('ALCHEMY_GAS_SPONSOR_POLICY_ID');
 
-// const SWAP_AMOUNT = 80;
-// const SWAP_TOKEN_IN_ADDRESS = '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed'; // DEGEN
-// const SWAP_TOKEN_IN_DECIMALS = 18;
-
-const SWAP_AMOUNT = 0.0003;
-const SWAP_TOKEN_IN_ADDRESS = '0x4200000000000000000000000000000000000006'; // WETH
+const SWAP_AMOUNT = 80;
+const SWAP_TOKEN_IN_ADDRESS = '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed'; // DEGEN
 const SWAP_TOKEN_IN_DECIMALS = 18;
+
+// const SWAP_AMOUNT = 0.0003;
+// const SWAP_TOKEN_IN_ADDRESS = '0x4200000000000000000000000000000000000006'; // WETH
+// const SWAP_TOKEN_IN_DECIMALS = 18;
 
 // const SWAP_AMOUNT = 0.1;
 // const SWAP_TOKEN_IN_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'; // USDC
 // const SWAP_TOKEN_IN_DECIMALS = 6;
 
-// const SWAP_TOKEN_OUT_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'; // USDC
-// const SWAP_TOKEN_OUT_DECIMALS = 6;
+const SWAP_TOKEN_OUT_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'; // USDC
+const SWAP_TOKEN_OUT_DECIMALS = 6;
 // const SWAP_TOKEN_OUT_ADDRESS = '0x4200000000000000000000000000000000000006'; // WETH
 // const SWAP_TOKEN_OUT_DECIMALS = 18;
-const SWAP_TOKEN_OUT_ADDRESS = '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed'; // DEGEN
-const SWAP_TOKEN_OUT_DECIMALS = 18;
+// const SWAP_TOKEN_OUT_ADDRESS = '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed'; // DEGEN
+// const SWAP_TOKEN_OUT_DECIMALS = 18;
 
 const RPC_URL = BASE_RPC_URL;
 const CHAIN_ID = 8453;
@@ -491,7 +491,7 @@ describe('Uniswap Swap Ability E2E Tests', () => {
       expect(precheckResult.result!.spenderAddress).toBe(signedUniswapQuote.quote.to);
     });
 
-    it('should execute the Uniswap Swap Ability with the Agent Wallet PKP', async () => {
+    it('should execute the Uniswap Swap Ability with the Agent Wallet PKP using Swap', async () => {
       const signedUniswapQuote = await validateSignedUniswapQuoteIsDefined(SIGNED_UNISWAP_QUOTE);
       const uniswapSwapAbilityClient = getUniswapSwapAbilityClient();
 
