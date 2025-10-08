@@ -25,7 +25,7 @@ contract MorphoPerfFeeFacet {
 
      /* ========== MUTATIVE FUNCTIONS ========== */
 
-    function depositToMorpho(address user, address vaultAddress, uint256 assetAmount) external {
+    function depositToMorpho(address vaultAddress, uint256 assetAmount) external {
         // get the vault and asset
         ERC4626 vault = ERC4626(vaultAddress);
         IERC20 asset = IERC20(vault.asset());
@@ -34,10 +34,10 @@ contract MorphoPerfFeeFacet {
         asset.approve(vaultAddress, assetAmount);
 
         // send it into morpho
-        uint256 vaultShares = vault.deposit(assetAmount, user);
+        uint256 vaultShares = vault.deposit(assetAmount, msg.sender);
 
         // track the deposit
-        LibFeeStorage.getStorage().deposits[user][vaultAddress] = LibFeeStorage.Deposit(
+        LibFeeStorage.getStorage().deposits[msg.sender][vaultAddress] = LibFeeStorage.Deposit(
             assetAmount,
             vaultShares,
             block.timestamp,
@@ -48,20 +48,20 @@ contract MorphoPerfFeeFacet {
     // @notice Withdraws funds from Morpho.  Only supports full withdrawals.
     // @param user the user who is withdrawing
     // @param vaultAddress the address of the vault to withdraw from
-    function withdrawFromMorpho(address user, address vaultAddress) external {
+    function withdrawFromMorpho(address vaultAddress) external {
         // lookup the corresponding deposit
-        LibFeeStorage.Deposit memory deposit = LibFeeStorage.getStorage().deposits[user][vaultAddress];
-        if (deposit.assetAmount == 0) revert DepositNotFound(user, vaultAddress);
+        LibFeeStorage.Deposit memory deposit = LibFeeStorage.getStorage().deposits[msg.sender][vaultAddress];
+        if (deposit.assetAmount == 0) revert DepositNotFound(msg.sender, vaultAddress);
 
         // 1 = Morpho
-        if (deposit.vaultProvider != 1) revert NotMorphoVault(user, vaultAddress);
+        if (deposit.vaultProvider != 1) revert NotMorphoVault(msg.sender, vaultAddress);
 
         uint256 depositAssetAmount = deposit.assetAmount;
         uint256 depositVaultShares = deposit.vaultShares;
 
         // zero out the struct now before we call any other
         // contracts to prevent reentrancy attacks
-        delete LibFeeStorage.getStorage().deposits[user][vaultAddress];
+        delete LibFeeStorage.getStorage().deposits[msg.sender][vaultAddress];
 
         // get the vault and asset
         ERC4626 vault = ERC4626(vaultAddress);
@@ -93,7 +93,7 @@ contract MorphoPerfFeeFacet {
         // at this point this contract already has the whole token amount
         // so we can just transfer the difference without the perf fee to
         // the user
-        asset.transfer(user, withdrawAssetAmount - performanceFeeAmount);
+        asset.transfer(msg.sender, withdrawAssetAmount - performanceFeeAmount);
     }
         
 }
