@@ -102,6 +102,7 @@ export const vincentAbility = createVincentAbility({
     // the current allowance is sufficient without having to call execute.
     if (action === AbilityAction.Approve) {
       return succeed({
+        nativeTokenBalance: checkNativeTokenBalanceResultSuccess?.ethBalance.toString(),
         currentTokenInAllowanceForSpender: checkErc20AllowanceResult.currentAllowance.toString(),
         spenderAddress: checkErc20AllowanceResult.spenderAddress,
       });
@@ -119,8 +120,9 @@ export const vincentAbility = createVincentAbility({
       });
     }
 
-    // 5. At this point, the ability action is either swap and the current allowance is sufficient, or
-    // approveAndSwap and the gas for the approval transaction can be paid for if the current allowance is insufficient.
+    // 5. At this point, the ability action is either:
+    // - Swap and the current allowance is sufficient
+    // - ApproveAndSwap and the gas for the approval transaction can be paid for if the current allowance is insufficient.
     // We now need to check if the current delegator balance of tokenIn is sufficient to perform the swap.
     const checkErc20BalanceResult = await checkErc20Balance({
       provider,
@@ -188,9 +190,10 @@ export const vincentAbility = createVincentAbility({
     }
 
     // 1. If the ability action is approve or approveAndSwap, we need to check if the current allowance is sufficient.
-    // If the ability action is approve, we return success if sufficient, otherwise we send a new approval transaction.
-    // If the ability action is approveAndSwap, and the current allowance is sufficient, we continue to create the swap transaction.
-    // Otherwise, we send a new approval transaction and then continue to create the swap transaction.
+    // If the ability action is:
+    // - Approve, we return success if allowance is sufficient, otherwise we send a new approval transaction
+    // - ApproveAndSwap, and the current allowance is sufficient, we continue to create the swap transaction. Otherwise,
+    // we send a new approval transaction and then continue to create the swap transaction
     let approvalTxHash: string | undefined;
     let approvalTxUserOperationHash: string | undefined;
     if (action === AbilityAction.Approve || action === AbilityAction.ApproveAndSwap) {
