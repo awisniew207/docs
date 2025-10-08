@@ -22,7 +22,9 @@ import "../contracts/diamond-base/interfaces/IERC173.sol";
  * @custom:env VINCENT_DEPLOYER_PRIVATE_KEY - Private key of the deployer
  */
 contract DeployFeeDiamond is Script {
-    /** @notice Error thrown when required environment variables are missing */
+    /**
+     * @notice Error thrown when required environment variables are missing
+     */
     error MissingEnvironmentVariable(string name);
 
     function getFunctionSelectors(string memory contractName) internal returns (bytes4[] memory) {
@@ -36,7 +38,10 @@ contract DeployFeeDiamond is Script {
         return selectors;
     }
 
-    function contractToFacetCutAdd(string memory contractName, address contractAddress) internal returns (IDiamondCut.FacetCut memory) {
+    function contractToFacetCutAdd(string memory contractName, address contractAddress)
+        internal
+        returns (IDiamondCut.FacetCut memory)
+    {
         return IDiamondCut.FacetCut({
             facetAddress: contractAddress,
             action: IDiamondCut.FacetCutAction.Add,
@@ -49,7 +54,6 @@ contract DeployFeeDiamond is Script {
      * @param network Network name for logging
      */
     function deployToNetwork(string memory network) public returns (address) {
-
         // Get private key from environment variable
         uint256 deployerPrivateKey = vm.envUint("VINCENT_DEPLOYER_PRIVATE_KEY");
         if (deployerPrivateKey == 0) {
@@ -80,16 +84,7 @@ contract DeployFeeDiamond is Script {
         cuts[4] = contractToFacetCutAdd("MorphoPerfFeeFacet", address(morphoPerfFeeFacet));
 
         // Deploy the Diamond with the diamondCut facet and all other facets in one transaction
-        Fee diamond = new Fee(
-            cuts,
-            FeeArgs({
-                owner: deployerAddress,
-                init: address(0),
-                initCalldata: bytes("")
-            })
-        );
-
-        
+        Fee diamond = new Fee(cuts, FeeArgs({owner: deployerAddress, init: address(0), initCalldata: bytes("")}));
 
         // Stop broadcasting transactions
         vm.stopBroadcast();
@@ -105,12 +100,16 @@ contract DeployFeeDiamond is Script {
         return address(diamond);
     }
 
-    /** @notice Deploy to Datil network */
+    /**
+     * @notice Deploy to Datil network
+     */
     function deployToDatil() public returns (address) {
         return deployToNetwork("Datil");
     }
 
-    /** @notice Main deployment function */
+    /**
+     * @notice Main deployment function
+     */
     function run() public {
         // Deploy to all networks
         deployToDatil();

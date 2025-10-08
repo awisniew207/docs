@@ -17,7 +17,6 @@ import {OwnershipFacet} from "../../contracts/diamond-base/facets/OwnershipFacet
 import {MockERC4626} from "../mocks/MockERC4626.sol";
 import {MockERC20} from "../mocks/MockERC20.sol";
 
-
 contract FeeTest is Test {
     address owner;
     address APP_USER_ALICE = makeAddr("Alice");
@@ -41,12 +40,11 @@ contract FeeTest is Test {
         address diamondAddress = deployScript.deployToNetwork("test");
         feeDiamond = Fee(payable(diamondAddress));
 
-
         feeViewsFacet = FeeViewsFacet(diamondAddress);
         feeAdminFacet = FeeAdminFacet(diamondAddress);
         morphoPerfFeeFacet = MorphoPerfFeeFacet(diamondAddress);
         ownershipFacet = OwnershipFacet(diamondAddress);
-        
+
         // deploy an ERC20 and 4626 (morpho style) vault
         mockERC20 = new MockERC20();
         mockERC4626 = new MockERC4626(address(mockERC20));
@@ -63,7 +61,6 @@ contract FeeTest is Test {
         assertEq(feeAdminFacet.performanceFeePercentage(), performanceFeePercentage);
         vm.stopPrank();
 
-
         uint256 depositAmount = 1000;
 
         mockERC20.mint(APP_USER_ALICE, depositAmount);
@@ -72,8 +69,7 @@ contract FeeTest is Test {
         morphoPerfFeeFacet.depositToMorpho(address(mockERC4626), depositAmount);
         vm.stopPrank();
 
-
-        LibFeeStorage.Deposit memory d = feeViewsFacet.deposits(APP_USER_ALICE,address(mockERC4626));
+        LibFeeStorage.Deposit memory d = feeViewsFacet.deposits(APP_USER_ALICE, address(mockERC4626));
 
         assertEq(d.assetAmount, depositAmount);
         console.log("d.vaultShares", d.vaultShares);
@@ -96,7 +92,7 @@ contract FeeTest is Test {
         vm.stopPrank();
 
         // confirm the deposit is zeroed out
-        d = feeViewsFacet.deposits(APP_USER_ALICE,address(mockERC4626));
+        d = feeViewsFacet.deposits(APP_USER_ALICE, address(mockERC4626));
 
         assertEq(d.assetAmount, 0);
         assertEq(d.vaultShares, 0);
@@ -105,7 +101,7 @@ contract FeeTest is Test {
         // confirm the profit went to the morpho contract, and some went to the user
         uint256 userBalance = mockERC20.balanceOf(APP_USER_ALICE);
         uint256 feeContractBalance = mockERC20.balanceOf(address(morphoPerfFeeFacet));
-        
+
         uint256 expectedTotalProfit = expectedTotalWithdrawl - depositAmount;
         uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / 10000);
         uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / 10000;
@@ -147,7 +143,6 @@ contract FeeTest is Test {
         assertEq(feeAdminFacet.performanceFeePercentage(), performanceFeePercentage);
         vm.stopPrank();
 
-
         uint256 depositAmount = 1000;
 
         mockERC20.mint(APP_USER_ALICE, depositAmount);
@@ -156,8 +151,7 @@ contract FeeTest is Test {
         morphoPerfFeeFacet.depositToMorpho(address(mockERC4626), depositAmount);
         vm.stopPrank();
 
-
-        LibFeeStorage.Deposit memory d = feeViewsFacet.deposits(APP_USER_ALICE,address(mockERC4626));
+        LibFeeStorage.Deposit memory d = feeViewsFacet.deposits(APP_USER_ALICE, address(mockERC4626));
 
         assertEq(d.assetAmount, depositAmount);
         console.log("d.vaultShares", d.vaultShares);
@@ -177,7 +171,7 @@ contract FeeTest is Test {
         // deposited twice, so total deposit amount is times 2
         depositAmount = depositAmount * 2;
 
-        d = feeViewsFacet.deposits(APP_USER_ALICE,address(mockERC4626));
+        d = feeViewsFacet.deposits(APP_USER_ALICE, address(mockERC4626));
 
         assertEq(d.assetAmount, depositAmount);
         console.log("d.vaultShares", d.vaultShares);
@@ -200,7 +194,7 @@ contract FeeTest is Test {
         vm.stopPrank();
 
         // confirm the deposit is zeroed out
-        d = feeViewsFacet.deposits(APP_USER_ALICE,address(mockERC4626));
+        d = feeViewsFacet.deposits(APP_USER_ALICE, address(mockERC4626));
 
         assertEq(d.assetAmount, 0);
         assertEq(d.vaultShares, 0);
@@ -209,7 +203,7 @@ contract FeeTest is Test {
         // confirm the profit went to the morpho contract, and some went to the user
         uint256 userBalance = mockERC20.balanceOf(APP_USER_ALICE);
         uint256 feeContractBalance = mockERC20.balanceOf(address(morphoPerfFeeFacet));
-        
+
         uint256 expectedTotalProfit = expectedTotalWithdrawl - depositAmount;
         uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / 10000);
         uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / 10000;
@@ -239,7 +233,6 @@ contract FeeTest is Test {
         tokensWithCollectedFees = feeAdminFacet.tokensWithCollectedFees();
         assertEq(tokensWithCollectedFees.length, 0);
     }
-    
 
     function testSetOwner() public {
         address NEW_OWNER = makeAddr("NewOwner");
