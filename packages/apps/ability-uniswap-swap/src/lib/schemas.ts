@@ -56,9 +56,18 @@ export const abilityParamsSchema = z.object({
 });
 
 export const precheckSuccessSchema = z.object({
-  nativeTokenBalance: z.string().describe('The balance of the native token used for gas fees'),
-  tokenInAddress: z.string().describe('The address of the input token used for the swap'),
-  tokenInBalance: z.string().describe('The balance of the input token used for the swap'),
+  nativeTokenBalance: z
+    .string()
+    .describe('The balance of the native token used for gas fees')
+    .optional(),
+  tokenInAddress: z
+    .string()
+    .describe('The address of the input token used for the swap')
+    .optional(),
+  tokenInBalance: z
+    .string()
+    .describe('The balance of the input token used for the swap')
+    .optional(),
   currentTokenInAllowanceForSpender: z
     .string()
     .describe('The current allowance of the input token used for the swap'),
