@@ -1,6 +1,7 @@
 import { spawnSync } from 'child_process';
-import { ethers } from 'ethers';
 import process from 'process';
+
+import { ethers } from 'ethers';
 
 function getSelectors(contract) {
   // Run: forge inspect --json <contract> mi
