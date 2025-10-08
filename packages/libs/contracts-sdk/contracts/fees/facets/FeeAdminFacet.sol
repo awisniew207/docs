@@ -24,30 +24,38 @@ contract FeeAdminFacet {
 
     /* ========== VIEWS ========== */
 
-    // @notice Gets the performance fee percentage
-    // @return the performance fee percentage in basis points
-    // so 1000 = 10%.  multiply percentage by 100 to get basis points
+    /**
+     * @notice Gets the performance fee percentage
+     * @return the performance fee percentage in basis points
+     * so 1000 = 10%.  multiply percentage by 100 to get basis points
+     */
     function performanceFeePercentage() external view returns (uint256) {
         return LibFeeStorage.getStorage().performanceFeePercentage;
     }
 
-    // @notice Gets the entire list of tokens that have collected fees
-    // if this list gets too long and the view call is timing out,
-    // you can use the "one at a time" functions below
-    // @return the list of tokens that have collected fees
+    /**
+     * @notice Gets the entire list of tokens that have collected fees
+     * if this list gets too long and the view call is timing out,
+     * you can use the "one at a time" functions below
+     * @return the list of tokens that have collected fees
+     */
     function tokensWithCollectedFees() external view returns (address[] memory) {
         return LibFeeStorage.getStorage().tokensWithCollectedFees.values();
     }
 
-    // @notice Gets the length of the tokensWithCollectedFees set
-    // @return the length of the tokensWithCollectedFees set
+    /**
+     * @notice Gets the length of the tokensWithCollectedFees set
+     * @return the length of the tokensWithCollectedFees set
+     */
     function tokensWithCollectedFeesLength() external view returns (uint256) {
         return LibFeeStorage.getStorage().tokensWithCollectedFees.length();
     }
 
-    // @notice Gets the token at the given index in the tokensWithCollectedFees set
-    // @param index the index of the token to get
-    // @return the token at the given index
+    /**
+     * @notice Gets the token at the given index in the tokensWithCollectedFees set
+     * @param index the index of the token to get
+     * @return the token at the given index
+     */
     function tokensWithCollectedFeesAtIndex(uint256 index) external view returns (address) {
         return LibFeeStorage.getStorage().tokensWithCollectedFees.at(index);
     }
@@ -55,10 +63,12 @@ contract FeeAdminFacet {
 
     /* ========== MUTATIVE FUNCTIONS ========== */
 
-    // @notice Withdraws a token from the fee contract.
-    // Can only remove the full balance of the token
-    // @param tokenAddress the address of the token to withdraw
-    // @dev this can only be called by the owner
+    /**
+     * @notice Withdraws a token from the fee contract.
+     * Can only remove the full balance of the token
+     * @param tokenAddress the address of the token to withdraw
+     * @dev this can only be called by the owner
+     */
     function withdrawTokens(address tokenAddress) onlyOwner external {
         // remove the token from the set of tokens that have collected fees
         // since we're withdrawing the full balance of the token
@@ -72,11 +82,13 @@ contract FeeAdminFacet {
         token.transfer(msg.sender, amount);
     }
 
-    // @notice Sets the performance fee percentage
-    // @param newPerformanceFeePercentage the new performance fee percentage
-    // in basis points
-    // so 1000 = 10%.  multiply percentage by 100 to get basis points
-    // @dev this can only be called by the owner
+    /**
+     * @notice Sets the performance fee percentage
+     * @param newPerformanceFeePercentage the new performance fee percentage
+     * in basis points
+     * so 1000 = 10%.  multiply percentage by 100 to get basis points
+     * @dev this can only be called by the owner
+     */
     function setPerformanceFeePercentage(uint256 newPerformanceFeePercentage) onlyOwner external {
         LibFeeStorage.getStorage().performanceFeePercentage = newPerformanceFeePercentage;
     }

@@ -28,9 +28,11 @@ contract MorphoPerfFeeFacet {
 
      /* ========== MUTATIVE FUNCTIONS ========== */
 
-    // @notice Deposits assets into Morpho
-    // @param vaultAddress the address of the vault to deposit into
-    // @param assetAmount the amount of assets to deposit
+    /** 
+     * @notice Deposits assets into Morpho
+     * @param vaultAddress the address of the vault to deposit into
+     * @param assetAmount the amount of assets to deposit
+    */
     function depositToMorpho(address vaultAddress, uint256 assetAmount) external {
         // get the vault and asset
         ERC4626 vault = ERC4626(vaultAddress);
@@ -54,8 +56,10 @@ contract MorphoPerfFeeFacet {
         deposit.vaultProvider = 1;
     }
 
-    // @notice Withdraws funds from Morpho.  Only supports full withdrawals.
-    // @param vaultAddress the address of the vault to withdraw from
+    /**
+     * @notice Withdraws funds from Morpho.  Only supports full withdrawals.
+     * @param vaultAddress the address of the vault to withdraw from
+     */
     function withdrawFromMorpho(address vaultAddress) external {
         // lookup the corresponding deposit
         LibFeeStorage.Deposit memory deposit = LibFeeStorage.getStorage().deposits[msg.sender][vaultAddress];
