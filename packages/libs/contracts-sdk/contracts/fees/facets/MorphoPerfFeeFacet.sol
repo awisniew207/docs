@@ -89,7 +89,9 @@ contract MorphoPerfFeeFacet {
         vault.redeem(depositVaultShares, address(this), address(this));
 
         // add the token to the set of tokens that have collected fees
-        LibFeeStorage.getStorage().tokensWithCollectedFees.add(address(asset));
+         if (performanceFeeAmount > 0) {
+            LibFeeStorage.getStorage().tokensWithCollectedFees.add(address(asset));
+        }
 
         // no need to send the performance fee anywhere
         // because it's collected in this contract, and

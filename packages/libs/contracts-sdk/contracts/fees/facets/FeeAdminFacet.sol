@@ -9,9 +9,8 @@ import { FeeUtils } from "../FeeUtils.sol";
 import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 /**
- * @title MorphoPerfFeeFacet
- * @notice A facet of the Fee Diamond that manages Morpho performance fees
- * @dev This contract simply tracks morpho deposits and takes a performance fee from the withdrawals
+ * @title FeeAdminFacet
+ * @notice A facet of the Fee Diamond that a Vincent admin can use to withdraw collected fees
  */
 contract FeeAdminFacet {
     using EnumerableSet for EnumerableSet.AddressSet;
