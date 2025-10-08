@@ -54,19 +54,26 @@ contract FeeTest is Test {
         vm.stopPrank();
     }
 
-    function testDepositToMorpho() public {
+    function testDepositAndWithdrawFromMorpho() public {
+        // mint some vault tokens to change the exchange rate
+        mockERC4626.mint(vm.addr(1), 1000);
+
         mockERC20.mint(APP_USER_ALICE, 1000);
         vm.startPrank(APP_USER_ALICE);
-        mockERC20.approve(address(mockERC4626), 1000);
+        mockERC20.approve(address(morphoPerfFeeFacet), 1000);
         morphoPerfFeeFacet.depositToMorpho(address(mockERC4626), 1000);
-        vm.stopPrank();
 
         LibFeeStorage.Deposit memory d = feeViewsFacet.deposits(APP_USER_ALICE,address(mockERC4626));
+        vm.stopPrank();
 
         assertEq(d.assetAmount, 1000);
         console.log("d.vaultShares", d.vaultShares);
         console.log("d.timestamp", d.timestamp);
         console.log("d.vaultProvider", d.vaultProvider);
+
+        // burn some vault tokens to change the exchange rate
+        mockERC4626.burn(vm.addr(1), 1000);
+
     }
     
 

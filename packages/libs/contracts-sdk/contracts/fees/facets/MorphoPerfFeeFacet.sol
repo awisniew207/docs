@@ -30,6 +30,9 @@ contract MorphoPerfFeeFacet {
         ERC4626 vault = ERC4626(vaultAddress);
         IERC20 asset = IERC20(vault.asset());
 
+        // transfer the assets into this contract
+        asset.transferFrom(msg.sender, address(this), assetAmount);
+
         // approve morpho
         asset.approve(vaultAddress, assetAmount);
 
