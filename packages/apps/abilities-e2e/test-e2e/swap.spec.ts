@@ -465,7 +465,7 @@ describe('Uniswap Swap Ability E2E Tests', () => {
       }
 
       expect(executeResult.result).toBeDefined();
-      expect(executeResult.result.approvalTxHash).not.toBeDefined();
+      expect(executeResult.result.approvalTxHash).toBeUndefined();
       expect(executeResult.result.currentAllowance).toBeDefined();
       expect(BigInt(executeResult.result.currentAllowance!)).toBeGreaterThanOrEqual(
         BigInt(ethers.utils.parseUnits(SWAP_AMOUNT.toString(), SWAP_TOKEN_IN_DECIMALS).toString()),
@@ -654,7 +654,7 @@ describe('Uniswap Swap Ability E2E Tests', () => {
       }
 
       expect(executeResult.result).toBeDefined();
-      expect(executeResult.result.approvalTxHash).not.toBeDefined();
+      expect(executeResult.result.approvalTxHash).toBeUndefined();
       expect(executeResult.result.approvalTxUserOperationHash).toBeDefined();
 
       const approvalTxUserOperationHash = executeResult.result.approvalTxUserOperationHash;
@@ -703,7 +703,7 @@ describe('Uniswap Swap Ability E2E Tests', () => {
       }
 
       expect(executeResult.result).toBeDefined();
-      expect(executeResult.result.approvalTxHash).not.toBeDefined();
+      expect(executeResult.result.approvalTxHash).toBeUndefined();
       expect(executeResult.result.currentAllowance).toBeDefined();
       expect(BigInt(executeResult.result.currentAllowance!)).toBeGreaterThanOrEqual(
         BigInt(ethers.utils.parseUnits(SWAP_AMOUNT.toString(), SWAP_TOKEN_IN_DECIMALS).toString()),
@@ -755,7 +755,7 @@ describe('Uniswap Swap Ability E2E Tests', () => {
 
       // Verify the result is properly populated
       expect(precheckResult.result).toBeDefined();
-      expect(precheckResult.result!.nativeTokenBalance).not.toBeDefined();
+      expect(precheckResult.result!.nativeTokenBalance).toBeUndefined();
       expect(precheckResult.result!.tokenInAddress).toBe(SWAP_TOKEN_IN_ADDRESS);
       expect(precheckResult.result!.tokenInBalance).toBeDefined();
       expect(BigInt(precheckResult.result!.tokenInBalance as string)).toBeGreaterThan(0n);
@@ -795,7 +795,7 @@ describe('Uniswap Swap Ability E2E Tests', () => {
       console.log(executeResult);
 
       expect(executeResult.result).toBeDefined();
-      expect(executeResult.result.swapTxHash).not.toBeDefined();
+      expect(executeResult.result.swapTxHash).toBeUndefined();
       expect(executeResult.result.swapTxUserOperationHash).toBeDefined();
 
       const swapTxUserOperationHash = executeResult.result.swapTxUserOperationHash;
