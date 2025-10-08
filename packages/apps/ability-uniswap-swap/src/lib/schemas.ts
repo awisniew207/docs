@@ -72,6 +72,10 @@ export const precheckSuccessSchema = z.object({
     .string()
     .describe('The current allowance of the input token used for the swap'),
   spenderAddress: z.string().describe('The Uniswap router address that will be used for the swap'),
+  requiredTokenInAllowance: z
+    .string()
+    .describe('The required allowance of the input token for the swap for the ERC20 spender')
+    .optional(),
 });
 
 export const precheckFailSchema = z.object({
@@ -119,5 +123,9 @@ export const executeSuccessSchema = z.object({
   currentAllowance: z
     .string()
     .describe('The current allowance of the input token used for the swap for the ERC20 spender')
+    .optional(),
+  requiredAllowance: z
+    .string()
+    .describe('The required allowance of the input token used for the swap for the ERC20 spender')
     .optional(),
 });

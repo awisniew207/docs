@@ -344,7 +344,7 @@ describe('Uniswap Swap Ability E2E Tests', () => {
       // Try to precheck with the malicious quote
       const precheckResult = await uniswapSwapAbilityClient.precheck(
         {
-          action: AbilityAction.ApproveAndSwap,
+          action: AbilityAction.Approve,
           rpcUrlForUniswap: RPC_URL,
           signedUniswapQuote: {
             quote: signedUniswapQuote.quote,
@@ -486,8 +486,17 @@ describe('Uniswap Swap Ability E2E Tests', () => {
       expect(precheckResult.result!.nativeTokenBalance).toBeUndefined();
       expect(precheckResult.result!.tokenInAddress).toBe(SWAP_TOKEN_IN_ADDRESS);
       expect(precheckResult.result!.tokenInBalance).toBeDefined();
-      expect(BigInt(precheckResult.result!.tokenInBalance as string)).toBeGreaterThan(0n);
-      expect(BigInt(precheckResult.result!.currentTokenInAllowanceForSpender)).toBeGreaterThan(0n);
+      expect(
+        ethers.utils
+          .parseUnits(precheckResult.result!.tokenInBalance as string, SWAP_TOKEN_IN_DECIMALS)
+          .toBigInt(),
+      ).toBeGreaterThan(0n);
+      expect(precheckResult.result!.currentTokenInAllowanceForSpender as string).toBe(
+        ethers.utils.formatUnits(
+          ethers.utils.parseUnits(SWAP_AMOUNT.toString(), SWAP_TOKEN_IN_DECIMALS),
+          SWAP_TOKEN_IN_DECIMALS,
+        ),
+      );
       expect(precheckResult.result!.spenderAddress).toBe(signedUniswapQuote.quote.to);
     });
 

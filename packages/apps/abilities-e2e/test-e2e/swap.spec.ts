@@ -46,24 +46,29 @@ import {
 const ALCHEMY_GAS_SPONSOR_API_KEY = getEnv('ALCHEMY_GAS_SPONSOR_API_KEY');
 const ALCHEMY_GAS_SPONSOR_POLICY_ID = getEnv('ALCHEMY_GAS_SPONSOR_POLICY_ID');
 
-// const SWAP_AMOUNT = 80;
-// const SWAP_TOKEN_IN_ADDRESS = '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed'; // DEGEN
-// const SWAP_TOKEN_IN_DECIMALS = 18;
+const SWAP_AMOUNT = 80;
+const SWAP_TOKEN_IN_ADDRESS = '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed'; // DEGEN
+const SWAP_TOKEN_IN_DECIMALS = 18;
 
 // const SWAP_AMOUNT = 0.0003;
 // const SWAP_TOKEN_IN_ADDRESS = '0x4200000000000000000000000000000000000006'; // WETH
 // const SWAP_TOKEN_IN_DECIMALS = 18;
 
-const SWAP_AMOUNT = 0.1;
-const SWAP_TOKEN_IN_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'; // USDC
-const SWAP_TOKEN_IN_DECIMALS = 6;
+// const SWAP_AMOUNT = 0.1;
+// const SWAP_TOKEN_IN_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'; // USDC
+// const SWAP_TOKEN_IN_DECIMALS = 6;
 
-// const SWAP_TOKEN_OUT_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'; // USDC
-// const SWAP_TOKEN_OUT_DECIMALS = 6;
+const EXPECTED_SWAP_AMOUNT = ethers.utils.formatUnits(
+  ethers.utils.parseUnits(SWAP_AMOUNT.toString(), SWAP_TOKEN_IN_DECIMALS),
+  SWAP_TOKEN_IN_DECIMALS,
+);
+
+const SWAP_TOKEN_OUT_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'; // USDC
+const SWAP_TOKEN_OUT_DECIMALS = 6;
 // const SWAP_TOKEN_OUT_ADDRESS = '0x4200000000000000000000000000000000000006'; // WETH
 // const SWAP_TOKEN_OUT_DECIMALS = 18;
-const SWAP_TOKEN_OUT_ADDRESS = '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed'; // DEGEN
-const SWAP_TOKEN_OUT_DECIMALS = 18;
+// const SWAP_TOKEN_OUT_ADDRESS = '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed'; // DEGEN
+// const SWAP_TOKEN_OUT_DECIMALS = 18;
 
 const RPC_URL = BASE_RPC_URL;
 const CHAIN_ID = 8453;
@@ -429,10 +434,8 @@ describe('Uniswap Swap Ability E2E Tests', () => {
       );
       expect(innerResult.spenderAddress).toBe(signedUniswapQuote.quote.to);
       expect(innerResult.tokenAddress).toBe(SWAP_TOKEN_IN_ADDRESS);
-      expect(innerResult.requiredAllowance).toBe(
-        ethers.utils.parseUnits(SWAP_AMOUNT.toString(), SWAP_TOKEN_IN_DECIMALS).toString(),
-      );
-      expect(innerResult.currentAllowance).toBe('0');
+      expect(innerResult.requiredAllowance).toBe(EXPECTED_SWAP_AMOUNT);
+      expect(innerResult.currentAllowance).toBe('0.0');
     });
 
     it('should fail execute because of invalid ability action', async () => {
@@ -531,10 +534,8 @@ describe('Uniswap Swap Ability E2E Tests', () => {
 
       expect(executeResult.result).toBeDefined();
       expect(executeResult.result.approvalTxHash).toBeUndefined();
-      expect(executeResult.result.currentAllowance).toBeDefined();
-      expect(BigInt(executeResult.result.currentAllowance!)).toBeGreaterThanOrEqual(
-        BigInt(ethers.utils.parseUnits(SWAP_AMOUNT.toString(), SWAP_TOKEN_IN_DECIMALS).toString()),
-      );
+      expect(executeResult.result.currentAllowance!).toBe(EXPECTED_SWAP_AMOUNT);
+      expect(executeResult.result.requiredAllowance!).toBe(EXPECTED_SWAP_AMOUNT);
     });
 
     it('should successfully run precheck on the Uniswap Swap Ability', async () => {
@@ -581,12 +582,23 @@ describe('Uniswap Swap Ability E2E Tests', () => {
       // Verify the result is properly populated
       expect(precheckResult.result).toBeDefined();
       expect(precheckResult.result!.nativeTokenBalance).toBeDefined();
-      expect(BigInt(precheckResult.result!.nativeTokenBalance as string)).toBeGreaterThan(0n);
+      expect(
+        ethers.utils.parseEther(precheckResult.result!.nativeTokenBalance as string).toBigInt(),
+      ).toBeGreaterThan(0n);
+
       expect(precheckResult.result!.tokenInAddress).toBe(SWAP_TOKEN_IN_ADDRESS);
       expect(precheckResult.result!.tokenInBalance).toBeDefined();
-      expect(BigInt(precheckResult.result!.tokenInBalance as string)).toBeGreaterThan(0n);
-      expect(BigInt(precheckResult.result!.currentTokenInAllowanceForSpender)).toBeGreaterThan(0n);
+      expect(
+        ethers.utils
+          .parseUnits(precheckResult.result!.tokenInBalance as string, SWAP_TOKEN_IN_DECIMALS)
+          .toBigInt(),
+      ).toBeGreaterThan(0n);
+
+      expect(precheckResult.result!.currentTokenInAllowanceForSpender as string).toBe(
+        EXPECTED_SWAP_AMOUNT,
+      );
       expect(precheckResult.result!.spenderAddress).toBe(signedUniswapQuote.quote.to);
+      expect(precheckResult.result!.requiredTokenInAllowance!).toBe(EXPECTED_SWAP_AMOUNT);
     });
 
     it('should execute the Uniswap Swap Ability with the Agent Wallet PKP', async () => {
@@ -684,10 +696,8 @@ describe('Uniswap Swap Ability E2E Tests', () => {
       );
       expect(innerResult.spenderAddress).toBe(signedUniswapQuote.quote.to);
       expect(innerResult.tokenAddress).toBe(SWAP_TOKEN_IN_ADDRESS);
-      expect(innerResult.requiredAllowance).toBe(
-        ethers.utils.parseUnits(SWAP_AMOUNT.toString(), SWAP_TOKEN_IN_DECIMALS).toString(),
-      );
-      expect(innerResult.currentAllowance).toBe('0');
+      expect(innerResult.requiredAllowance).toBe(EXPECTED_SWAP_AMOUNT);
+      expect(innerResult.currentAllowance).toBe('0.0');
     });
 
     it('should make a new ERC20 approval transaction for the Uniswap router', async () => {
@@ -769,10 +779,8 @@ describe('Uniswap Swap Ability E2E Tests', () => {
 
       expect(executeResult.result).toBeDefined();
       expect(executeResult.result.approvalTxHash).toBeUndefined();
-      expect(executeResult.result.currentAllowance).toBeDefined();
-      expect(BigInt(executeResult.result.currentAllowance!)).toBeGreaterThanOrEqual(
-        BigInt(ethers.utils.parseUnits(SWAP_AMOUNT.toString(), SWAP_TOKEN_IN_DECIMALS).toString()),
-      );
+      expect(executeResult.result.currentAllowance!).toBe(EXPECTED_SWAP_AMOUNT);
+      expect(executeResult.result.requiredAllowance!).toBe(EXPECTED_SWAP_AMOUNT);
     });
 
     it('should successfully run precheck on the Uniswap Swap Ability', async () => {
@@ -822,10 +830,16 @@ describe('Uniswap Swap Ability E2E Tests', () => {
       expect(precheckResult.result).toBeDefined();
       expect(precheckResult.result!.nativeTokenBalance).toBeUndefined();
       expect(precheckResult.result!.tokenInAddress).toBe(SWAP_TOKEN_IN_ADDRESS);
-      expect(precheckResult.result!.tokenInBalance).toBeDefined();
-      expect(BigInt(precheckResult.result!.tokenInBalance as string)).toBeGreaterThan(0n);
-      expect(BigInt(precheckResult.result!.currentTokenInAllowanceForSpender)).toBeGreaterThan(0n);
+      expect(
+        ethers.utils
+          .parseUnits(precheckResult.result!.tokenInBalance as string, SWAP_TOKEN_IN_DECIMALS)
+          .toBigInt(),
+      ).toBeGreaterThan(0n);
+      expect(precheckResult.result!.currentTokenInAllowanceForSpender as string).toBe(
+        EXPECTED_SWAP_AMOUNT,
+      );
       expect(precheckResult.result!.spenderAddress).toBe(signedUniswapQuote.quote.to);
+      expect(precheckResult.result!.requiredTokenInAllowance!).toBe(EXPECTED_SWAP_AMOUNT);
     });
 
     it('should execute the Uniswap Swap Ability with the Agent Wallet PKP', async () => {

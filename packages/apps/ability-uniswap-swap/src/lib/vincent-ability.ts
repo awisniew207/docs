@@ -91,7 +91,14 @@ export const vincentAbility = createVincentAbility({
     if (action === AbilityAction.Approve) {
       return succeed({
         nativeTokenBalance: checkNativeTokenBalanceResultSuccess?.ethBalance.toString(),
-        currentTokenInAllowanceForSpender: checkErc20AllowanceResult.currentAllowance.toString(),
+        currentTokenInAllowanceForSpender: ethers.utils.formatUnits(
+          checkErc20AllowanceResult.currentAllowance,
+          quote.tokenInDecimals,
+        ),
+        requiredTokenInAllowance: ethers.utils.formatUnits(
+          checkErc20AllowanceResult.requiredAllowance,
+          quote.tokenInDecimals,
+        ),
         spenderAddress: checkErc20AllowanceResult.spenderAddress,
       });
     }
@@ -103,8 +110,14 @@ export const vincentAbility = createVincentAbility({
         reason: checkErc20AllowanceResult.reason,
         spenderAddress: checkErc20AllowanceResult.spenderAddress,
         tokenAddress: checkErc20AllowanceResult.tokenAddress,
-        requiredAllowance: checkErc20AllowanceResult.requiredAllowance.toString(),
-        currentAllowance: checkErc20AllowanceResult.currentAllowance.toString(),
+        requiredAllowance: ethers.utils.formatUnits(
+          checkErc20AllowanceResult.requiredAllowance,
+          quote.tokenInDecimals,
+        ),
+        currentAllowance: ethers.utils.formatUnits(
+          checkErc20AllowanceResult.currentAllowance,
+          quote.tokenInDecimals,
+        ),
       });
     }
 
@@ -120,8 +133,14 @@ export const vincentAbility = createVincentAbility({
       return fail({
         reason: checkErc20BalanceResult.reason,
         tokenAddress: checkErc20BalanceResult.tokenAddress,
-        requiredTokenAmount: checkErc20BalanceResult.requiredTokenAmount.toString(),
-        tokenBalance: checkErc20BalanceResult.tokenBalance.toString(),
+        requiredTokenAmount: ethers.utils.formatUnits(
+          checkErc20BalanceResult.requiredTokenAmount,
+          quote.tokenInDecimals,
+        ),
+        tokenBalance: ethers.utils.formatUnits(
+          checkErc20BalanceResult.tokenBalance,
+          quote.tokenInDecimals,
+        ),
       });
     }
 
@@ -130,8 +149,18 @@ export const vincentAbility = createVincentAbility({
     return succeed({
       nativeTokenBalance: checkNativeTokenBalanceResultSuccess?.ethBalance.toString(),
       tokenInAddress: checkErc20BalanceResult.tokenAddress,
-      tokenInBalance: checkErc20BalanceResult.tokenBalance.toString(),
-      currentTokenInAllowanceForSpender: checkErc20AllowanceResult.currentAllowance.toString(),
+      tokenInBalance: ethers.utils.formatUnits(
+        checkErc20BalanceResult.tokenBalance,
+        quote.tokenInDecimals,
+      ),
+      currentTokenInAllowanceForSpender: ethers.utils.formatUnits(
+        checkErc20AllowanceResult.currentAllowance,
+        quote.tokenInDecimals,
+      ),
+      requiredTokenInAllowance: ethers.utils.formatUnits(
+        checkErc20AllowanceResult.requiredAllowance,
+        quote.tokenInDecimals,
+      ),
       spenderAddress: checkErc20AllowanceResult.spenderAddress,
     });
   },
@@ -186,7 +215,14 @@ export const vincentAbility = createVincentAbility({
         // 1.1 Because the ability action is approve, we return success since the current allowance is sufficient,
         // and a new approval transaction is not needed.
         return succeed({
-          currentAllowance: checkErc20AllowanceResult.currentAllowance.toString(),
+          currentAllowance: ethers.utils.formatUnits(
+            checkErc20AllowanceResult.currentAllowance,
+            quote.tokenInDecimals,
+          ),
+          requiredAllowance: ethers.utils.formatUnits(
+            checkErc20AllowanceResult.requiredAllowance,
+            quote.tokenInDecimals,
+          ),
         });
       } else {
         if (checkErc20AllowanceResult.reason.includes('insufficient ERC20 allowance for spender')) {
