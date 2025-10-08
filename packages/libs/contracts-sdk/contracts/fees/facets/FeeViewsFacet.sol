@@ -8,10 +8,10 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 /**
- * @title FeeViews
+ * @title FeeViewsFacet
  * @notice A contract that contains the views for the Fee Diamond
  */
-contract FeeViews {
+contract FeeViewsFacet {
 
     /* ========== VIEWS ========== */
 
