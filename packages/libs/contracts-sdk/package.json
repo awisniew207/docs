@@ -30,6 +30,7 @@
     "viem": "^2.34.0"
   },
   "dependencies": {
+    "@aave-dao/aave-v3-origin": "^3.5.0",
     "@ethersproject/abi": "^5.8.0",
     "cbor2": "^2.0.1",
     "ethers": "^5.8.0"

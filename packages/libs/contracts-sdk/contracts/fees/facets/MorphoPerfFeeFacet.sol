@@ -52,6 +52,7 @@ contract MorphoPerfFeeFacet {
         
         deposit.assetAmount += assetAmount;
         deposit.vaultShares += vaultShares;
+        // 1 = Morpho
         deposit.vaultProvider = 1;
     }
 
@@ -78,8 +79,9 @@ contract MorphoPerfFeeFacet {
         ERC4626 vault = ERC4626(vaultAddress);
         IERC20 asset = IERC20(vault.asset());
 
-        // calculate the assets that will come out of the vault
-        uint256 withdrawAssetAmount = vault.convertToAssets(depositVaultShares);
+        // perform the withdrawal with morpho
+        // and send the assets to this contract
+        uint256 withdrawAssetAmount = vault.redeem(depositVaultShares, address(this), address(this));
 
         uint256 performanceFeeAmount = 0;
         if (withdrawAssetAmount > depositAssetAmount) {
@@ -88,10 +90,6 @@ contract MorphoPerfFeeFacet {
             // so divide by 10000 to use it as a percentage
             performanceFeeAmount = (withdrawAssetAmount - depositAssetAmount) * LibFeeStorage.getStorage().performanceFeePercentage / 10000;
         }
-
-        // perform the withdrawal with morpho
-        // and send the assets to this contract
-        vault.redeem(depositVaultShares, address(this), address(this));
 
         // add the token to the set of tokens that have collected fees
         if (performanceFeeAmount > 0) {
