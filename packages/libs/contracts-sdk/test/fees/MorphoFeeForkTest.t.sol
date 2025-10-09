@@ -104,6 +104,11 @@ contract FeeForkTest is Test {
         console.log("feeContractVaultShares", feeContractVaultShares);
         assertEq(feeContractVaultShares, d.vaultShares);
 
+        // confirm that the asset is in the userVaultOrPoolAssetAddresses set
+        address[] memory userVaultOrPoolAssetAddresses = feeViewsFacet.userVaultOrPoolAssetAddresses(APP_USER_ALICE);
+        assertEq(userVaultOrPoolAssetAddresses.length, 1);
+        assertEq(userVaultOrPoolAssetAddresses[0], address(morphoVault));
+
         // find the underlying morpho market and advance timestamp to 1 week from now to accrue interest, to simulate profit
         uint256 withdrawalQueueLength = morphoVault.withdrawQueueLength();
         console.log("withdrawalQueueLength", withdrawalQueueLength);
@@ -133,6 +138,10 @@ contract FeeForkTest is Test {
         assertEq(d.assetAmount, 0);
         assertEq(d.vaultShares, 0);
         assertEq(d.vaultProvider, 0);
+
+        // confirm that the asset is no longer in the userVaultOrPoolAssetAddresses set
+        userVaultOrPoolAssetAddresses = feeViewsFacet.userVaultOrPoolAssetAddresses(APP_USER_ALICE);
+        assertEq(userVaultOrPoolAssetAddresses.length, 0);
 
         // confirm the profit went to the fee contract, and some went to the user
         uint256 userBalance = underlyingERC20.balanceOf(APP_USER_ALICE);
@@ -192,6 +201,11 @@ contract FeeForkTest is Test {
         console.log("feeContractVaultShares", feeContractVaultShares);
         assertEq(feeContractVaultShares, d.vaultShares);
 
+        // confirm that the asset is in the userVaultOrPoolAssetAddresses set
+        address[] memory userVaultOrPoolAssetAddresses = feeViewsFacet.userVaultOrPoolAssetAddresses(APP_USER_ALICE);
+        assertEq(userVaultOrPoolAssetAddresses.length, 1);
+        assertEq(userVaultOrPoolAssetAddresses[0], address(morphoVault));
+
         // check that asset balance will be slightly lower if we withdraw now, due to fees / rounding
         uint256 expectedTotalWithdrawal = morphoVault.convertToAssets(d.vaultShares);
         console.log("expectedTotalWithdrawal", expectedTotalWithdrawal);
@@ -207,6 +221,10 @@ contract FeeForkTest is Test {
         assertEq(d.assetAmount, 0);
         assertEq(d.vaultShares, 0);
         assertEq(d.vaultProvider, 0);
+
+        // confirm that the asset is no longer in the userVaultOrPoolAssetAddresses set
+        userVaultOrPoolAssetAddresses = feeViewsFacet.userVaultOrPoolAssetAddresses(APP_USER_ALICE);
+        assertEq(userVaultOrPoolAssetAddresses.length, 0);
 
         // confirm there was no profit
         uint256 userBalance = underlyingERC20.balanceOf(APP_USER_ALICE);
@@ -259,6 +277,11 @@ contract FeeForkTest is Test {
         console.log("feeContractVaultShares", feeContractVaultShares);
         assertEq(feeContractVaultShares, d.vaultShares);
 
+        // confirm that the asset is in the userVaultOrPoolAssetAddresses set
+        address[] memory userVaultOrPoolAssetAddresses = feeViewsFacet.userVaultOrPoolAssetAddresses(APP_USER_ALICE);
+        assertEq(userVaultOrPoolAssetAddresses.length, 1);
+        assertEq(userVaultOrPoolAssetAddresses[0], address(morphoVault));
+
         // deposit again
         vm.startPrank(USDC_MINTER);
         underlyingERC20.mint(APP_USER_ALICE, depositAmount);
@@ -267,6 +290,11 @@ contract FeeForkTest is Test {
         underlyingERC20.approve(address(morphoPerfFeeFacet), depositAmount);
         morphoPerfFeeFacet.depositToMorpho(address(morphoVault), depositAmount);
         vm.stopPrank();
+
+        // confirm that the asset is still in the userVaultOrPoolAssetAddresses set
+        userVaultOrPoolAssetAddresses = feeViewsFacet.userVaultOrPoolAssetAddresses(APP_USER_ALICE);
+        assertEq(userVaultOrPoolAssetAddresses.length, 1);
+        assertEq(userVaultOrPoolAssetAddresses[0], address(morphoVault));
 
         // deposited twice, so total deposit amount is times 2
         depositAmount = depositAmount * 2;
@@ -310,6 +338,10 @@ contract FeeForkTest is Test {
         assertEq(d.assetAmount, 0);
         assertEq(d.vaultShares, 0);
         assertEq(d.vaultProvider, 0);
+
+        // confirm that the asset is no longer in the userVaultOrPoolAssetAddresses set
+        userVaultOrPoolAssetAddresses = feeViewsFacet.userVaultOrPoolAssetAddresses(APP_USER_ALICE);
+        assertEq(userVaultOrPoolAssetAddresses.length, 0);
 
         // confirm the profit went to the fee contract, and some went to the user
         uint256 userBalance = underlyingERC20.balanceOf(APP_USER_ALICE);

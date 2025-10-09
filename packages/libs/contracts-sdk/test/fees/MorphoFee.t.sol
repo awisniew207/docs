@@ -79,6 +79,12 @@ contract FeeTest is Test {
         console.log("feeContractVaultShares", feeContractVaultShares);
         assertEq(feeContractVaultShares, d.vaultShares);
 
+        // confirm that the asset is in the userVaultOrPoolAssetAddresses set
+        address[] memory userVaultOrPoolAssetAddresses = feeViewsFacet.userVaultOrPoolAssetAddresses(APP_USER_ALICE);
+        assertEq(userVaultOrPoolAssetAddresses.length, 1);
+        assertEq(userVaultOrPoolAssetAddresses[0], address(mockERC4626));
+
+
         // send more assets to the vault to create profit
         mockERC20.mint(address(mockERC4626), 100);
 
@@ -97,6 +103,10 @@ contract FeeTest is Test {
         assertEq(d.assetAmount, 0);
         assertEq(d.vaultShares, 0);
         assertEq(d.vaultProvider, 0);
+
+        // confirm that the asset is no longer in the userVaultOrPoolAssetAddresses set
+        userVaultOrPoolAssetAddresses = feeViewsFacet.userVaultOrPoolAssetAddresses(APP_USER_ALICE);
+        assertEq(userVaultOrPoolAssetAddresses.length, 0);
 
         // confirm the profit went to the fee contract, and some went to the user
         uint256 userBalance = mockERC20.balanceOf(APP_USER_ALICE);
@@ -161,12 +171,22 @@ contract FeeTest is Test {
         console.log("feeContractVaultShares", feeContractVaultShares);
         assertEq(feeContractVaultShares, d.vaultShares);
 
+        // confirm that the asset is in the userVaultOrPoolAssetAddresses set
+        address[] memory userVaultOrPoolAssetAddresses = feeViewsFacet.userVaultOrPoolAssetAddresses(APP_USER_ALICE);
+        assertEq(userVaultOrPoolAssetAddresses.length, 1);
+        assertEq(userVaultOrPoolAssetAddresses[0], address(mockERC4626));
+
         // deposit again
         mockERC20.mint(APP_USER_ALICE, depositAmount);
         vm.startPrank(APP_USER_ALICE);
         mockERC20.approve(address(morphoPerfFeeFacet), depositAmount);
         morphoPerfFeeFacet.depositToMorpho(address(mockERC4626), depositAmount);
         vm.stopPrank();
+
+        // confirm that the asset is still in the userVaultOrPoolAssetAddresses set
+        userVaultOrPoolAssetAddresses = feeViewsFacet.userVaultOrPoolAssetAddresses(APP_USER_ALICE);
+        assertEq(userVaultOrPoolAssetAddresses.length, 1);
+        assertEq(userVaultOrPoolAssetAddresses[0], address(mockERC4626));
 
         // deposited twice, so total deposit amount is times 2
         depositAmount = depositAmount * 2;
@@ -199,6 +219,10 @@ contract FeeTest is Test {
         assertEq(d.assetAmount, 0);
         assertEq(d.vaultShares, 0);
         assertEq(d.vaultProvider, 0);
+
+        // confirm that the asset is no longer in the userVaultOrPoolAssetAddresses set
+        userVaultOrPoolAssetAddresses = feeViewsFacet.userVaultOrPoolAssetAddresses(APP_USER_ALICE);
+        assertEq(userVaultOrPoolAssetAddresses.length, 0);
 
         // confirm the profit went to the fee contract, and some went to the user
         uint256 userBalance = mockERC20.balanceOf(APP_USER_ALICE);

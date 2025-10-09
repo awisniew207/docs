@@ -103,6 +103,11 @@ contract FeeForkTest is Test {
         console.log("d.vaultShares", d.vaultShares);
         console.log("d.vaultProvider", d.vaultProvider);
 
+        // confirm that the asset is in the userVaultOrPoolAssetAddresses set
+        address[] memory userVaultOrPoolAssetAddresses = feeViewsFacet.userVaultOrPoolAssetAddresses(APP_USER_ALICE);
+        assertEq(userVaultOrPoolAssetAddresses.length, 1);
+        assertEq(userVaultOrPoolAssetAddresses[0], REAL_USDC);
+
         // confirm that the fee contract has the aTokens
         ERC20 aToken = ERC20(aavePool.getReserveAToken(REAL_USDC));
         uint256 feeContractAaveTokens = aToken.balanceOf(address(aavePerfFeeFacet));
@@ -130,6 +135,10 @@ contract FeeForkTest is Test {
         assertEq(d.assetAmount, 0);
         assertEq(d.vaultShares, 0);
         assertEq(d.vaultProvider, 0);
+
+        // confirm that the asset is no longer in the userVaultOrPoolAssetAddresses set
+        userVaultOrPoolAssetAddresses = feeViewsFacet.userVaultOrPoolAssetAddresses(APP_USER_ALICE);
+        assertEq(userVaultOrPoolAssetAddresses.length, 0);
 
         // confirm the profit went to the fee contract, and some went to the user
         uint256 userBalance = underlyingERC20.balanceOf(APP_USER_ALICE);
@@ -187,6 +196,11 @@ contract FeeForkTest is Test {
         console.log("d.vaultShares", d.vaultShares);
         console.log("d.vaultProvider", d.vaultProvider);
 
+        // confirm that the asset is in the userVaultOrPoolAssetAddresses set
+        address[] memory userVaultOrPoolAssetAddresses = feeViewsFacet.userVaultOrPoolAssetAddresses(APP_USER_ALICE);
+        assertEq(userVaultOrPoolAssetAddresses.length, 1);
+        assertEq(userVaultOrPoolAssetAddresses[0], REAL_USDC);
+
         // confirm that the fee contract has the aTokens
         ERC20 aToken = ERC20(aavePool.getReserveAToken(REAL_USDC));
         uint256 feeContractAaveTokens = aToken.balanceOf(address(aavePerfFeeFacet));
@@ -205,6 +219,10 @@ contract FeeForkTest is Test {
         assertEq(d.assetAmount, 0);
         assertEq(d.vaultShares, 0);
         assertEq(d.vaultProvider, 0);
+
+        // confirm that the asset is no longer in the userVaultOrPoolAssetAddresses set
+        userVaultOrPoolAssetAddresses = feeViewsFacet.userVaultOrPoolAssetAddresses(APP_USER_ALICE);
+        assertEq(userVaultOrPoolAssetAddresses.length, 0);
 
         // confirm the profit went to the fee contract, and some went to the user
         uint256 userBalance = underlyingERC20.balanceOf(APP_USER_ALICE);
@@ -256,6 +274,11 @@ contract FeeForkTest is Test {
         console.log("d.vaultShares", d.vaultShares);
         console.log("d.vaultProvider", d.vaultProvider);
 
+        // confirm that the asset is in the userVaultOrPoolAssetAddresses set
+        address[] memory userVaultOrPoolAssetAddresses = feeViewsFacet.userVaultOrPoolAssetAddresses(APP_USER_ALICE);
+        assertEq(userVaultOrPoolAssetAddresses.length, 1);
+        assertEq(userVaultOrPoolAssetAddresses[0], REAL_USDC);
+
         // confirm that the fee contract has the aTokens
         ERC20 aToken = ERC20(aavePool.getReserveAToken(REAL_USDC));
         uint256 feeContractAaveTokens = aToken.balanceOf(address(aavePerfFeeFacet));
@@ -275,6 +298,11 @@ contract FeeForkTest is Test {
         aavePerfFeeFacet.depositToAave(REAL_USDC, depositAmount);
         vm.stopPrank();
         console.log("deposited to aave");
+
+        // confirm that the asset is still in the userVaultOrPoolAssetAddresses set
+        userVaultOrPoolAssetAddresses = feeViewsFacet.userVaultOrPoolAssetAddresses(APP_USER_ALICE);
+        assertEq(userVaultOrPoolAssetAddresses.length, 1);
+        assertEq(userVaultOrPoolAssetAddresses[0], REAL_USDC);
 
         depositAmount = depositAmount * 2;
 
@@ -310,6 +338,10 @@ contract FeeForkTest is Test {
         assertEq(d.assetAmount, 0);
         assertEq(d.vaultShares, 0);
         assertEq(d.vaultProvider, 0);
+
+        // confirm that the asset is no longer in the userVaultOrPoolAssetAddresses set
+        userVaultOrPoolAssetAddresses = feeViewsFacet.userVaultOrPoolAssetAddresses(APP_USER_ALICE);
+        assertEq(userVaultOrPoolAssetAddresses.length, 0);
 
         // confirm the profit went to the fee contract, and some went to the user
         uint256 userBalance = underlyingERC20.balanceOf(APP_USER_ALICE);
