@@ -24,6 +24,9 @@ contract MorphoPerfFeeFacet {
     // thrown when a deposit already exists with another provider
     error DepositAlreadyExistsWithAnotherProvider(address user, address vaultAddress);
 
+    // 1 = Morpho
+    uint256 private constant VAULT_PROVIDER = 1;
+
 
      /* ========== MUTATIVE FUNCTIONS ========== */
 
@@ -48,12 +51,11 @@ contract MorphoPerfFeeFacet {
 
         // track the deposit
         LibFeeStorage.Deposit storage deposit = LibFeeStorage.getStorage().deposits[msg.sender][vaultAddress];
-        if (deposit.vaultProvider != 0 && deposit.vaultProvider != 1) revert DepositAlreadyExistsWithAnotherProvider(msg.sender, vaultAddress);
+        if (deposit.vaultProvider != 0 && deposit.vaultProvider != VAULT_PROVIDER) revert DepositAlreadyExistsWithAnotherProvider(msg.sender, vaultAddress);
         
         deposit.assetAmount += assetAmount;
         deposit.vaultShares += vaultShares;
-        // 1 = Morpho
-        deposit.vaultProvider = 1;
+        deposit.vaultProvider = VAULT_PROVIDER;
     }
 
     /**
@@ -65,8 +67,7 @@ contract MorphoPerfFeeFacet {
         LibFeeStorage.Deposit memory deposit = LibFeeStorage.getStorage().deposits[msg.sender][vaultAddress];
         if (deposit.assetAmount == 0) revert DepositNotFound(msg.sender, vaultAddress);
 
-        // 1 = Morpho
-        if (deposit.vaultProvider != 1) revert NotMorphoVault(msg.sender, vaultAddress);
+        if (deposit.vaultProvider != VAULT_PROVIDER) revert NotMorphoVault(msg.sender, vaultAddress);
 
         uint256 depositAssetAmount = deposit.assetAmount;
         uint256 depositVaultShares = deposit.vaultShares;

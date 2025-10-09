@@ -24,6 +24,9 @@ contract AavePerfFeeFacet {
     // thrown when a deposit already exists with another provider
     error DepositAlreadyExistsWithAnotherProvider(address user, address poolAddress);
 
+    // 2 = Aave
+    uint256 private constant VAULT_PROVIDER = 2;
+
 
      /* ========== MUTATIVE FUNCTIONS ========== */
 
@@ -48,11 +51,10 @@ contract AavePerfFeeFacet {
 
         // track the deposit
         LibFeeStorage.Deposit storage deposit = LibFeeStorage.getStorage().deposits[msg.sender][poolAsset];
-        if (deposit.vaultProvider != 0 && deposit.vaultProvider != 1) revert DepositAlreadyExistsWithAnotherProvider(msg.sender, poolAsset);
+        if (deposit.vaultProvider != 0 && deposit.vaultProvider != VAULT_PROVIDER) revert DepositAlreadyExistsWithAnotherProvider(msg.sender, poolAsset);
         
         deposit.assetAmount += assetAmount;
-        // 2 = Aave
-        deposit.vaultProvider = 2;
+        deposit.vaultProvider = VAULT_PROVIDER;
     }
 
     /**
@@ -64,8 +66,7 @@ contract AavePerfFeeFacet {
         LibFeeStorage.Deposit memory deposit = LibFeeStorage.getStorage().deposits[msg.sender][poolAsset];
         if (deposit.assetAmount == 0) revert DepositNotFound(msg.sender, poolAsset);
 
-        // 2 = Aave
-        if (deposit.vaultProvider != 2) revert NotAavePool(msg.sender, poolAsset);
+        if (deposit.vaultProvider != VAULT_PROVIDER) revert NotAavePool(msg.sender, poolAsset);
 
         uint256 depositAssetAmount = deposit.assetAmount;
 
