@@ -18,7 +18,7 @@ import {USDC} from "../ABIs/USDC.sol";
 import {MorphoVault} from "../ABIs/MorphoVault.sol";
 import {Morpho} from "../ABIs/Morpho.sol";
 
-contract FeeTest is Test {
+contract FeeForkTest is Test {
     address owner;
     address APP_USER_ALICE = makeAddr("Alice");
     // real morpho vault on base from https://app.morpho.org/base/vault/0x7BfA7C4f149E7415b73bdeDfe609237e29CBF34A/spark-usdc-vault
