@@ -113,9 +113,11 @@ contract FeeForkTest is Test {
         // advance timestamp to 1 week from now to accrue interest, to simulate profit
         // aave is rebasing so this should just be a bigger of aTokens after 1 week
         vm.warp(block.timestamp + 1 weeks);
-        uint256 expectedTotalWithdrawl = aToken.balanceOf(address(aavePerfFeeFacet));
-        console.log("expectedTotalWithdrawl - aka the aTokens in the fee contract after 1 week", expectedTotalWithdrawl);
-        assertGt(expectedTotalWithdrawl, feeContractAaveTokens);
+        uint256 expectedTotalWithdrawal = aToken.balanceOf(address(aavePerfFeeFacet));
+        console.log(
+            "expectedTotalWithdrawal - aka the aTokens in the fee contract after 1 week", expectedTotalWithdrawal
+        );
+        assertGt(expectedTotalWithdrawal, feeContractAaveTokens);
 
         // now, do the withdrawal
         vm.startPrank(APP_USER_ALICE);
@@ -133,7 +135,7 @@ contract FeeForkTest is Test {
         uint256 userBalance = underlyingERC20.balanceOf(APP_USER_ALICE);
         uint256 feeContractBalance = underlyingERC20.balanceOf(address(aavePerfFeeFacet));
 
-        uint256 expectedTotalProfit = expectedTotalWithdrawl - depositAmount;
+        uint256 expectedTotalProfit = expectedTotalWithdrawal - depositAmount;
         uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / 10000);
         uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / 10000;
         console.log("expectedTotalProfit", expectedTotalProfit);
@@ -291,9 +293,11 @@ contract FeeForkTest is Test {
         // advance timestamp to 1 week from now to accrue interest, to simulate profit
         // aave is rebasing so this should just be a bigger of aTokens after 1 week
         vm.warp(block.timestamp + 1 weeks);
-        uint256 expectedTotalWithdrawl = aToken.balanceOf(address(aavePerfFeeFacet));
-        console.log("expectedTotalWithdrawl - aka the aTokens in the fee contract after 1 week", expectedTotalWithdrawl);
-        assertGt(expectedTotalWithdrawl, feeContractAaveTokens);
+        uint256 expectedTotalWithdrawal = aToken.balanceOf(address(aavePerfFeeFacet));
+        console.log(
+            "expectedTotalWithdrawal - aka the aTokens in the fee contract after 1 week", expectedTotalWithdrawal
+        );
+        assertGt(expectedTotalWithdrawal, feeContractAaveTokens);
 
         // now, do the withdrawal
         vm.startPrank(APP_USER_ALICE);
@@ -311,7 +315,7 @@ contract FeeForkTest is Test {
         uint256 userBalance = underlyingERC20.balanceOf(APP_USER_ALICE);
         uint256 feeContractBalance = underlyingERC20.balanceOf(address(aavePerfFeeFacet));
 
-        uint256 expectedTotalProfit = expectedTotalWithdrawl - depositAmount;
+        uint256 expectedTotalProfit = expectedTotalWithdrawal - depositAmount;
         uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / 10000);
         uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / 10000;
         console.log("expectedTotalProfit", expectedTotalProfit);

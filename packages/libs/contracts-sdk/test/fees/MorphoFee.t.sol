@@ -83,9 +83,9 @@ contract FeeTest is Test {
         mockERC20.mint(address(mockERC4626), 100);
 
         // check that asset balance will be higher if we withdraw
-        uint256 expectedTotalWithdrawl = mockERC4626.convertToAssets(d.vaultShares);
-        console.log("expectedTotalWithdrawl", expectedTotalWithdrawl);
-        assertEq(expectedTotalWithdrawl > depositAmount, true);
+        uint256 expectedTotalWithdrawal = mockERC4626.convertToAssets(d.vaultShares);
+        console.log("expectedTotalWithdrawal", expectedTotalWithdrawal);
+        assertEq(expectedTotalWithdrawal > depositAmount, true);
 
         vm.startPrank(APP_USER_ALICE);
         morphoPerfFeeFacet.withdrawFromMorpho(address(mockERC4626));
@@ -102,7 +102,7 @@ contract FeeTest is Test {
         uint256 userBalance = mockERC20.balanceOf(APP_USER_ALICE);
         uint256 feeContractBalance = mockERC20.balanceOf(address(morphoPerfFeeFacet));
 
-        uint256 expectedTotalProfit = expectedTotalWithdrawl - depositAmount;
+        uint256 expectedTotalProfit = expectedTotalWithdrawal - depositAmount;
         uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / 10000);
         uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / 10000;
         console.log("expectedTotalProfit", expectedTotalProfit);
@@ -185,9 +185,9 @@ contract FeeTest is Test {
         mockERC20.mint(address(mockERC4626), 100);
 
         // check that asset balance will be higher if we withdraw
-        uint256 expectedTotalWithdrawl = mockERC4626.convertToAssets(d.vaultShares);
-        console.log("expectedTotalWithdrawl", expectedTotalWithdrawl);
-        assertEq(expectedTotalWithdrawl > depositAmount, true);
+        uint256 expectedTotalWithdrawal = mockERC4626.convertToAssets(d.vaultShares);
+        console.log("expectedTotalWithdrawal", expectedTotalWithdrawal);
+        assertEq(expectedTotalWithdrawal > depositAmount, true);
 
         vm.startPrank(APP_USER_ALICE);
         morphoPerfFeeFacet.withdrawFromMorpho(address(mockERC4626));
@@ -204,7 +204,7 @@ contract FeeTest is Test {
         uint256 userBalance = mockERC20.balanceOf(APP_USER_ALICE);
         uint256 feeContractBalance = mockERC20.balanceOf(address(morphoPerfFeeFacet));
 
-        uint256 expectedTotalProfit = expectedTotalWithdrawl - depositAmount;
+        uint256 expectedTotalProfit = expectedTotalWithdrawal - depositAmount;
         uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / 10000);
         uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / 10000;
         console.log("expectedTotalProfit", expectedTotalProfit);
