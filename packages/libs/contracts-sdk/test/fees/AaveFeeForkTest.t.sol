@@ -174,7 +174,7 @@ contract FeeForkTest is Test {
 
         vm.startPrank(APP_USER_ALICE);
         underlyingERC20.approve(address(aavePerfFeeFacet), depositAmount);
-        console.log("approved USDC to aave");
+        console.log("approved USDC to the fee contract");
         aavePerfFeeFacet.depositToAave(REAL_USDC, depositAmount);
         vm.stopPrank();
         console.log("deposited to aave");
@@ -219,6 +219,125 @@ contract FeeForkTest is Test {
 
         // test that the MockERC20 is not in the set of tokens that have collected fees
         address[] memory tokensWithCollectedFees = feeAdminFacet.tokensWithCollectedFees();
+        assertEq(tokensWithCollectedFees.length, 0);
+    }
+
+    function testMultipleDepositAndWithdrawFromAaveWithProfit() public {
+        // set the performance fee percentage to 5% in basis points
+        uint256 performanceFeePercentage = 500;
+
+        // set the performance fee percentage to 5%
+        vm.startPrank(owner);
+        assertNotEq(feeAdminFacet.performanceFeePercentage(), performanceFeePercentage);
+        feeAdminFacet.setPerformanceFeePercentage(performanceFeePercentage);
+        assertEq(feeAdminFacet.performanceFeePercentage(), performanceFeePercentage);
+        vm.stopPrank();
+
+        uint256 depositAmount = 50 * 10 ** erc20Decimals;
+
+        // mint the USDC to the user
+        vm.startPrank(USDC_MINTER);
+        underlyingERC20.mint(APP_USER_ALICE, depositAmount);
+        vm.stopPrank();
+        console.log("minted USDC to user");
+
+        vm.startPrank(APP_USER_ALICE);
+        underlyingERC20.approve(address(aavePerfFeeFacet), depositAmount);
+        console.log("approved USDC to aave");
+        aavePerfFeeFacet.depositToAave(REAL_USDC, depositAmount);
+        vm.stopPrank();
+        console.log("deposited to aave");
+
+        LibFeeStorage.Deposit memory d = feeViewsFacet.deposits(APP_USER_ALICE, REAL_USDC);
+
+        assertEq(d.assetAmount, depositAmount);
+        console.log("d.vaultShares", d.vaultShares);
+        console.log("d.vaultProvider", d.vaultProvider);
+
+        // confirm that the fee contract has the aTokens
+        ERC20 aToken = ERC20(aavePool.getReserveAToken(REAL_USDC));
+        uint256 feeContractAaveTokens = aToken.balanceOf(address(aavePerfFeeFacet));
+        console.log("feeContractAaveTokens", feeContractAaveTokens);
+        // due to aave fees / rounding math, we get back 1 less aToken than we deposited
+        assertEq(feeContractAaveTokens / 10 ** aToken.decimals(), (depositAmount / 10 ** erc20Decimals) - 1);
+
+        // deposit again
+        vm.startPrank(USDC_MINTER);
+        underlyingERC20.mint(APP_USER_ALICE, depositAmount);
+        vm.stopPrank();
+        console.log("minted USDC to user");
+
+        vm.startPrank(APP_USER_ALICE);
+        underlyingERC20.approve(address(aavePerfFeeFacet), depositAmount);
+        console.log("approved USDC to the fee contract");
+        aavePerfFeeFacet.depositToAave(REAL_USDC, depositAmount);
+        vm.stopPrank();
+        console.log("deposited to aave");
+
+        depositAmount = depositAmount * 2;
+
+        d = feeViewsFacet.deposits(APP_USER_ALICE, REAL_USDC);
+
+        assertEq(d.assetAmount, depositAmount);
+        console.log("d.vaultShares", d.vaultShares);
+        console.log("d.vaultProvider", d.vaultProvider);
+
+        // confirm that the fee contract has the aTokens
+        feeContractAaveTokens = aToken.balanceOf(address(aavePerfFeeFacet));
+        console.log("feeContractAaveTokens", feeContractAaveTokens);
+        // due to aave fees / rounding math, we get back 1 less aToken than we deposited
+        assertEq(feeContractAaveTokens / 10 ** aToken.decimals(), (depositAmount / 10 ** erc20Decimals) - 1);
+
+        // advance timestamp to 1 week from now to accrue interest, to simulate profit
+        // aave is rebasing so this should just be a bigger of aTokens after 1 week
+        vm.warp(block.timestamp + 1 weeks);
+        uint256 expectedTotalWithdrawl = aToken.balanceOf(address(aavePerfFeeFacet));
+        console.log("expectedTotalWithdrawl - aka the aTokens in the fee contract after 1 week", expectedTotalWithdrawl);
+        assertGt(expectedTotalWithdrawl, feeContractAaveTokens);
+
+        // now, do the withdrawal
+        vm.startPrank(APP_USER_ALICE);
+        aavePerfFeeFacet.withdrawFromAave(REAL_USDC);
+        vm.stopPrank();
+
+        // confirm the deposit is zeroed out
+        d = feeViewsFacet.deposits(APP_USER_ALICE, REAL_USDC);
+
+        assertEq(d.assetAmount, 0);
+        assertEq(d.vaultShares, 0);
+        assertEq(d.vaultProvider, 0);
+
+        // confirm the profit went to the fee contract, and some went to the user
+        uint256 userBalance = underlyingERC20.balanceOf(APP_USER_ALICE);
+        uint256 feeContractBalance = underlyingERC20.balanceOf(address(aavePerfFeeFacet));
+
+        uint256 expectedTotalProfit = expectedTotalWithdrawl - depositAmount;
+        uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / 10000);
+        uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / 10000;
+        console.log("expectedTotalProfit", expectedTotalProfit);
+        console.log("expectedUserProfit", expectedUserProfit);
+        console.log("expectedFeeContractProfit", expectedFeeContractProfit);
+        console.log("userProfit", userBalance);
+        console.log("feeContractProfit", feeContractBalance);
+
+        assertEq(userBalance, depositAmount + expectedUserProfit);
+        assertEq(feeContractBalance, expectedFeeContractProfit);
+
+        // test that the MockERC20 is in the set of tokens that have collected fees
+        address[] memory tokensWithCollectedFees = feeAdminFacet.tokensWithCollectedFees();
+        assertEq(tokensWithCollectedFees.length, 1);
+        assertEq(tokensWithCollectedFees[0], address(underlyingERC20));
+
+        // test withdrawal of profit from the fee contract as owner
+        vm.startPrank(owner);
+        feeAdminFacet.withdrawTokens(address(underlyingERC20));
+        vm.stopPrank();
+
+        // confirm the profit went to the owner
+        assertEq(underlyingERC20.balanceOf(owner), expectedFeeContractProfit);
+
+        // confirm that the token is no longer in the set of tokens that have collected fees
+        tokensWithCollectedFees = feeAdminFacet.tokensWithCollectedFees();
         assertEq(tokensWithCollectedFees.length, 0);
     }
 }
