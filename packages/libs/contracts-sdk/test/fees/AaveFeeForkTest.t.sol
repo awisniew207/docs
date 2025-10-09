@@ -15,8 +15,8 @@ import {FeeUtils} from "../../contracts/fees/FeeUtils.sol";
 import {OwnershipFacet} from "../../contracts/diamond-base/facets/OwnershipFacet.sol";
 
 import {USDC} from "../ABIs/USDC.sol";
-import { IPool } from "@aave-dao/aave-v3-origin/src/contracts/interfaces/IPool.sol";
-import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {IPool} from "@aave-dao/aave-v3-origin/src/contracts/interfaces/IPool.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract FeeForkTest is Test {
     address owner;
@@ -117,8 +117,6 @@ contract FeeForkTest is Test {
         console.log("expectedTotalWithdrawl - aka the aTokens in the fee contract after 1 week", expectedTotalWithdrawl);
         assertGt(expectedTotalWithdrawl, feeContractAaveTokens);
 
-
-
         // now, do the withdrawal
         vm.startPrank(APP_USER_ALICE);
         aavePerfFeeFacet.withdrawFromAave(REAL_USDC);
@@ -164,5 +162,4 @@ contract FeeForkTest is Test {
         tokensWithCollectedFees = feeAdminFacet.tokensWithCollectedFees();
         assertEq(tokensWithCollectedFees.length, 0);
     }
-
 }
