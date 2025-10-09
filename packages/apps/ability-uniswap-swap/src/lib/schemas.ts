@@ -2,9 +2,9 @@ import { z } from 'zod';
 
 export const abilityParamsSchema = z.object({
   action: z
-    .enum(['approve', 'swap', 'approveAndSwap'])
+    .enum(['approve', 'swap'])
     .describe(
-      'Dictates whether to perform an ERC20 approval, a swap, or both using the signed Uniswap quote',
+      'Dictates whether to perform an ERC20 approval or a swap using the signed Uniswap quote',
     ),
   rpcUrlForUniswap: z
     .string()
@@ -56,13 +56,26 @@ export const abilityParamsSchema = z.object({
 });
 
 export const precheckSuccessSchema = z.object({
-  nativeTokenBalance: z.string().describe('The balance of the native token used for gas fees'),
-  tokenInAddress: z.string().describe('The address of the input token used for the swap'),
-  tokenInBalance: z.string().describe('The balance of the input token used for the swap'),
+  nativeTokenBalance: z
+    .string()
+    .describe('The balance of the native token used for gas fees')
+    .optional(),
+  tokenInAddress: z
+    .string()
+    .describe('The address of the input token used for the swap')
+    .optional(),
+  tokenInBalance: z
+    .string()
+    .describe('The balance of the input token used for the swap')
+    .optional(),
   currentTokenInAllowanceForSpender: z
     .string()
     .describe('The current allowance of the input token used for the swap'),
   spenderAddress: z.string().describe('The Uniswap router address that will be used for the swap'),
+  requiredTokenInAllowance: z
+    .string()
+    .describe('The required allowance of the input token for the swap for the ERC20 spender')
+    .optional(),
 });
 
 export const precheckFailSchema = z.object({
@@ -110,5 +123,9 @@ export const executeSuccessSchema = z.object({
   currentAllowance: z
     .string()
     .describe('The current allowance of the input token used for the swap for the ERC20 spender')
+    .optional(),
+  requiredAllowance: z
+    .string()
+    .describe('The required allowance of the input token used for the swap for the ERC20 spender')
     .optional(),
 });

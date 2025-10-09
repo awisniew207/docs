@@ -58,6 +58,11 @@ const SWAP_TOKEN_IN_DECIMALS = 18;
 // const SWAP_TOKEN_IN_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'; // USDC
 // const SWAP_TOKEN_IN_DECIMALS = 6;
 
+const EXPECTED_SWAP_AMOUNT = ethers.utils.formatUnits(
+  ethers.utils.parseUnits(SWAP_AMOUNT.toString(), SWAP_TOKEN_IN_DECIMALS),
+  SWAP_TOKEN_IN_DECIMALS,
+);
+
 const SWAP_TOKEN_OUT_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'; // USDC
 const SWAP_TOKEN_OUT_DECIMALS = 6;
 // const SWAP_TOKEN_OUT_ADDRESS = '0x4200000000000000000000000000000000000006'; // WETH
@@ -359,6 +364,41 @@ describe('Uniswap Swap Ability E2E Tests', () => {
   });
 
   describe('Precheck and Execute without Alchemy Gas Sponsorship', () => {
+    it('should fail precheck because of invalid ability action', async () => {
+      const signedUniswapQuote = await validateSignedUniswapQuoteIsDefined(SIGNED_UNISWAP_QUOTE);
+      const uniswapSwapAbilityClient = getUniswapSwapAbilityClient();
+
+      // Try to precheck with the malicious quote
+      const precheckResult = await uniswapSwapAbilityClient.precheck(
+        {
+          // @ts-expect-error - invalid ability action
+          action: 'invalid',
+          rpcUrlForUniswap: RPC_URL,
+          signedUniswapQuote: {
+            quote: signedUniswapQuote.quote,
+            signature: signedUniswapQuote.signature,
+          },
+          alchemyGasSponsor: false,
+        },
+        {
+          delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+        },
+      );
+      console.log(
+        '[should fail precheck because of invalid ability action]',
+        util.inspect(precheckResult, { depth: 10 }),
+      );
+
+      // Precheck should fail with recipient validation error
+      expect(precheckResult).toBeDefined();
+      expect(precheckResult.success).toBe(false);
+
+      if (precheckResult.success === false) {
+        expect(precheckResult.runtimeError).toContain('Invalid precheck parameters.');
+        expect(precheckResult.schemaValidationError).toBeTruthy();
+      }
+    });
+
     it('should fail precheck because of insufficient tokenIn allowance', async () => {
       const signedUniswapQuote = await validateSignedUniswapQuoteIsDefined(SIGNED_UNISWAP_QUOTE);
       const uniswapSwapAbilityClient = getUniswapSwapAbilityClient();
@@ -394,10 +434,38 @@ describe('Uniswap Swap Ability E2E Tests', () => {
       );
       expect(innerResult.spenderAddress).toBe(signedUniswapQuote.quote.to);
       expect(innerResult.tokenAddress).toBe(SWAP_TOKEN_IN_ADDRESS);
-      expect(innerResult.requiredAllowance).toBe(
-        ethers.utils.parseUnits(SWAP_AMOUNT.toString(), SWAP_TOKEN_IN_DECIMALS).toString(),
+      expect(innerResult.requiredAllowance).toBe(EXPECTED_SWAP_AMOUNT);
+      expect(innerResult.currentAllowance).toBe('0.0');
+    });
+
+    it('should fail execute because of invalid ability action', async () => {
+      const signedUniswapQuote = await validateSignedUniswapQuoteIsDefined(SIGNED_UNISWAP_QUOTE);
+      const uniswapSwapAbilityClient = getUniswapSwapAbilityClient();
+
+      const executeResult = await uniswapSwapAbilityClient.execute(
+        {
+          // @ts-expect-error - invalid ability action
+          action: 'invalid',
+          rpcUrlForUniswap: RPC_URL,
+          signedUniswapQuote: signedUniswapQuote,
+          alchemyGasSponsor: false,
+        },
+        {
+          delegatorPkpEthAddress: TEST_CONFIG.userPkp!.ethAddress!,
+        },
       );
-      expect(innerResult.currentAllowance).toBe('0');
+      console.log(
+        '[should fail execute because of invalid ability action]',
+        util.inspect(executeResult, { depth: 10 }),
+      );
+
+      expect(executeResult).toBeDefined();
+      expect(executeResult.success).toBe(false);
+
+      if (executeResult.success === false) {
+        expect(executeResult.runtimeError).toContain('Invalid execute parameters.');
+        expect(executeResult.schemaValidationError).toBeTruthy();
+      }
     });
 
     it('should make a new ERC20 approval transaction for the Uniswap router', async () => {
@@ -465,11 +533,9 @@ describe('Uniswap Swap Ability E2E Tests', () => {
       }
 
       expect(executeResult.result).toBeDefined();
-      expect(executeResult.result.approvalTxHash).not.toBeDefined();
-      expect(executeResult.result.currentAllowance).toBeDefined();
-      expect(BigInt(executeResult.result.currentAllowance!)).toBeGreaterThanOrEqual(
-        BigInt(ethers.utils.parseUnits(SWAP_AMOUNT.toString(), SWAP_TOKEN_IN_DECIMALS).toString()),
-      );
+      expect(executeResult.result.approvalTxHash).toBeUndefined();
+      expect(executeResult.result.currentAllowance!).toBe(EXPECTED_SWAP_AMOUNT);
+      expect(executeResult.result.requiredAllowance!).toBe(EXPECTED_SWAP_AMOUNT);
     });
 
     it('should successfully run precheck on the Uniswap Swap Ability', async () => {
@@ -478,6 +544,7 @@ describe('Uniswap Swap Ability E2E Tests', () => {
 
       const precheckResult = await uniswapSwapAbilityClient.precheck(
         {
+          action: AbilityAction.Swap,
           rpcUrlForUniswap: RPC_URL,
           signedUniswapQuote: {
             quote: signedUniswapQuote.quote,
@@ -514,11 +581,24 @@ describe('Uniswap Swap Ability E2E Tests', () => {
 
       // Verify the result is properly populated
       expect(precheckResult.result).toBeDefined();
-      expect(BigInt(precheckResult.result!.nativeTokenBalance)).toBeGreaterThan(0n);
+      expect(precheckResult.result!.nativeTokenBalance).toBeDefined();
+      expect(
+        ethers.utils.parseEther(precheckResult.result!.nativeTokenBalance as string).toBigInt(),
+      ).toBeGreaterThan(0n);
+
       expect(precheckResult.result!.tokenInAddress).toBe(SWAP_TOKEN_IN_ADDRESS);
-      expect(BigInt(precheckResult.result!.tokenInBalance)).toBeGreaterThan(0n);
-      expect(BigInt(precheckResult.result!.currentTokenInAllowanceForSpender)).toBeGreaterThan(0n);
+      expect(precheckResult.result!.tokenInBalance).toBeDefined();
+      expect(
+        ethers.utils
+          .parseUnits(precheckResult.result!.tokenInBalance as string, SWAP_TOKEN_IN_DECIMALS)
+          .toBigInt(),
+      ).toBeGreaterThan(0n);
+
+      expect(precheckResult.result!.currentTokenInAllowanceForSpender as string).toBe(
+        EXPECTED_SWAP_AMOUNT,
+      );
       expect(precheckResult.result!.spenderAddress).toBe(signedUniswapQuote.quote.to);
+      expect(precheckResult.result!.requiredTokenInAllowance!).toBe(EXPECTED_SWAP_AMOUNT);
     });
 
     it('should execute the Uniswap Swap Ability with the Agent Wallet PKP', async () => {
@@ -616,10 +696,8 @@ describe('Uniswap Swap Ability E2E Tests', () => {
       );
       expect(innerResult.spenderAddress).toBe(signedUniswapQuote.quote.to);
       expect(innerResult.tokenAddress).toBe(SWAP_TOKEN_IN_ADDRESS);
-      expect(innerResult.requiredAllowance).toBe(
-        ethers.utils.parseUnits(SWAP_AMOUNT.toString(), SWAP_TOKEN_IN_DECIMALS).toString(),
-      );
-      expect(innerResult.currentAllowance).toBe('0');
+      expect(innerResult.requiredAllowance).toBe(EXPECTED_SWAP_AMOUNT);
+      expect(innerResult.currentAllowance).toBe('0.0');
     });
 
     it('should make a new ERC20 approval transaction for the Uniswap router', async () => {
@@ -651,7 +729,7 @@ describe('Uniswap Swap Ability E2E Tests', () => {
       }
 
       expect(executeResult.result).toBeDefined();
-      expect(executeResult.result.approvalTxHash).not.toBeDefined();
+      expect(executeResult.result.approvalTxHash).toBeUndefined();
       expect(executeResult.result.approvalTxUserOperationHash).toBeDefined();
 
       const approvalTxUserOperationHash = executeResult.result.approvalTxUserOperationHash;
@@ -700,11 +778,9 @@ describe('Uniswap Swap Ability E2E Tests', () => {
       }
 
       expect(executeResult.result).toBeDefined();
-      expect(executeResult.result.approvalTxHash).not.toBeDefined();
-      expect(executeResult.result.currentAllowance).toBeDefined();
-      expect(BigInt(executeResult.result.currentAllowance!)).toBeGreaterThanOrEqual(
-        BigInt(ethers.utils.parseUnits(SWAP_AMOUNT.toString(), SWAP_TOKEN_IN_DECIMALS).toString()),
-      );
+      expect(executeResult.result.approvalTxHash).toBeUndefined();
+      expect(executeResult.result.currentAllowance!).toBe(EXPECTED_SWAP_AMOUNT);
+      expect(executeResult.result.requiredAllowance!).toBe(EXPECTED_SWAP_AMOUNT);
     });
 
     it('should successfully run precheck on the Uniswap Swap Ability', async () => {
@@ -713,6 +789,7 @@ describe('Uniswap Swap Ability E2E Tests', () => {
 
       const precheckResult = await uniswapSwapAbilityClient.precheck(
         {
+          action: AbilityAction.Swap,
           rpcUrlForUniswap: RPC_URL,
           signedUniswapQuote: {
             quote: signedUniswapQuote.quote,
@@ -751,11 +828,18 @@ describe('Uniswap Swap Ability E2E Tests', () => {
 
       // Verify the result is properly populated
       expect(precheckResult.result).toBeDefined();
-      expect(BigInt(precheckResult.result!.nativeTokenBalance)).toBeGreaterThan(0n);
+      expect(precheckResult.result!.nativeTokenBalance).toBeUndefined();
       expect(precheckResult.result!.tokenInAddress).toBe(SWAP_TOKEN_IN_ADDRESS);
-      expect(BigInt(precheckResult.result!.tokenInBalance)).toBeGreaterThan(0n);
-      expect(BigInt(precheckResult.result!.currentTokenInAllowanceForSpender)).toBeGreaterThan(0n);
+      expect(
+        ethers.utils
+          .parseUnits(precheckResult.result!.tokenInBalance as string, SWAP_TOKEN_IN_DECIMALS)
+          .toBigInt(),
+      ).toBeGreaterThan(0n);
+      expect(precheckResult.result!.currentTokenInAllowanceForSpender as string).toBe(
+        EXPECTED_SWAP_AMOUNT,
+      );
       expect(precheckResult.result!.spenderAddress).toBe(signedUniswapQuote.quote.to);
+      expect(precheckResult.result!.requiredTokenInAllowance!).toBe(EXPECTED_SWAP_AMOUNT);
     });
 
     it('should execute the Uniswap Swap Ability with the Agent Wallet PKP', async () => {
@@ -790,7 +874,7 @@ describe('Uniswap Swap Ability E2E Tests', () => {
       console.log(executeResult);
 
       expect(executeResult.result).toBeDefined();
-      expect(executeResult.result.swapTxHash).not.toBeDefined();
+      expect(executeResult.result.swapTxHash).toBeUndefined();
       expect(executeResult.result.swapTxUserOperationHash).toBeDefined();
 
       const swapTxUserOperationHash = executeResult.result.swapTxUserOperationHash;

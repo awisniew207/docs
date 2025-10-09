@@ -1,3 +1,28 @@
+# 8.0.0 (2025-10-08)
+
+### ⚠️ Breaking Changes
+
+- Remove the ApproveAndSwap Ability Action from the Uniswap Swap Ability, and format returned tokenIn allowances and balances as decimal strings ([0b80ad90](https://github.com/LIT-Protocol/Vincent/commit/0b80ad90))
+
+### ❤️ Thank You
+
+- Wyatt Barnes @spacesailor24
+
+# 7.0.0 (2025-10-08)
+
+### ⚠️ Breaking Changes
+
+- The nativeTokenBalance, tokenInAddress, tokenInBalance properties of the Uniswap Ability Precheck success response have been made optional and can now possibly return undefined ([6069020e](https://github.com/LIT-Protocol/Vincent/commit/6069020e))
+
+### 🧱 Updated Dependencies
+
+- Updated ability-sdk to 2.3.1
+- Updated app-sdk to 2.2.3
+
+### ❤️ Thank You
+
+- Wyatt Barnes @spacesailor24
+
 # 6.0.0 (2025-10-06)
 
 ### ⚠️ Breaking Changes
