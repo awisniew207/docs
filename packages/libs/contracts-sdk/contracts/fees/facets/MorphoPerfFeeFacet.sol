@@ -56,6 +56,10 @@ contract MorphoPerfFeeFacet {
         deposit.assetAmount += assetAmount;
         deposit.vaultShares += vaultShares;
         deposit.vaultProvider = VAULT_PROVIDER;
+
+        // add the vault address to the set of vault or pool asset addresses
+        // so the user can find their deposits later
+        LibFeeStorage.getStorage().userVaultOrPoolAssetAddresses[msg.sender].add(vaultAddress);
     }
 
     /**
@@ -75,6 +79,10 @@ contract MorphoPerfFeeFacet {
         // zero out the struct now before we call any other
         // contracts to prevent reentrancy attacks
         delete LibFeeStorage.getStorage().deposits[msg.sender][vaultAddress];
+
+        // remove the vault address from the set of vault or pool asset addresses
+        // so the user can't find their deposits later
+        LibFeeStorage.getStorage().userVaultOrPoolAssetAddresses[msg.sender].remove(vaultAddress);
 
         // get the vault and asset
         ERC4626 vault = ERC4626(vaultAddress);

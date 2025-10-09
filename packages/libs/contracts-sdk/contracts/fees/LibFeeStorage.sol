@@ -27,6 +27,11 @@ library LibFeeStorage {
         EnumerableSet.AddressSet tokensWithCollectedFees;
         // aave pool contract address for this chain
         address aavePool;
+        // maps user address to a set of vault or pool asset addresses
+        // this means the user has deposited into this vault or pool
+        // and if the vincent app disappears, the user can grab this set
+        // and then call deposits(userAddress, addressFromThisSet) to find their deposits
+        mapping(address => EnumerableSet.AddressSet) userVaultOrPoolAssetAddresses;
     }
 
     function getStorage() internal pure returns (FeeStorage storage as_) {
