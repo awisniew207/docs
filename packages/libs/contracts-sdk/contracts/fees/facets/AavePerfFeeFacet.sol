@@ -27,7 +27,6 @@ contract AavePerfFeeFacet {
     // 2 = Aave
     uint256 private constant VAULT_PROVIDER = 2;
 
-
      /* ========== MUTATIVE FUNCTIONS ========== */
 
     /** 

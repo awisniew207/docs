@@ -54,9 +54,4 @@ contract FeeViewsFacet {
     function userVaultOrPoolAssetAddressesAtIndex(address user, uint256 index) external view returns (address) {
         return LibFeeStorage.getStorage().userVaultOrPoolAssetAddresses[user].at(index);
     }
-
-
-     
-
-
 }

@@ -27,7 +27,6 @@ contract MorphoPerfFeeFacet {
     // 1 = Morpho
     uint256 private constant VAULT_PROVIDER = 1;
 
-
      /* ========== MUTATIVE FUNCTIONS ========== */
 
     /** 
