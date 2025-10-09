@@ -1,3 +1,10 @@
+## 0.2.4 (2025-10-08)
+
+### 🧱 Updated Dependencies
+
+- Updated ability-sdk to 2.3.1
+- Updated app-sdk to 2.2.3
+
 ## 0.2.3 (2025-10-06)
 
 ### 🧱 Updated Dependencies
