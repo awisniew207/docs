@@ -54,7 +54,7 @@ contract DeployFeeDiamond is Script {
      * @notice Deploy to a specific network
      * @param network Network name for logging
      */
-    function deployToNetwork(string memory network) public returns (address) {
+    function deployToNetwork(string memory network, bytes32 create2Salt) public returns (address) {
         // Get private key from environment variable
         uint256 deployerPrivateKey = vm.envUint("VINCENT_DEPLOYER_PRIVATE_KEY");
         if (deployerPrivateKey == 0) {
@@ -71,23 +71,25 @@ contract DeployFeeDiamond is Script {
         IDiamondCut.FacetCut[] memory cuts = new IDiamondCut.FacetCut[](6);
 
         // core diamond lib facets
-        DiamondLoupeFacet diamondLoupeFacet = new DiamondLoupeFacet();
+        DiamondLoupeFacet diamondLoupeFacet = new DiamondLoupeFacet{salt: create2Salt}();
         cuts[0] = contractToFacetCutAdd("DiamondLoupeFacet", address(diamondLoupeFacet));
-        OwnershipFacet ownershipFacet = new OwnershipFacet();
+        OwnershipFacet ownershipFacet = new OwnershipFacet{salt: create2Salt}();
         cuts[1] = contractToFacetCutAdd("OwnershipFacet", address(ownershipFacet));
 
         // fee facets
-        FeeViewsFacet feeViewsFacet = new FeeViewsFacet();
+        FeeViewsFacet feeViewsFacet = new FeeViewsFacet{salt: create2Salt}();
         cuts[2] = contractToFacetCutAdd("FeeViewsFacet", address(feeViewsFacet));
-        FeeAdminFacet feeAdminFacet = new FeeAdminFacet();
+        FeeAdminFacet feeAdminFacet = new FeeAdminFacet{salt: create2Salt}();
         cuts[3] = contractToFacetCutAdd("FeeAdminFacet", address(feeAdminFacet));
-        MorphoPerfFeeFacet morphoPerfFeeFacet = new MorphoPerfFeeFacet();
+        MorphoPerfFeeFacet morphoPerfFeeFacet = new MorphoPerfFeeFacet{salt: create2Salt}();
         cuts[4] = contractToFacetCutAdd("MorphoPerfFeeFacet", address(morphoPerfFeeFacet));
-        AavePerfFeeFacet aavePerfFeeFacet = new AavePerfFeeFacet();
+        AavePerfFeeFacet aavePerfFeeFacet = new AavePerfFeeFacet{salt: create2Salt}();
         cuts[5] = contractToFacetCutAdd("AavePerfFeeFacet", address(aavePerfFeeFacet));
 
         // Deploy the Diamond with the diamondCut facet and all other facets in one transaction
-        Fee diamond = new Fee(cuts, FeeArgs({owner: deployerAddress, init: address(0), initCalldata: bytes("")}));
+        Fee diamond = new Fee{
+            salt: create2Salt
+        }(cuts, FeeArgs({owner: deployerAddress, init: address(0), initCalldata: bytes("")}));
 
         // Stop broadcasting transactions
         vm.stopBroadcast();
@@ -108,7 +110,7 @@ contract DeployFeeDiamond is Script {
      * @notice Deploy to Datil network
      */
     function deployToDatil() public returns (address) {
-        return deployToNetwork("Datil");
+        return deployToNetwork("Datil", keccak256("DatilSalt"));
     }
 
     /**

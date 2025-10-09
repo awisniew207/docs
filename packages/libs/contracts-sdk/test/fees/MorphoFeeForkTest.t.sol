@@ -47,7 +47,7 @@ contract FeeForkTest is Test {
 
         DeployFeeDiamond deployScript = new DeployFeeDiamond();
 
-        address diamondAddress = deployScript.deployToNetwork("test");
+        address diamondAddress = deployScript.deployToNetwork("test", keccak256("testSalt"));
         feeDiamond = Fee(payable(diamondAddress));
 
         feeViewsFacet = FeeViewsFacet(diamondAddress);
