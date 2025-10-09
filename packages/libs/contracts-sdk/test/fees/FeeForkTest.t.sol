@@ -212,7 +212,9 @@ contract FeeTest is Test {
         console.log("depositAmount", depositAmount);
         console.log("userBalance", userBalance);
 
-        // due to vault math and fees, the user will have a slightly lower balance
+        // The user's balance is exactly depositAmount - 1 due to vault share math and fee rounding:
+        // When withdrawing, the vault converts shares back to assets, and due to integer division/rounding,
+        // the user receives one less unit than deposited. This is expected for this test scenario.
         assertEq(userBalance, depositAmount - 1);
         assertEq(feeContractBalance, 0);
 
