@@ -14,9 +14,9 @@ import {LibFeeStorage} from "../../contracts/fees/LibFeeStorage.sol";
 import {FeeUtils} from "../../contracts/fees/FeeUtils.sol";
 import {OwnershipFacet} from "../../contracts/diamond-base/facets/OwnershipFacet.sol";
 
-import { USDC } from "../ABIs/USDC.sol";
-import { MorphoVault } from "../ABIs/MorphoVault.sol";
-import { Morpho } from "../ABIs/Morpho.sol";
+import {USDC} from "../ABIs/USDC.sol";
+import {MorphoVault} from "../ABIs/MorphoVault.sol";
+import {Morpho} from "../ABIs/Morpho.sol";
 
 contract FeeTest is Test {
     address owner;
@@ -106,15 +106,14 @@ contract FeeTest is Test {
         console.log("withdrawalQueueLength", withdrawalQueueLength);
         assertGt(withdrawalQueueLength, 0);
         Morpho.Id withdrawalQueueEntryHash = Morpho.Id.wrap(MorphoVault.Id.unwrap(morphoVault.withdrawQueue(0)));
-        (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) = morpho.idToMarketParams(withdrawalQueueEntryHash);
+        (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) =
+            morpho.idToMarketParams(withdrawalQueueEntryHash);
         vm.warp(block.timestamp + 1 weeks);
-        morpho.accrueInterest(Morpho.MarketParams({
-            loanToken: loanToken,
-            collateralToken: collateralToken,
-            oracle: oracle,
-            irm: irm,
-            lltv: lltv
-        }));
+        morpho.accrueInterest(
+            Morpho.MarketParams({
+                loanToken: loanToken, collateralToken: collateralToken, oracle: oracle, irm: irm, lltv: lltv
+            })
+        );
 
         // check that asset balance will be higher if we withdraw
         uint256 expectedTotalWithdrawl = morphoVault.convertToAssets(d.vaultShares);
@@ -282,15 +281,14 @@ contract FeeTest is Test {
         console.log("withdrawalQueueLength", withdrawalQueueLength);
         assertGt(withdrawalQueueLength, 0);
         Morpho.Id withdrawalQueueEntryHash = Morpho.Id.wrap(MorphoVault.Id.unwrap(morphoVault.withdrawQueue(0)));
-        (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) = morpho.idToMarketParams(withdrawalQueueEntryHash);
+        (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) =
+            morpho.idToMarketParams(withdrawalQueueEntryHash);
         vm.warp(block.timestamp + 1 weeks);
-        morpho.accrueInterest(Morpho.MarketParams({
-            loanToken: loanToken,
-            collateralToken: collateralToken,
-            oracle: oracle,
-            irm: irm,
-            lltv: lltv
-        }));
+        morpho.accrueInterest(
+            Morpho.MarketParams({
+                loanToken: loanToken, collateralToken: collateralToken, oracle: oracle, irm: irm, lltv: lltv
+            })
+        );
 
         // check that asset balance will be higher if we withdraw
         uint256 expectedTotalWithdrawl = morphoVault.convertToAssets(d.vaultShares);
