@@ -74,4 +74,19 @@ contract FeeTest is Test {
         vm.stopPrank();
         assertNotEq(feeAdminFacet.performanceFeePercentage(), newPerformanceFeePercentage);
     }
+
+    function testSetAavePool() public {
+        address NEW_AAVE_POOL = makeAddr("AavePool");
+        assertNotEq(feeAdminFacet.aavePool(), NEW_AAVE_POOL);
+
+        // test that a non-owner cannot set the aave pool
+        vm.expectRevert(FeeUtils.CallerNotOwner.selector);
+        feeAdminFacet.setAavePool(NEW_AAVE_POOL);
+
+        // test that the owner can set the aave pool
+        vm.startPrank(owner);
+        feeAdminFacet.setAavePool(NEW_AAVE_POOL);
+        vm.stopPrank();
+        assertEq(feeAdminFacet.aavePool(), NEW_AAVE_POOL);
+    }
 }

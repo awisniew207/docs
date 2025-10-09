@@ -9,6 +9,7 @@ import "../contracts/diamond-base/facets/OwnershipFacet.sol";
 import "../contracts/fees/facets/FeeViewsFacet.sol";
 import "../contracts/fees/facets/FeeAdminFacet.sol";
 import "../contracts/fees/facets/MorphoPerfFeeFacet.sol";
+import "../contracts/fees/facets/AavePerfFeeFacet.sol";
 
 import "../contracts/diamond-base/interfaces/IDiamondCut.sol";
 import "../contracts/diamond-base/interfaces/IDiamondLoupe.sol";
@@ -67,7 +68,7 @@ contract DeployFeeDiamond is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         // Deploy the facets
-        IDiamondCut.FacetCut[] memory cuts = new IDiamondCut.FacetCut[](5);
+        IDiamondCut.FacetCut[] memory cuts = new IDiamondCut.FacetCut[](6);
 
         // core diamond lib facets
         DiamondLoupeFacet diamondLoupeFacet = new DiamondLoupeFacet();
@@ -82,6 +83,8 @@ contract DeployFeeDiamond is Script {
         cuts[3] = contractToFacetCutAdd("FeeAdminFacet", address(feeAdminFacet));
         MorphoPerfFeeFacet morphoPerfFeeFacet = new MorphoPerfFeeFacet();
         cuts[4] = contractToFacetCutAdd("MorphoPerfFeeFacet", address(morphoPerfFeeFacet));
+        AavePerfFeeFacet aavePerfFeeFacet = new AavePerfFeeFacet();
+        cuts[5] = contractToFacetCutAdd("AavePerfFeeFacet", address(aavePerfFeeFacet));
 
         // Deploy the Diamond with the diamondCut facet and all other facets in one transaction
         Fee diamond = new Fee(cuts, FeeArgs({owner: deployerAddress, init: address(0), initCalldata: bytes("")}));
@@ -96,6 +99,7 @@ contract DeployFeeDiamond is Script {
         console.log("FeeViewsFacet:", address(feeViewsFacet));
         console.log("FeeAdminFacet:", address(feeAdminFacet));
         console.log("MorphoPerfFeeFacet:", address(morphoPerfFeeFacet));
+        console.log("AavePerfFeeFacet:", address(aavePerfFeeFacet));
 
         return address(diamond);
     }

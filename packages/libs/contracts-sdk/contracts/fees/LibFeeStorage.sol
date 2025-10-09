@@ -25,6 +25,8 @@ library LibFeeStorage {
         // used to track which tokens have collected fees
         // so we know where to look for collected fees
         EnumerableSet.AddressSet tokensWithCollectedFees;
+        // aave pool contract address for this chain
+        address aavePool;
     }
 
     function getStorage() internal pure returns (FeeStorage storage as_) {

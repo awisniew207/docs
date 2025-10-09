@@ -74,7 +74,7 @@ contract FeeTest is Test {
         assertEq(d.assetAmount, depositAmount);
         console.log("d.vaultShares", d.vaultShares);
         console.log("d.vaultProvider", d.vaultProvider);
-        // confirm that the user has the vault shares
+        // confirm that the fee contract has the vault shares
         uint256 feeContractVaultShares = mockERC4626.balanceOf(address(morphoPerfFeeFacet));
         console.log("feeContractVaultShares", feeContractVaultShares);
         assertEq(feeContractVaultShares, d.vaultShares);
@@ -98,7 +98,7 @@ contract FeeTest is Test {
         assertEq(d.vaultShares, 0);
         assertEq(d.vaultProvider, 0);
 
-        // confirm the profit went to the morpho contract, and some went to the user
+        // confirm the profit went to the fee contract, and some went to the user
         uint256 userBalance = mockERC20.balanceOf(APP_USER_ALICE);
         uint256 feeContractBalance = mockERC20.balanceOf(address(morphoPerfFeeFacet));
 
@@ -156,7 +156,7 @@ contract FeeTest is Test {
         assertEq(d.assetAmount, depositAmount);
         console.log("d.vaultShares", d.vaultShares);
         console.log("d.vaultProvider", d.vaultProvider);
-        // confirm that the user has the vault shares
+        // confirm that the fee contract has the vault shares
         uint256 feeContractVaultShares = mockERC4626.balanceOf(address(morphoPerfFeeFacet));
         console.log("feeContractVaultShares", feeContractVaultShares);
         assertEq(feeContractVaultShares, d.vaultShares);
@@ -176,7 +176,7 @@ contract FeeTest is Test {
         assertEq(d.assetAmount, depositAmount);
         console.log("d.vaultShares", d.vaultShares);
         console.log("d.vaultProvider", d.vaultProvider);
-        // confirm that the user has the vault shares
+        // confirm that the fee contract has the vault shares
         feeContractVaultShares = mockERC4626.balanceOf(address(morphoPerfFeeFacet));
         console.log("feeContractVaultShares", feeContractVaultShares);
         assertEq(feeContractVaultShares, d.vaultShares);
@@ -200,7 +200,7 @@ contract FeeTest is Test {
         assertEq(d.vaultShares, 0);
         assertEq(d.vaultProvider, 0);
 
-        // confirm the profit went to the morpho contract, and some went to the user
+        // confirm the profit went to the fee contract, and some went to the user
         uint256 userBalance = mockERC20.balanceOf(APP_USER_ALICE);
         uint256 feeContractBalance = mockERC20.balanceOf(address(morphoPerfFeeFacet));
 

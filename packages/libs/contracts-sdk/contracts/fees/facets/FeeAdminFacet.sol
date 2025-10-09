@@ -59,6 +59,14 @@ contract FeeAdminFacet {
         return LibFeeStorage.getStorage().tokensWithCollectedFees.at(index);
     }
 
+    /**
+     * @notice Gets the aave pool contract address for this chain
+     * @return the aave pool contract address for this chain
+     */
+    function aavePool() external view returns (address) {
+        return LibFeeStorage.getStorage().aavePool;
+    }
+
 
     /* ========== MUTATIVE FUNCTIONS ========== */
 
@@ -92,6 +100,12 @@ contract FeeAdminFacet {
         LibFeeStorage.getStorage().performanceFeePercentage = newPerformanceFeePercentage;
     }
 
-
-
+    /**
+     * @notice Sets the aave pool contract address for this chain
+     * @param newAavePool the new aave pool contract address for this chain
+     * @dev this can only be called by the owner
+     */
+    function setAavePool(address newAavePool) onlyOwner external {
+        LibFeeStorage.getStorage().aavePool = newAavePool;
+    }
 }

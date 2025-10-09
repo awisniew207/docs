@@ -24,8 +24,6 @@ contract AavePerfFeeFacet {
     // thrown when a deposit already exists with another provider
     error DepositAlreadyExistsWithAnotherProvider(address user, address poolAddress);
 
-    IPool public AAVE = IPool(0xA238Dd80C259a72e81d7e4664a9801593F98d1c5);
-
 
      /* ========== MUTATIVE FUNCTIONS ========== */
 
@@ -35,17 +33,18 @@ contract AavePerfFeeFacet {
      * @param assetAmount the amount of assets to deposit
     */
     function depositToAave(address poolAsset, uint256 assetAmount) external {
-        // get the vault and asset
+        // get the aave pool contract and asset
+        IPool aave = IPool(LibFeeStorage.getStorage().aavePool);
         IERC20 asset = IERC20(poolAsset);
 
         // transfer the assets into this contract
         asset.transferFrom(msg.sender, address(this), assetAmount);
 
         // approve aave
-        asset.approve(address(AAVE), assetAmount);
+        asset.approve(address(aave), assetAmount);
 
         // send it into aave
-        AAVE.supply(poolAsset, assetAmount, address(this), 0);
+        aave.supply(poolAsset, assetAmount, address(this), 0);
 
         // track the deposit
         LibFeeStorage.Deposit storage deposit = LibFeeStorage.getStorage().deposits[msg.sender][poolAsset];
@@ -74,12 +73,13 @@ contract AavePerfFeeFacet {
         // contracts to prevent reentrancy attacks
         delete LibFeeStorage.getStorage().deposits[msg.sender][poolAsset];
 
-        // get the asset
+        // get the aave pool contract and asset
+        IPool aave = IPool(LibFeeStorage.getStorage().aavePool);
         IERC20 asset = IERC20(poolAsset);
 
         // withdraw the assets from aave into this contract
         // set the amount to max to withdraw all assets per aave docs
-        uint256 withdrawAssetAmount = AAVE.withdraw(poolAsset, type(uint256).max, address(this));
+        uint256 withdrawAssetAmount = aave.withdraw(poolAsset, type(uint256).max, address(this));
 
         uint256 performanceFeeAmount = 0;
         if (withdrawAssetAmount > depositAssetAmount) {

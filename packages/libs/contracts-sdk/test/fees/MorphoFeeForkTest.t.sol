@@ -85,11 +85,14 @@ contract FeeForkTest is Test {
         vm.startPrank(USDC_MINTER);
         underlyingERC20.mint(APP_USER_ALICE, depositAmount);
         vm.stopPrank();
+        console.log("minted USDC to user");
 
         vm.startPrank(APP_USER_ALICE);
         underlyingERC20.approve(address(morphoPerfFeeFacet), depositAmount);
+        console.log("approved USDC to morpho");
         morphoPerfFeeFacet.depositToMorpho(address(morphoVault), depositAmount);
         vm.stopPrank();
+        console.log("deposited to morpho");
 
         LibFeeStorage.Deposit memory d = feeViewsFacet.deposits(APP_USER_ALICE, address(morphoVault));
 
@@ -131,7 +134,7 @@ contract FeeForkTest is Test {
         assertEq(d.vaultShares, 0);
         assertEq(d.vaultProvider, 0);
 
-        // confirm the profit went to the morpho contract, and some went to the user
+        // confirm the profit went to the fee contract, and some went to the user
         uint256 userBalance = underlyingERC20.balanceOf(APP_USER_ALICE);
         uint256 feeContractBalance = underlyingERC20.balanceOf(address(morphoPerfFeeFacet));
 
@@ -308,7 +311,7 @@ contract FeeForkTest is Test {
         assertEq(d.vaultShares, 0);
         assertEq(d.vaultProvider, 0);
 
-        // confirm the profit went to the morpho contract, and some went to the user
+        // confirm the profit went to the fee contract, and some went to the user
         uint256 userBalance = underlyingERC20.balanceOf(APP_USER_ALICE);
         uint256 feeContractBalance = underlyingERC20.balanceOf(address(morphoPerfFeeFacet));
 
