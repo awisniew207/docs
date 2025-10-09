@@ -84,7 +84,6 @@ contract FeeTest is Test {
         assertEq(userVaultOrPoolAssetAddresses.length, 1);
         assertEq(userVaultOrPoolAssetAddresses[0], address(mockERC4626));
 
-
         // send more assets to the vault to create profit
         mockERC20.mint(address(mockERC4626), 100);
 
