@@ -2,9 +2,9 @@
 pragma solidity ^0.8.29;
 
 import "../LibFeeStorage.sol";
-import { ERC4626 } from "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {ERC4626} from "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 /**
  * @title MorphoPerfFeeFacet
@@ -29,11 +29,11 @@ contract MorphoPerfFeeFacet {
 
     /* ========== MUTATIVE FUNCTIONS ========== */
 
-    /** 
+    /**
      * @notice Deposits assets into Morpho
      * @param vaultAddress the address of the vault to deposit into
      * @param assetAmount the amount of assets to deposit
-    */
+     */
     function depositToMorpho(address vaultAddress, uint256 assetAmount) external {
         // get the vault and asset
         ERC4626 vault = ERC4626(vaultAddress);
@@ -50,8 +50,10 @@ contract MorphoPerfFeeFacet {
 
         // track the deposit
         LibFeeStorage.Deposit storage deposit = LibFeeStorage.getStorage().deposits[msg.sender][vaultAddress];
-        if (deposit.vaultProvider != 0 && deposit.vaultProvider != VAULT_PROVIDER) revert DepositAlreadyExistsWithAnotherProvider(msg.sender, vaultAddress);
-        
+        if (deposit.vaultProvider != 0 && deposit.vaultProvider != VAULT_PROVIDER) {
+            revert DepositAlreadyExistsWithAnotherProvider(msg.sender, vaultAddress);
+        }
+
         deposit.assetAmount += assetAmount;
         deposit.vaultShares += vaultShares;
         deposit.vaultProvider = VAULT_PROVIDER;
@@ -96,7 +98,8 @@ contract MorphoPerfFeeFacet {
             // there's a profit, calculate fee
             // performance fee is in basis points
             // so divide by 10000 to use it as a percentage
-            performanceFeeAmount = (withdrawAssetAmount - depositAssetAmount) * LibFeeStorage.getStorage().performanceFeePercentage / 10000;
+            performanceFeeAmount = (withdrawAssetAmount - depositAssetAmount)
+                * LibFeeStorage.getStorage().performanceFeePercentage / 10000;
         }
 
         // add the token to the set of tokens that have collected fees
@@ -111,5 +114,4 @@ contract MorphoPerfFeeFacet {
         // the user
         asset.transfer(msg.sender, withdrawAssetAmount - performanceFeeAmount);
     }
-        
 }

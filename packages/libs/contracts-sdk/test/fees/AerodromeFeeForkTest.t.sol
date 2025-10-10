@@ -16,7 +16,7 @@ import {OwnershipFacet} from "../../contracts/diamond-base/facets/OwnershipFacet
 
 import {USDC} from "../ABIs/USDC.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import { IRouter } from "@aerodrome/contracts/interfaces/IRouter.sol";
+import {IRouter} from "@aerodrome/contracts/interfaces/IRouter.sol";
 
 contract FeeForkTest is Test {
     address owner;
@@ -96,7 +96,9 @@ contract FeeForkTest is Test {
 
         uint256 userWethBalanceBefore = WETHErc20.balanceOf(APP_USER_ALICE);
 
-        aerodromeSwapFeeFacet.swapExactTokensForTokensOnAerodrome(swapAmount, expectedOutput, routes, APP_USER_ALICE, block.timestamp + 1 minutes);
+        aerodromeSwapFeeFacet.swapExactTokensForTokensOnAerodrome(
+            swapAmount, expectedOutput, routes, APP_USER_ALICE, block.timestamp + 1 minutes
+        );
         vm.stopPrank();
         console.log("swapped USDC to WETH");
         uint256 userWethBalanceAfter = WETHErc20.balanceOf(APP_USER_ALICE);

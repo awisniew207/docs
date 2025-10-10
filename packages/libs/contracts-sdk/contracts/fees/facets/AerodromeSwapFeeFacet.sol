@@ -2,10 +2,10 @@
 pragma solidity ^0.8.29;
 
 import "../LibFeeStorage.sol";
-import { ERC4626 } from "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import { IRouter } from "@aerodrome/contracts/interfaces/IRouter.sol";
+import {ERC4626} from "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {IRouter} from "@aerodrome/contracts/interfaces/IRouter.sol";
 
 /**
  * @title AerodromeSwapFeeFacet
@@ -37,7 +37,8 @@ contract AerodromeSwapFeeFacet {
         IERC20(routes[0].from).approve(LibFeeStorage.getStorage().aerodromeRouter, amountIn);
 
         // swap the tokens
-        amounts = IRouter(LibFeeStorage.getStorage().aerodromeRouter).swapExactTokensForTokens(amountIn, amountOutMin, routes, address(this), deadline);
+        amounts = IRouter(LibFeeStorage.getStorage().aerodromeRouter)
+            .swapExactTokensForTokens(amountIn, amountOutMin, routes, address(this), deadline);
 
         // add the input token to the collected fees list
         LibFeeStorage.getStorage().tokensWithCollectedFees.add(routes[0].from);
@@ -48,5 +49,4 @@ contract AerodromeSwapFeeFacet {
         // return the amounts just like aerodrome
         return amounts;
     }
-
 }
