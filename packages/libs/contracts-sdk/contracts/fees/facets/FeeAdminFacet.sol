@@ -33,6 +33,15 @@ contract FeeAdminFacet {
     }
 
     /**
+     * @notice Gets the swap fee percentage
+     * @return the swap fee percentage in basis points
+     * so 25 = 0.25%.  multiply percentage by 100 to get basis points
+     */
+    function swapFeePercentage() external view returns (uint256) {
+        return LibFeeStorage.getStorage().swapFeePercentage;
+    }
+
+    /**
      * @notice Gets the entire list of tokens that have collected fees
      * if this list gets too long and the view call is timing out,
      * you can use the "one at a time" functions below
@@ -65,6 +74,14 @@ contract FeeAdminFacet {
      */
     function aavePool() external view returns (address) {
         return LibFeeStorage.getStorage().aavePool;
+    }
+
+    /**
+     * @notice Gets the aerodrome router contract address for this chain
+     * @return the aerodrome router contract address for this chain
+     */
+    function aerodromeRouter() external view returns (address) {
+        return LibFeeStorage.getStorage().aerodromeRouter;
     }
 
 
@@ -101,11 +118,31 @@ contract FeeAdminFacet {
     }
 
     /**
+     * @notice Sets the swap fee percentage
+     * @param newSwapFeePercentage the new swap fee percentage
+     * in basis points
+     * so 25 = 0.25%.  multiply percentage by 100 to get basis points
+     * @dev this can only be called by the owner
+     */
+    function setSwapFeePercentage(uint256 newSwapFeePercentage) onlyOwner external {
+        LibFeeStorage.getStorage().swapFeePercentage = newSwapFeePercentage;
+    }
+
+    /**
      * @notice Sets the aave pool contract address for this chain
      * @param newAavePool the new aave pool contract address for this chain
      * @dev this can only be called by the owner
      */
     function setAavePool(address newAavePool) onlyOwner external {
         LibFeeStorage.getStorage().aavePool = newAavePool;
+    }
+
+    /**
+     * @notice Sets the aerodrome router contract address for this chain
+     * @param newAerodromeRouter the new aerodrome router contract address for this chain
+     * @dev this can only be called by the owner
+     */
+    function setAerodromeRouter(address newAerodromeRouter) onlyOwner external {
+        LibFeeStorage.getStorage().aerodromeRouter = newAerodromeRouter;
     }
 }

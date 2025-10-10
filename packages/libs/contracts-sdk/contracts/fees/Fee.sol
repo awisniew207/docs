@@ -42,6 +42,9 @@ contract Fee {
 
         // default to 10% performance fee
         LibFeeStorage.getStorage().performanceFeePercentage = 1000;
+
+        // default to 0.25% swap fee
+        LibFeeStorage.getStorage().swapFeePercentage = 25;
     }
 
     /**
