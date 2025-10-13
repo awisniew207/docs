@@ -113,7 +113,8 @@ contract FeeForkTest is Test {
         uint256 feeContractAaveTokens = aToken.balanceOf(address(aavePerfFeeFacet));
         console.log("feeContractAaveTokens", feeContractAaveTokens);
         // due to aave fees / rounding math, we get back 1 or 2 less aToken than we deposited.  bound the result to between 0 and 2
-        uint256 differenceFromExpectedAmount = (depositAmount / 10 ** erc20Decimals) - (feeContractAaveTokens / 10 ** aToken.decimals());
+        uint256 differenceFromExpectedAmount =
+            (depositAmount / 10 ** erc20Decimals) - (feeContractAaveTokens / 10 ** aToken.decimals());
         assertGe(differenceFromExpectedAmount, 0);
         assertLe(differenceFromExpectedAmount, 2);
 
@@ -208,7 +209,8 @@ contract FeeForkTest is Test {
         uint256 feeContractAaveTokens = aToken.balanceOf(address(aavePerfFeeFacet));
         console.log("feeContractAaveTokens", feeContractAaveTokens);
         // due to aave fees / rounding math, we get back 1 or 2 less aToken than we deposited.  bound the result to between 0 and 2
-        uint256 differenceFromExpectedAmount = (depositAmount / 10 ** erc20Decimals) - (feeContractAaveTokens / 10 ** aToken.decimals());
+        uint256 differenceFromExpectedAmount =
+            (depositAmount / 10 ** erc20Decimals) - (feeContractAaveTokens / 10 ** aToken.decimals());
         assertGe(differenceFromExpectedAmount, 0);
         assertLe(differenceFromExpectedAmount, 2);
 
@@ -288,7 +290,8 @@ contract FeeForkTest is Test {
         uint256 feeContractAaveTokens = aToken.balanceOf(address(aavePerfFeeFacet));
         console.log("feeContractAaveTokens", feeContractAaveTokens);
         // due to aave fees / rounding math, we get back 1 or 2 less aToken than we deposited.  bound the result to between 0 and 2
-        uint256 differenceFromExpectedAmount = (depositAmount / 10 ** erc20Decimals) - (feeContractAaveTokens / 10 ** aToken.decimals());
+        uint256 differenceFromExpectedAmount =
+            (depositAmount / 10 ** erc20Decimals) - (feeContractAaveTokens / 10 ** aToken.decimals());
         assertGe(differenceFromExpectedAmount, 0);
         assertLe(differenceFromExpectedAmount, 2);
 
@@ -322,7 +325,8 @@ contract FeeForkTest is Test {
         feeContractAaveTokens = aToken.balanceOf(address(aavePerfFeeFacet));
         console.log("feeContractAaveTokens", feeContractAaveTokens);
         // due to aave fees / rounding math, we get back 1 or 2 less aToken than we deposited.  bound the result to between 0 and 2
-        differenceFromExpectedAmount = (depositAmount / 10 ** erc20Decimals) - (feeContractAaveTokens / 10 ** aToken.decimals());
+        differenceFromExpectedAmount =
+            (depositAmount / 10 ** erc20Decimals) - (feeContractAaveTokens / 10 ** aToken.decimals());
         assertGe(differenceFromExpectedAmount, 0);
         assertLe(differenceFromExpectedAmount, 2);
 
