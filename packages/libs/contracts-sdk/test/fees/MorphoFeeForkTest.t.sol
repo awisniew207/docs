@@ -93,7 +93,14 @@ contract FeeForkTest is Test {
 
         // debugging possible timestamp issue
         console.log("block.timestamp", block.timestamp);
-        (uint128 totalSupplyAssets, uint128 totalSupplyShares, uint128 totalBorrowAssets, uint128 totalBorrowShares, uint128 lastUpdate, uint128 fee) = morpho.market(Morpho.Id.wrap(0x9103c3b4e834476c9a62ea009ba2c884ee42e94e6e314a26f04d312434191836));
+        (
+            uint128 totalSupplyAssets,
+            uint128 totalSupplyShares,
+            uint128 totalBorrowAssets,
+            uint128 totalBorrowShares,
+            uint128 lastUpdate,
+            uint128 fee
+        ) = morpho.market(Morpho.Id.wrap(0x9103c3b4e834476c9a62ea009ba2c884ee42e94e6e314a26f04d312434191836));
         console.log("totalSupplyAssets", totalSupplyAssets);
         console.log("totalSupplyShares", totalSupplyShares);
         console.log("totalBorrowAssets", totalBorrowAssets);
@@ -101,9 +108,8 @@ contract FeeForkTest is Test {
         console.log("lastUpdate", lastUpdate);
         console.log("fee", fee);
 
-        uint diff = block.timestamp - lastUpdate;
+        uint256 diff = block.timestamp - lastUpdate;
         console.log("diff", diff);
-
 
         morphoPerfFeeFacet.depositToMorpho(address(morphoVault), depositAmount);
         vm.stopPrank();
@@ -134,7 +140,11 @@ contract FeeForkTest is Test {
         vm.warp(block.timestamp + 1 weeks);
         morpho.accrueInterest(
             Morpho.MarketParams({
-                loanToken: loanToken, collateralToken: collateralToken, oracle: oracle, irm: irm, lltv: lltv
+                loanToken: loanToken,
+                collateralToken: collateralToken,
+                oracle: oracle,
+                irm: irm,
+                lltv: lltv
             })
         );
 
@@ -334,7 +344,11 @@ contract FeeForkTest is Test {
         vm.warp(block.timestamp + 1 weeks);
         morpho.accrueInterest(
             Morpho.MarketParams({
-                loanToken: loanToken, collateralToken: collateralToken, oracle: oracle, irm: irm, lltv: lltv
+                loanToken: loanToken,
+                collateralToken: collateralToken,
+                oracle: oracle,
+                irm: irm,
+                lltv: lltv
             })
         );
 

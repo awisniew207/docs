@@ -37,8 +37,9 @@ contract AerodromeSwapFeeFacet {
         IERC20(routes[0].from).approve(LibFeeStorage.getStorage().aerodromeRouter, amountIn);
 
         // swap the tokens
-        amounts = IRouter(LibFeeStorage.getStorage().aerodromeRouter)
-            .swapExactTokensForTokens(amountIn, amountOutMin, routes, address(this), deadline);
+        amounts = IRouter(LibFeeStorage.getStorage().aerodromeRouter).swapExactTokensForTokens(
+            amountIn, amountOutMin, routes, address(this), deadline
+        );
 
         // add the input token to the collected fees list
         LibFeeStorage.getStorage().tokensWithCollectedFees.add(routes[0].from);
