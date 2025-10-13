@@ -57,12 +57,12 @@ contract FeeForkTest is Test {
         aerodromeSwapFeeFacet = AerodromeSwapFeeFacet(diamondAddress);
         ownershipFacet = OwnershipFacet(diamondAddress);
 
-        // set the aave pool address in the fee diamond
+        // set the aerodrome router address in the fee diamond
         vm.startPrank(owner);
         feeAdminFacet.setAerodromeRouter(REAL_AERODROME_ROUTER);
         vm.stopPrank();
 
-        // set up the real aave pool and USDC token
+        // set up the real aerodrome router and USDC token
         aerodromeRouter = IRouter(REAL_AERODROME_ROUTER);
         USDCErc20 = USDC(REAL_USDC);
         WETHErc20 = ERC20(REAL_WETH);
