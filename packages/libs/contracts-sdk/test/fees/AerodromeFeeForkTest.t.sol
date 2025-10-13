@@ -236,7 +236,6 @@ contract FeeForkTest is Test {
         assertEq(tokensWithCollectedFees.length, 1);
         assertEq(tokensWithCollectedFees[0], address(USDCErc20));
 
-
         // test withdrawal of profit from the fee contract as owner
         vm.startPrank(owner);
         feeAdminFacet.withdrawTokens(address(USDCErc20));
