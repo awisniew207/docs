@@ -150,7 +150,8 @@ contract AaveFeeForkTest is Test {
         uint256 feeContractBalance = underlyingERC20.balanceOf(address(aavePerfFeeFacet));
 
         uint256 expectedTotalProfit = expectedTotalWithdrawal - depositAmount;
-        uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR);
+        uint256 expectedUserProfit =
+            expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR);
         uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR;
         console.log("expectedTotalProfit", expectedTotalProfit);
         console.log("expectedUserProfit", expectedUserProfit);
@@ -364,7 +365,8 @@ contract AaveFeeForkTest is Test {
         uint256 feeContractBalance = underlyingERC20.balanceOf(address(aavePerfFeeFacet));
 
         uint256 expectedTotalProfit = expectedTotalWithdrawal - depositAmount;
-        uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR);
+        uint256 expectedUserProfit =
+            expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR);
         uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR;
         console.log("expectedTotalProfit", expectedTotalProfit);
         console.log("expectedUserProfit", expectedUserProfit);

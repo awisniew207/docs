@@ -114,7 +114,8 @@ contract MorphoFeeTest is Test {
         uint256 feeContractBalance = mockERC20.balanceOf(address(morphoPerfFeeFacet));
 
         uint256 expectedTotalProfit = expectedTotalWithdrawal - depositAmount;
-        uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR);
+        uint256 expectedUserProfit =
+            expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR);
         uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR;
         console.log("expectedTotalProfit", expectedTotalProfit);
         console.log("expectedUserProfit", expectedUserProfit);
@@ -230,7 +231,8 @@ contract MorphoFeeTest is Test {
         uint256 feeContractBalance = mockERC20.balanceOf(address(morphoPerfFeeFacet));
 
         uint256 expectedTotalProfit = expectedTotalWithdrawal - depositAmount;
-        uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR);
+        uint256 expectedUserProfit =
+            expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR);
         uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR;
         console.log("expectedTotalProfit", expectedTotalProfit);
         console.log("expectedUserProfit", expectedUserProfit);
