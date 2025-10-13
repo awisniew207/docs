@@ -78,6 +78,8 @@ contract FeeForkTest is Test {
     function testSingleRouteSwap() public {
         uint256 swapAmount = 50 * 10 ** erc20Decimals;
 
+        uint256 swapFeePercentage = feeAdminFacet.swapFeePercentage();
+
         // mint the USDC to the user
         vm.startPrank(USDC_MINTER);
         USDCErc20.mint(APP_USER_ALICE, swapAmount);
@@ -102,6 +104,7 @@ contract FeeForkTest is Test {
         vm.stopPrank();
         console.log("swapped USDC to WETH");
         uint256 userWethBalanceAfter = WETHErc20.balanceOf(APP_USER_ALICE);
+        // assert that they got at least the amountOut
         assertGt(userWethBalanceAfter - userWethBalanceBefore, expectedOutput);
         console.log("userWethBalanceAfter", userWethBalanceAfter);
 
@@ -111,17 +114,8 @@ contract FeeForkTest is Test {
         console.log("usdc userBalance", userBalance);
         console.log("usdc feeContractBalance", feeContractBalance);
 
-        // uint256 expectedTotalProfit = expectedTotalWithdrawal - depositAmount;
-        // uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / 10000);
-        // uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / 10000;
-        // console.log("expectedTotalProfit", expectedTotalProfit);
-        // console.log("expectedUserProfit", expectedUserProfit);
-        // console.log("expectedFeeContractProfit", expectedFeeContractProfit);
-        // console.log("userProfit", userBalance);
-        // console.log("feeContractProfit", feeContractBalance);
-
-        // assertEq(userBalance, depositAmount + expectedUserProfit);
-        // assertEq(feeContractBalance, expectedFeeContractProfit);
+        uint256 expectedFee = swapAmount * swapFeePercentage / 10000;
+        assertEq(feeContractBalance, expectedFee);
 
         // test that USDC is in the set of tokens that have collected fees
         address[] memory tokensWithCollectedFees = feeAdminFacet.tokensWithCollectedFees();
@@ -134,10 +128,13 @@ contract FeeForkTest is Test {
         vm.stopPrank();
 
         // confirm the profit went to the owner
-        // assertEq(USDCErc20.balanceOf(owner), expectedFeeContractProfit);
+        assertEq(USDCErc20.balanceOf(owner), expectedFee);
 
         // confirm that the token is no longer in the set of tokens that have collected fees
         tokensWithCollectedFees = feeAdminFacet.tokensWithCollectedFees();
         assertEq(tokensWithCollectedFees.length, 0);
+
+        // confirm that the fee contract has 0 balance
+        assertEq(USDCErc20.balanceOf(address(aerodromeSwapFeeFacet)), 0);
     }
 }

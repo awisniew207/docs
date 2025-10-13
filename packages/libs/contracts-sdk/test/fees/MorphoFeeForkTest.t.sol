@@ -90,6 +90,21 @@ contract FeeForkTest is Test {
         vm.startPrank(APP_USER_ALICE);
         underlyingERC20.approve(address(morphoPerfFeeFacet), depositAmount);
         console.log("approved USDC to morpho");
+
+        // debugging possible timestamp issue
+        console.log("block.timestamp", block.timestamp);
+        (uint128 totalSupplyAssets, uint128 totalSupplyShares, uint128 totalBorrowAssets, uint128 totalBorrowShares, uint128 lastUpdate, uint128 fee) = morpho.market(Morpho.Id.wrap(0x9103c3b4e834476c9a62ea009ba2c884ee42e94e6e314a26f04d312434191836));
+        console.log("totalSupplyAssets", totalSupplyAssets);
+        console.log("totalSupplyShares", totalSupplyShares);
+        console.log("totalBorrowAssets", totalBorrowAssets);
+        console.log("totalBorrowShares", totalBorrowShares);
+        console.log("lastUpdate", lastUpdate);
+        console.log("fee", fee);
+
+        uint diff = block.timestamp - lastUpdate;
+        console.log("diff", diff);
+
+
         morphoPerfFeeFacet.depositToMorpho(address(morphoVault), depositAmount);
         vm.stopPrank();
         console.log("deposited to morpho");
