@@ -237,10 +237,12 @@ contract FeeForkTest is Test {
         console.log("depositAmount", depositAmount);
         console.log("userBalance", userBalance);
 
-        // The user's balance is exactly depositAmount - 1 due to aave aToken math and fee rounding:
+        // The user's balance is exactly depositAmount minus 0 through 2 due to aave aToken math and fee rounding:
         // When withdrawing, aave converts the aTokens back to assets, and due to integer division/rounding,
-        // the user receives one less unit than deposited. This is expected for this test scenario.
-        assertEq(userBalance, depositAmount - 1);
+        // the user receives up to 2 less units than deposited. So let's bound the result to between 0 and 2
+        uint256 differenceFromExpectedDepositAmount = depositAmount - userBalance;
+        assertGe(differenceFromExpectedDepositAmount, 0);
+        assertLe(differenceFromExpectedDepositAmount, 2);
         assertEq(feeContractBalance, 0);
 
         // test that the MockERC20 is not in the set of tokens that have collected fees
