@@ -30,7 +30,7 @@ library LibFeeStorage {
         EnumerableSet.AddressSet tokensWithCollectedFees;
         // aave pool contract address for this chain
         address aavePool;
-        // aerdrome router contract address for this chain
+        // aerodrome router contract address for this chain
         address aerodromeRouter;
         // maps user address to a set of vault or pool asset addresses
         // this means the user has deposited into this vault or pool
