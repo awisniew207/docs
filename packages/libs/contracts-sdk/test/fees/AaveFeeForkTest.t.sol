@@ -18,7 +18,9 @@ import {USDC} from "../ABIs/USDC.sol";
 import {IPool} from "@aave-dao/aave-v3-origin/src/contracts/interfaces/IPool.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract FeeForkTest is Test {
+contract AaveFeeForkTest is Test {
+    uint256 constant BASIS_POINT_DIVISOR = 10000;
+
     address owner;
     address APP_USER_ALICE = makeAddr("Alice");
     // real aave pool from https://aave.com/docs/resources/addresses
@@ -148,8 +150,8 @@ contract FeeForkTest is Test {
         uint256 feeContractBalance = underlyingERC20.balanceOf(address(aavePerfFeeFacet));
 
         uint256 expectedTotalProfit = expectedTotalWithdrawal - depositAmount;
-        uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / 10000);
-        uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / 10000;
+        uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR);
+        uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR;
         console.log("expectedTotalProfit", expectedTotalProfit);
         console.log("expectedUserProfit", expectedUserProfit);
         console.log("expectedFeeContractProfit", expectedFeeContractProfit);
@@ -362,8 +364,8 @@ contract FeeForkTest is Test {
         uint256 feeContractBalance = underlyingERC20.balanceOf(address(aavePerfFeeFacet));
 
         uint256 expectedTotalProfit = expectedTotalWithdrawal - depositAmount;
-        uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / 10000);
-        uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / 10000;
+        uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR);
+        uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR;
         console.log("expectedTotalProfit", expectedTotalProfit);
         console.log("expectedUserProfit", expectedUserProfit);
         console.log("expectedFeeContractProfit", expectedFeeContractProfit);

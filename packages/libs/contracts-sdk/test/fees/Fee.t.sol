@@ -89,4 +89,49 @@ contract FeeTest is Test {
         vm.stopPrank();
         assertEq(feeAdminFacet.aavePool(), NEW_AAVE_POOL);
     }
+
+    function testSetAerodromeRouter() public {
+        address NEW_AERODROME_ROUTER = makeAddr("AerodromeRouter");
+        assertNotEq(feeAdminFacet.aerodromeRouter(), NEW_AERODROME_ROUTER);
+
+        // test that a non-owner cannot set the aerodrome router
+        vm.expectRevert(FeeUtils.CallerNotOwner.selector);
+        feeAdminFacet.setAerodromeRouter(NEW_AERODROME_ROUTER);
+
+        // test that the owner can set the aerodrome router
+        vm.startPrank(owner);
+        feeAdminFacet.setAerodromeRouter(NEW_AERODROME_ROUTER);
+        vm.stopPrank();
+        assertEq(feeAdminFacet.aerodromeRouter(), NEW_AERODROME_ROUTER);
+    }
+
+    function testSetSwapFeePercentage() public {
+        uint256 NEW_SWAP_FEE_PERCENTAGE = 5;
+        assertNotEq(feeAdminFacet.swapFeePercentage(), NEW_SWAP_FEE_PERCENTAGE);
+
+        // test that a non-owner cannot set the aerodrome router
+        vm.expectRevert(FeeUtils.CallerNotOwner.selector);
+        feeAdminFacet.setSwapFeePercentage(NEW_SWAP_FEE_PERCENTAGE);
+
+        // test that the owner can set the swap fee percentage
+        vm.startPrank(owner);
+        feeAdminFacet.setSwapFeePercentage(NEW_SWAP_FEE_PERCENTAGE);
+        vm.stopPrank();
+        assertEq(feeAdminFacet.swapFeePercentage(), NEW_SWAP_FEE_PERCENTAGE);
+    }
+
+    function testSetPerformanceFeePercentage() public {
+        uint256 NEW_PERFORMANCE_FEE_PERCENTAGE = 5;
+        assertNotEq(feeAdminFacet.performanceFeePercentage(), NEW_PERFORMANCE_FEE_PERCENTAGE);
+
+        // test that a non-owner cannot set the performance fee percentage
+        vm.expectRevert(FeeUtils.CallerNotOwner.selector);
+        feeAdminFacet.setPerformanceFeePercentage(NEW_PERFORMANCE_FEE_PERCENTAGE);
+
+        // test that the owner can set the performance fee percentage
+        vm.startPrank(owner);
+        feeAdminFacet.setPerformanceFeePercentage(NEW_PERFORMANCE_FEE_PERCENTAGE);
+        vm.stopPrank();
+        assertEq(feeAdminFacet.performanceFeePercentage(), NEW_PERFORMANCE_FEE_PERCENTAGE);
+    }
 }

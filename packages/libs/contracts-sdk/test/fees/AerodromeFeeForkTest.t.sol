@@ -18,7 +18,9 @@ import {USDC} from "../ABIs/USDC.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IRouter} from "@aerodrome/contracts/interfaces/IRouter.sol";
 
-contract FeeForkTest is Test {
+contract AerodromeFeeForkTest is Test {
+    uint256 constant BASIS_POINT_DIVISOR = 10000;
+
     address owner;
     address APP_USER_ALICE = makeAddr("Alice");
     // real aerodrome router on base from https://www.aerodrome.finance/security
@@ -117,7 +119,7 @@ contract FeeForkTest is Test {
         // the user swapped all their USDC to WETH, so their balance should be 0
         assertEq(userBalance, 0);
 
-        uint256 expectedFee = swapAmount * swapFeePercentage / 10000;
+        uint256 expectedFee = swapAmount * swapFeePercentage / BASIS_POINT_DIVISOR;
         assertEq(feeContractBalance, expectedFee);
 
         // test that USDC is in the set of tokens that have collected fees
@@ -183,7 +185,7 @@ contract FeeForkTest is Test {
         // the user swapped all their USDC to WETH, so their balance should be 0
         assertEq(userBalance, 0);
 
-        uint256 expectedFee = swapAmount * swapFeePercentage / 10000;
+        uint256 expectedFee = swapAmount * swapFeePercentage / BASIS_POINT_DIVISOR;
         assertEq(feeContractBalance, expectedFee);
 
         // test that USDC is in the set of tokens that have collected fees
