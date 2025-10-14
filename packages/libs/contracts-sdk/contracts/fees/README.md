@@ -4,12 +4,14 @@ The Fee Diamond is a sophisticated smart contract system built using the Diamond
 
 ## Overview
 
-The Fee Diamond system allows Vincent's abilities to deposit user funds into DeFi protocols (currently Morpho and Aave) and automatically collect performance fees when users withdraw their funds. The system tracks user deposits, calculates profits, and takes a configurable percentage of the profit as a fee.
+The Fee Diamond system allows Vincent's abilities to deposit user funds into DeFi protocols (currently Morpho and Aave) and automatically collect performance fees when users withdraw their funds. The system also supports token swaps on Aerodrome DEX with automatic fee collection from input tokens. The system tracks user deposits, calculates profits, and takes a configurable percentage of the profit as a fee.
 
 ### Key Features
 
 - **Multi-Protocol Support**: Currently supports Morpho and Aave protocols
+- **DEX Integration**: Supports token swaps on Aerodrome DEX with automatic fee collection
 - **Performance Fee Collection**: Automatically calculates and collects fees only on profits
+- **Swap Fee Collection**: Automatically collects fees from input tokens during swaps
 - **Full Withdrawal Only**: Simplified implementation that only supports full withdrawals
 - **Deterministic Deployment**: Uses Create2 for consistent addresses across EVM chains
 - **Admin Controls**: Owner can adjust fee percentages and withdraw collected fees
@@ -56,9 +58,19 @@ Administrative functions for managing the fee system.
 - `setPerformanceFeePercentage(uint256 newPercentage)`: Sets the performance fee percentage (in basis points)
 - `withdrawTokens(address tokenAddress)`: Withdraws collected fees for a specific token
 - `setAavePool(address newAavePool)`: Sets the Aave pool contract address
+- `setAerodromeRouter(address newAerodromeRouter)`: Sets the Aerodrome router contract address
+- `aerodromeRouter()`: Returns the current Aerodrome router address
 - `tokensWithCollectedFees()`: Returns list of tokens that have collected fees
 
-#### 4. FeeViewsFacet
+#### 4. AerodromeSwapFeeFacet
+
+Handles token swaps on Aerodrome DEX with automatic fee collection from input tokens.
+
+**Key Functions:**
+
+- `swapExactTokensForTokensOnAerodrome(uint256 amountIn, uint256 amountOutMin, IRouter.Route[] calldata routes, address to, uint256 deadline)`: Executes token swaps on Aerodrome and collects fees from input tokens
+
+#### 5. FeeViewsFacet
 
 Read-only functions for querying deposit information.
 
@@ -87,7 +99,20 @@ Read-only functions for querying deposit information.
    - Remaining amount (original deposit + user's share of profit) goes to user
 5. **Cleanup**: Deposit records are cleared and user's vault list is updated
 
+### Aerodrome Swap Process
+
+1. **User Authorization**: User approves the Fee Diamond to spend their input tokens
+2. **Fee Calculation**: Contract calculates swap fee from the input amount (percentage of input tokens)
+3. **Token Transfer**: Input tokens are transferred from user to the Fee Diamond contract
+4. **Fee Deduction**: Swap fee is deducted from the input amount before executing the swap
+5. **Swap Execution**: Contract executes the swap on Aerodrome DEX with the reduced input amount
+6. **Fee Collection**: The calculated fee remains in the contract and is added to the collected fees tracking
+7. **Token Distribution**: Swapped output tokens are transferred to the user
+8. **Fee Tracking**: Input token address is added to the set of tokens with collected fees
+
 ### Fee Calculation
+
+#### Performance Fees (Morpho/Aave)
 
 The performance fee is calculated as:
 
@@ -101,15 +126,28 @@ if (withdrawalAmount > originalDepositAmount) {
 
 Where `performanceFeePercentage` is expressed in basis points (1000 = 10%).
 
+#### Swap Fees (Aerodrome)
+
+The swap fee is calculated as:
+
+```
+swapFee = amountIn * swapFeePercentage / 10000
+actualAmountIn = amountIn - swapFee
+amountOutMin = amountOutMin - (amountOutMin * swapFeePercentage / 10000)
+```
+
+Where `swapFeePercentage` is expressed in basis points (e.g., 50 = 0.5%). The fee is collected from the input token and accumulates in the contract for later withdrawal by the owner.
+
 ## Storage Structure
 
 The system uses a sophisticated storage structure to track:
 
 - **User Deposits**: Maps user address → vault address → deposit details
 - **Performance Fee Percentage**: Configurable fee rate in basis points
+- **Swap Fee Percentage**: Configurable swap fee rate in basis points
 - **Collected Fees Tracking**: Set of token addresses that have collected fees
 - **User Vault Tracking**: Set of vault/pool addresses per user for recovery
-- **Protocol Configuration**: Aave pool contract address
+- **Protocol Configuration**: Aave pool contract address and Aerodrome router address
 
 ## Example Usage
 
@@ -125,11 +163,34 @@ morphoPerfFeeFacet.depositToMorpho(morphoVaultAddress, 1000e6);
 morphoPerfFeeFacet.withdrawFromMorpho(morphoVaultAddress);
 ```
 
+### Aerodrome Token Swaps
+
+```solidity
+// Create swap route (USDC to WETH)
+IRouter.Route[] memory routes = new IRouter.Route[](1);
+routes[0] = IRouter.Route(usdcAddress, wethAddress, false, address(0));
+
+// Execute swap with fee collection
+aerodromeSwapFeeFacet.swapExactTokensForTokensOnAerodrome(
+    1000e6,  // 1000 USDC input
+    0,       // minimum output (adjusted internally for fees)
+    routes,  // swap route
+    userAddress, // recipient
+    block.timestamp + 1 hours // deadline
+);
+```
+
 ### Admin Operations
 
 ```solidity
 // Set performance fee to 5% (500 basis points)
 feeAdminFacet.setPerformanceFeePercentage(500);
+
+// Set swap fee to 0.5% (50 basis points)
+feeAdminFacet.setSwapFeePercentage(50);
+
+// Set Aerodrome router address
+feeAdminFacet.setAerodromeRouter(aerodromeRouterAddress);
 
 // Withdraw collected USDC fees
 feeAdminFacet.withdrawTokens(usdcAddress);
@@ -175,6 +236,7 @@ Comprehensive test suites are available in `test/fees/`:
 - `MorphoFee.t.sol`: Unit tests for Morpho functionality
 - `AaveFeeForkTest.t.sol`: Fork tests for Aave integration
 - `MorphoFeeForkTest.t.sol`: Fork tests for Morpho integration
+- `AerodromeFeeForkTest.t.sol`: Fork tests for Aerodrome swap integration
 
 ## Future Enhancements
 

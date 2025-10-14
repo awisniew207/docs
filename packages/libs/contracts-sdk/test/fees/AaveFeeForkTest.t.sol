@@ -18,7 +18,9 @@ import {USDC} from "../ABIs/USDC.sol";
 import {IPool} from "@aave-dao/aave-v3-origin/src/contracts/interfaces/IPool.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract FeeForkTest is Test {
+contract AaveFeeForkTest is Test {
+    uint256 constant BASIS_POINT_DIVISOR = 10000;
+
     address owner;
     address APP_USER_ALICE = makeAddr("Alice");
     // real aave pool from https://aave.com/docs/resources/addresses
@@ -112,8 +114,11 @@ contract FeeForkTest is Test {
         ERC20 aToken = ERC20(aavePool.getReserveAToken(REAL_USDC));
         uint256 feeContractAaveTokens = aToken.balanceOf(address(aavePerfFeeFacet));
         console.log("feeContractAaveTokens", feeContractAaveTokens);
-        // due to aave fees / rounding math, we get back 1 less aToken than we deposited
-        assertEq(feeContractAaveTokens / 10 ** aToken.decimals(), (depositAmount / 10 ** erc20Decimals) - 1);
+        // due to aave fees / rounding math, we get back 1 or 2 less aToken than we deposited.  bound the result to between 0 and 2
+        uint256 differenceFromExpectedAmount =
+            (depositAmount / 10 ** erc20Decimals) - (feeContractAaveTokens / 10 ** aToken.decimals());
+        assertGe(differenceFromExpectedAmount, 0);
+        assertLe(differenceFromExpectedAmount, 2);
 
         // advance timestamp to 1 week from now to accrue interest, to simulate profit
         // aave is rebasing so this should just be a bigger of aTokens after 1 week
@@ -145,8 +150,9 @@ contract FeeForkTest is Test {
         uint256 feeContractBalance = underlyingERC20.balanceOf(address(aavePerfFeeFacet));
 
         uint256 expectedTotalProfit = expectedTotalWithdrawal - depositAmount;
-        uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / 10000);
-        uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / 10000;
+        uint256 expectedUserProfit =
+            expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR);
+        uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR;
         console.log("expectedTotalProfit", expectedTotalProfit);
         console.log("expectedUserProfit", expectedUserProfit);
         console.log("expectedFeeContractProfit", expectedFeeContractProfit);
@@ -205,8 +211,11 @@ contract FeeForkTest is Test {
         ERC20 aToken = ERC20(aavePool.getReserveAToken(REAL_USDC));
         uint256 feeContractAaveTokens = aToken.balanceOf(address(aavePerfFeeFacet));
         console.log("feeContractAaveTokens", feeContractAaveTokens);
-        // due to aave fees / rounding math, we get back 1 less aToken than we deposited
-        assertEq(feeContractAaveTokens / 10 ** aToken.decimals(), (depositAmount / 10 ** erc20Decimals) - 1);
+        // due to aave fees / rounding math, we get back 1 or 2 less aToken than we deposited.  bound the result to between 0 and 2
+        uint256 differenceFromExpectedAmount =
+            (depositAmount / 10 ** erc20Decimals) - (feeContractAaveTokens / 10 ** aToken.decimals());
+        assertGe(differenceFromExpectedAmount, 0);
+        assertLe(differenceFromExpectedAmount, 2);
 
         // now, do the withdrawal
         vm.startPrank(APP_USER_ALICE);
@@ -231,10 +240,12 @@ contract FeeForkTest is Test {
         console.log("depositAmount", depositAmount);
         console.log("userBalance", userBalance);
 
-        // The user's balance is exactly depositAmount - 1 due to aave aToken math and fee rounding:
+        // The user's balance is exactly depositAmount minus 0 through 2 due to aave aToken math and fee rounding:
         // When withdrawing, aave converts the aTokens back to assets, and due to integer division/rounding,
-        // the user receives one less unit than deposited. This is expected for this test scenario.
-        assertEq(userBalance, depositAmount - 1);
+        // the user receives up to 2 less units than deposited. So let's bound the result to between 0 and 2
+        uint256 differenceFromExpectedDepositAmount = depositAmount - userBalance;
+        assertGe(differenceFromExpectedDepositAmount, 0);
+        assertLe(differenceFromExpectedDepositAmount, 2);
         assertEq(feeContractBalance, 0);
 
         // test that the MockERC20 is not in the set of tokens that have collected fees
@@ -283,8 +294,11 @@ contract FeeForkTest is Test {
         ERC20 aToken = ERC20(aavePool.getReserveAToken(REAL_USDC));
         uint256 feeContractAaveTokens = aToken.balanceOf(address(aavePerfFeeFacet));
         console.log("feeContractAaveTokens", feeContractAaveTokens);
-        // due to aave fees / rounding math, we get back 1 less aToken than we deposited
-        assertEq(feeContractAaveTokens / 10 ** aToken.decimals(), (depositAmount / 10 ** erc20Decimals) - 1);
+        // due to aave fees / rounding math, we get back 1 or 2 less aToken than we deposited.  bound the result to between 0 and 2
+        uint256 differenceFromExpectedAmount =
+            (depositAmount / 10 ** erc20Decimals) - (feeContractAaveTokens / 10 ** aToken.decimals());
+        assertGe(differenceFromExpectedAmount, 0);
+        assertLe(differenceFromExpectedAmount, 2);
 
         // deposit again
         vm.startPrank(USDC_MINTER);
@@ -315,8 +329,11 @@ contract FeeForkTest is Test {
         // confirm that the fee contract has the aTokens
         feeContractAaveTokens = aToken.balanceOf(address(aavePerfFeeFacet));
         console.log("feeContractAaveTokens", feeContractAaveTokens);
-        // due to aave fees / rounding math, we get back 1 less aToken than we deposited
-        assertEq(feeContractAaveTokens / 10 ** aToken.decimals(), (depositAmount / 10 ** erc20Decimals) - 1);
+        // due to aave fees / rounding math, we get back 1 or 2 less aToken than we deposited.  bound the result to between 0 and 2
+        differenceFromExpectedAmount =
+            (depositAmount / 10 ** erc20Decimals) - (feeContractAaveTokens / 10 ** aToken.decimals());
+        assertGe(differenceFromExpectedAmount, 0);
+        assertLe(differenceFromExpectedAmount, 2);
 
         // advance timestamp to 1 week from now to accrue interest, to simulate profit
         // aave is rebasing so this should just be a bigger of aTokens after 1 week
@@ -348,8 +365,9 @@ contract FeeForkTest is Test {
         uint256 feeContractBalance = underlyingERC20.balanceOf(address(aavePerfFeeFacet));
 
         uint256 expectedTotalProfit = expectedTotalWithdrawal - depositAmount;
-        uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / 10000);
-        uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / 10000;
+        uint256 expectedUserProfit =
+            expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR);
+        uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR;
         console.log("expectedTotalProfit", expectedTotalProfit);
         console.log("expectedUserProfit", expectedUserProfit);
         console.log("expectedFeeContractProfit", expectedFeeContractProfit);

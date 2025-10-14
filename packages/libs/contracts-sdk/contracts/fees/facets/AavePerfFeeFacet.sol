@@ -2,9 +2,9 @@
 pragma solidity ^0.8.29;
 
 import "../LibFeeStorage.sol";
-import { IPool } from "@aave-dao/aave-v3-origin/src/contracts/interfaces/IPool.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {IPool} from "@aave-dao/aave-v3-origin/src/contracts/interfaces/IPool.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 /**
  * @title AavePerfFeeFacet
@@ -29,11 +29,11 @@ contract AavePerfFeeFacet {
 
     /* ========== MUTATIVE FUNCTIONS ========== */
 
-    /** 
+    /**
      * @notice Deposits assets into Aave
      * @param poolAsset the address of the pool asset to deposit into
      * @param assetAmount the amount of assets to deposit
-    */
+     */
     function depositToAave(address poolAsset, uint256 assetAmount) external {
         // get the aave pool contract and asset
         IPool aave = IPool(LibFeeStorage.getStorage().aavePool);
@@ -50,8 +50,10 @@ contract AavePerfFeeFacet {
 
         // track the deposit
         LibFeeStorage.Deposit storage deposit = LibFeeStorage.getStorage().deposits[msg.sender][poolAsset];
-        if (deposit.vaultProvider != 0 && deposit.vaultProvider != VAULT_PROVIDER) revert DepositAlreadyExistsWithAnotherProvider(msg.sender, poolAsset);
-        
+        if (deposit.vaultProvider != 0 && deposit.vaultProvider != VAULT_PROVIDER) {
+            revert DepositAlreadyExistsWithAnotherProvider(msg.sender, poolAsset);
+        }
+
         deposit.assetAmount += assetAmount;
         deposit.vaultProvider = VAULT_PROVIDER;
 
@@ -94,7 +96,8 @@ contract AavePerfFeeFacet {
             // there's a profit, calculate fee
             // performance fee is in basis points
             // so divide by 10000 to use it as a percentage
-            performanceFeeAmount = (withdrawAssetAmount - depositAssetAmount) * LibFeeStorage.getStorage().performanceFeePercentage / 10000;
+            performanceFeeAmount =
+                (withdrawAssetAmount - depositAssetAmount) * LibFeeStorage.getStorage().performanceFeePercentage / 10000;
         }
 
         // add the token to the set of tokens that have collected fees
@@ -109,5 +112,4 @@ contract AavePerfFeeFacet {
         // the user
         asset.transfer(msg.sender, withdrawAssetAmount - performanceFeeAmount);
     }
-        
 }

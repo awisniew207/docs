@@ -17,7 +17,9 @@ import {OwnershipFacet} from "../../contracts/diamond-base/facets/OwnershipFacet
 import {MockERC4626} from "../mocks/MockERC4626.sol";
 import {MockERC20} from "../mocks/MockERC20.sol";
 
-contract FeeTest is Test {
+contract MorphoFeeTest is Test {
+    uint256 constant BASIS_POINT_DIVISOR = 10000;
+
     address owner;
     address APP_USER_ALICE = makeAddr("Alice");
 
@@ -112,8 +114,9 @@ contract FeeTest is Test {
         uint256 feeContractBalance = mockERC20.balanceOf(address(morphoPerfFeeFacet));
 
         uint256 expectedTotalProfit = expectedTotalWithdrawal - depositAmount;
-        uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / 10000);
-        uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / 10000;
+        uint256 expectedUserProfit =
+            expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR);
+        uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR;
         console.log("expectedTotalProfit", expectedTotalProfit);
         console.log("expectedUserProfit", expectedUserProfit);
         console.log("expectedFeeContractProfit", expectedFeeContractProfit);
@@ -228,8 +231,9 @@ contract FeeTest is Test {
         uint256 feeContractBalance = mockERC20.balanceOf(address(morphoPerfFeeFacet));
 
         uint256 expectedTotalProfit = expectedTotalWithdrawal - depositAmount;
-        uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / 10000);
-        uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / 10000;
+        uint256 expectedUserProfit =
+            expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR);
+        uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR;
         console.log("expectedTotalProfit", expectedTotalProfit);
         console.log("expectedUserProfit", expectedUserProfit);
         console.log("expectedFeeContractProfit", expectedFeeContractProfit);

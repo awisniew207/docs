@@ -21,12 +21,17 @@ library LibFeeStorage {
         // performance fee percentage, expressed in basis points
         // so 1000 = 10%.  multiply percentage by 100 to get basis points
         uint256 performanceFeePercentage;
+        // aerodrome swap fee percentage, expressed in basis points
+        // so 25 = 0.25%.  multiply percentage by 100 to get basis points
+        uint256 swapFeePercentage;
         // set of tokens that have collected fees
         // used to track which tokens have collected fees
         // so we know where to look for collected fees
         EnumerableSet.AddressSet tokensWithCollectedFees;
         // aave pool contract address for this chain
         address aavePool;
+        // aerodrome router contract address for this chain
+        address aerodromeRouter;
         // maps user address to a set of vault or pool asset addresses
         // this means the user has deposited into this vault or pool
         // and if the vincent app disappears, the user can grab this set

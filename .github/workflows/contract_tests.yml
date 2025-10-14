@@ -32,7 +32,7 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
-          version: nightly
+          version: stable
 
       - name: Run Forge fmt
         run: |
@@ -57,5 +57,6 @@ jobs:
         env:
           BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
         run: |
-          forge test --ffi -vvv --match-path 'test/**/*ForkTest*.t.sol' --fork-url "$BASE_RPC_URL"
+          LATEST_BLOCK=$(cast block-number --rpc-url "$BASE_RPC_URL")
+          forge test --ffi -vvv --match-path 'test/**/*ForkTest*.t.sol' --fork-url "$BASE_RPC_URL" --fork-block-number "$LATEST_BLOCK"
         id: test-forked

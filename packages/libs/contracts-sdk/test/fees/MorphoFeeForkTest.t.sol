@@ -18,7 +18,9 @@ import {USDC} from "../ABIs/USDC.sol";
 import {MorphoVault} from "../ABIs/MorphoVault.sol";
 import {Morpho} from "../ABIs/Morpho.sol";
 
-contract FeeForkTest is Test {
+contract MorphoFeeForkTest is Test {
+    uint256 constant BASIS_POINT_DIVISOR = 10000;
+
     address owner;
     address APP_USER_ALICE = makeAddr("Alice");
     // real morpho vault on base from https://app.morpho.org/base/vault/0x7BfA7C4f149E7415b73bdeDfe609237e29CBF34A/spark-usdc-vault
@@ -119,7 +121,11 @@ contract FeeForkTest is Test {
         vm.warp(block.timestamp + 1 weeks);
         morpho.accrueInterest(
             Morpho.MarketParams({
-                loanToken: loanToken, collateralToken: collateralToken, oracle: oracle, irm: irm, lltv: lltv
+                loanToken: loanToken,
+                collateralToken: collateralToken,
+                oracle: oracle,
+                irm: irm,
+                lltv: lltv
             })
         );
 
@@ -148,8 +154,9 @@ contract FeeForkTest is Test {
         uint256 feeContractBalance = underlyingERC20.balanceOf(address(morphoPerfFeeFacet));
 
         uint256 expectedTotalProfit = expectedTotalWithdrawal - depositAmount;
-        uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / 10000);
-        uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / 10000;
+        uint256 expectedUserProfit =
+            expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR);
+        uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR;
         console.log("expectedTotalProfit", expectedTotalProfit);
         console.log("expectedUserProfit", expectedUserProfit);
         console.log("expectedFeeContractProfit", expectedFeeContractProfit);
@@ -319,7 +326,11 @@ contract FeeForkTest is Test {
         vm.warp(block.timestamp + 1 weeks);
         morpho.accrueInterest(
             Morpho.MarketParams({
-                loanToken: loanToken, collateralToken: collateralToken, oracle: oracle, irm: irm, lltv: lltv
+                loanToken: loanToken,
+                collateralToken: collateralToken,
+                oracle: oracle,
+                irm: irm,
+                lltv: lltv
             })
         );
 
@@ -348,8 +359,9 @@ contract FeeForkTest is Test {
         uint256 feeContractBalance = underlyingERC20.balanceOf(address(morphoPerfFeeFacet));
 
         uint256 expectedTotalProfit = expectedTotalWithdrawal - depositAmount;
-        uint256 expectedUserProfit = expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / 10000);
-        uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / 10000;
+        uint256 expectedUserProfit =
+            expectedTotalProfit - (expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR);
+        uint256 expectedFeeContractProfit = expectedTotalProfit * performanceFeePercentage / BASIS_POINT_DIVISOR;
         console.log("expectedTotalProfit", expectedTotalProfit);
         console.log("expectedUserProfit", expectedUserProfit);
         console.log("expectedFeeContractProfit", expectedFeeContractProfit);

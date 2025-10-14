@@ -156,7 +156,9 @@ contract SmartUpdateFacet is Script {
         if (plan.toRemove.length > 0) {
             console2.log("Executing REMOVE for", plan.toRemove.length, "selectors");
             cuts[cutIndex] = IDiamondCut.FacetCut({
-                facetAddress: address(0), action: IDiamondCut.FacetCutAction.Remove, functionSelectors: plan.toRemove
+                facetAddress: address(0),
+                action: IDiamondCut.FacetCutAction.Remove,
+                functionSelectors: plan.toRemove
             });
             cutIndex++;
         }
@@ -176,7 +178,9 @@ contract SmartUpdateFacet is Script {
         if (plan.toAdd.length > 0) {
             console2.log("Executing ADD for", plan.toAdd.length, "selectors");
             cuts[cutIndex] = IDiamondCut.FacetCut({
-                facetAddress: newFacetAddress, action: IDiamondCut.FacetCutAction.Add, functionSelectors: plan.toAdd
+                facetAddress: newFacetAddress,
+                action: IDiamondCut.FacetCutAction.Add,
+                functionSelectors: plan.toAdd
             });
             cutIndex++;
         }

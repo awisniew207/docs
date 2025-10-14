@@ -10,6 +10,7 @@ import "../contracts/fees/facets/FeeViewsFacet.sol";
 import "../contracts/fees/facets/FeeAdminFacet.sol";
 import "../contracts/fees/facets/MorphoPerfFeeFacet.sol";
 import "../contracts/fees/facets/AavePerfFeeFacet.sol";
+import "../contracts/fees/facets/AerodromeSwapFeeFacet.sol";
 
 import "../contracts/diamond-base/interfaces/IDiamondCut.sol";
 import "../contracts/diamond-base/interfaces/IDiamondLoupe.sol";
@@ -68,7 +69,7 @@ contract DeployFeeDiamond is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         // Deploy the facets
-        IDiamondCut.FacetCut[] memory cuts = new IDiamondCut.FacetCut[](6);
+        IDiamondCut.FacetCut[] memory cuts = new IDiamondCut.FacetCut[](7);
 
         // core diamond lib facets
         DiamondLoupeFacet diamondLoupeFacet = new DiamondLoupeFacet{salt: create2Salt}();
@@ -85,11 +86,13 @@ contract DeployFeeDiamond is Script {
         cuts[4] = contractToFacetCutAdd("MorphoPerfFeeFacet", address(morphoPerfFeeFacet));
         AavePerfFeeFacet aavePerfFeeFacet = new AavePerfFeeFacet{salt: create2Salt}();
         cuts[5] = contractToFacetCutAdd("AavePerfFeeFacet", address(aavePerfFeeFacet));
+        AerodromeSwapFeeFacet aerodromeSwapFeeFacet = new AerodromeSwapFeeFacet{salt: create2Salt}();
+        cuts[6] = contractToFacetCutAdd("AerodromeSwapFeeFacet", address(aerodromeSwapFeeFacet));
 
         // Deploy the Diamond with the diamondCut facet and all other facets in one transaction
-        Fee diamond = new Fee{
-            salt: create2Salt
-        }(cuts, FeeArgs({owner: deployerAddress, init: address(0), initCalldata: bytes("")}));
+        Fee diamond = new Fee{salt: create2Salt}(
+            cuts, FeeArgs({owner: deployerAddress, init: address(0), initCalldata: bytes("")})
+        );
 
         // Stop broadcasting transactions
         vm.stopBroadcast();
@@ -102,6 +105,7 @@ contract DeployFeeDiamond is Script {
         console.log("FeeAdminFacet:", address(feeAdminFacet));
         console.log("MorphoPerfFeeFacet:", address(morphoPerfFeeFacet));
         console.log("AavePerfFeeFacet:", address(aavePerfFeeFacet));
+        console.log("AerodromeSwapFeeFacet:", address(aerodromeSwapFeeFacet));
 
         return address(diamond);
     }

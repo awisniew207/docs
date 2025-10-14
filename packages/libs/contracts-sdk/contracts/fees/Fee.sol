@@ -1,19 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.29;
-/******************************************************************************\
-* Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
-* EIP-2535 Diamonds: https://eips.ethereum.org/EIPS/eip-2535
-*
-* Implementation of a diamond.
-/******************************************************************************/
+/**
+ * \
+ * Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
+ * EIP-2535 Diamonds: https://eips.ethereum.org/EIPS/eip-2535
+ *
+ * Implementation of a diamond.
+ * /*****************************************************************************
+ */
 
-import { LibDiamond } from "../diamond-base/libraries/LibDiamond.sol";
-import { IDiamondCut } from "../diamond-base/interfaces/IDiamondCut.sol";
-import { IDiamondLoupe } from "../diamond-base/interfaces/IDiamondLoupe.sol";
-import { IERC173 } from "../diamond-base/interfaces/IERC173.sol";
-import { IERC165 } from "../diamond-base/interfaces/IERC165.sol";
-import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import { LibFeeStorage } from "./LibFeeStorage.sol";
+import {LibDiamond} from "../diamond-base/libraries/LibDiamond.sol";
+import {IDiamondCut} from "../diamond-base/interfaces/IDiamondCut.sol";
+import {IDiamondLoupe} from "../diamond-base/interfaces/IDiamondLoupe.sol";
+import {IERC173} from "../diamond-base/interfaces/IERC173.sol";
+import {IERC165} from "../diamond-base/interfaces/IERC165.sol";
+import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import {LibFeeStorage} from "./LibFeeStorage.sol";
 
 // When no function exists for function called
 error FunctionNotFound(bytes4 _functionSelector);
@@ -32,16 +34,16 @@ contract Fee {
      * @notice Thrown when ETH is sent directly to the contract without a function call
      */
     error DirectETHTransfersNotAllowed();
-    
-    constructor(
-        IDiamondCut.FacetCut[] memory _diamondCut,
-        FeeArgs memory _args
-    ) payable {
+
+    constructor(IDiamondCut.FacetCut[] memory _diamondCut, FeeArgs memory _args) payable {
         LibDiamond.setContractOwner(_args.owner);
         LibDiamond.diamondCut(_diamondCut, _args.init, _args.initCalldata);
 
         // default to 10% performance fee
         LibFeeStorage.getStorage().performanceFeePercentage = 1000;
+
+        // default to 0.25% swap fee
+        LibFeeStorage.getStorage().swapFeePercentage = 25;
     }
 
     /**
