@@ -109,7 +109,7 @@ contract FeeTest is Test {
         uint256 NEW_SWAP_FEE_PERCENTAGE = 5;
         assertNotEq(feeAdminFacet.swapFeePercentage(), NEW_SWAP_FEE_PERCENTAGE);
 
-        // test that a non-owner cannot set the aerodrome router
+        // test that a non-owner cannot set the swap fee percentage
         vm.expectRevert(FeeUtils.CallerNotOwner.selector);
         feeAdminFacet.setSwapFeePercentage(NEW_SWAP_FEE_PERCENTAGE);
 
