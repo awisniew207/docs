@@ -76,6 +76,7 @@
                 "pages": [
                   "ability/official-abilities/overview",
                   "ability/official-abilities/aave",
+                  "ability/official-abilities/aerodrome-swap",
                   "ability/official-abilities/debridge",
                   "ability/official-abilities/erc20-approval",
                   "ability/official-abilities/erc20-transfer",
