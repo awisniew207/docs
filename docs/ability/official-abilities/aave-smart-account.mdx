@@ -20,7 +20,7 @@ The Aave Smart Account Ability is built using the Vincent Ability SDK and operat
   <Step title="Precheck Phase">
     Validates the UserOperation without executing it:
 
-    - Decodes the UserOperation calldata to understand the transactions
+    - Decodes the UserOperation calldata to understand the transaction
     - Simulates the transaction on-chain (read-only) to see effects
     - Validates all contract interactions are with authorized Aave addresses
     - Verifies no value is being extracted from the user
@@ -45,6 +45,10 @@ Depending on your role in the Vincent Ecosystem, you'll be interacting with this
 - **Vincent App Developers**: If you're building a Vincent App that needs Smart Account integration with Aave, go [here](#adding-the-ability-to-your-vincent-app).
 - **Vincent App Delegatees**: If you're executing this ability on behalf of Vincent App Users, go [here](#executing-the-ability-as-a-vincent-app-delegatee).
 
+<Note>
+This ability is designed for Smart Account (ERC-4337) workflows. If you're using regular EOA wallets, use the standard [Aave Ability](./aave) instead.
+</Note>
+
 ## Adding the Ability to your Vincent App
 
 If you want to enable your App Delegatees to validate and sign Aave Smart Account operations on behalf of your Vincent App Users, you can add this Ability to your App.
@@ -59,7 +63,7 @@ Before executing Aave Smart Account operations, the following conditions must be
 
 - **Session Key Permission**: The Agent Wallet must be granted session key permissions on the Smart Account
 
-- **Valid UserOperation**: The backend service must construct a valid UserOperation containing Aave interactions
+- **Valid UserOperation**: The backend service must construct a valid UserOperation containing interactions with the Aave protocol
 
 - **Gas Sponsorship (Optional)**: If using a paymaster, ensure proper paymaster data is included in the UserOperation
 
@@ -67,34 +71,33 @@ Before executing Aave Smart Account operations, the following conditions must be
 To learn more about executing Vincent Abilities, see the [Executing Abilities](/ability/explaining-abilities) guide.
 </Info>
 
-<Note>
-This ability is designed for Smart Account (ERC-4337) workflows. If you're using regular EOA wallets, use the standard [Aave Ability](./aave) instead.
-</Note>
-
 ### Smart Account Architecture
 
 The typical flow involves multiple components:
 
+<div align="center">
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"primaryColor":"transparent","primaryTextColor":"#FF4205","primaryBorderColor":"#FF4205","lineColor":"#FF4205"}}}%%
+graph TD
+    A["<b>Your EOA Wallet</b><br/>"]
+    B["<b>Smart Account</b>"]
+    C["<b>Vincent Agent Wallet</b>"]
+    D["<b>Vincent Ability</b><br/><i>(Validates & Signs)</i>"]
+
+    A -->| User Controls| B
+    B -->|Grants session key to| C
+    C -->|Signs via| D
+
+    style A fill:transparent,stroke:#FF4205,stroke-width:2px,color:#FF4205
+    style B fill:transparent,stroke:#FF4205,stroke-width:2px,color:#FF4205
+    style C fill:transparent,stroke:#FF4205,stroke-width:2px,color:#FF4205
+    style D fill:transparent,stroke:#FF4205,stroke-width:2px,color:#FF4205
+
+    linkStyle 0,1,2 stroke:#FF4205,stroke-width:2px
 ```
-┌─────────────────┐
-│   User EOA      │ Controls
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ Smart Account   │ Grants session key to
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Agent Wallet   │ Signs via
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ This Ability    │ Validates & Signs UserOp
-└─────────────────┘
-```
+
+</div>
 
 Learn more about Smart Accounts in the [Smart Accounts concept guide](/concepts/wallets/smart-accounts).
 
@@ -137,7 +140,7 @@ This Ability's `precheck` function validates a UserOperation without actually si
        */
       entryPointAddress: string;
       /**
-       * RPC URL for on-chain simulation and validation
+       * The Alchemy RPC URL for on-chain simulation and validation
        */
       rpcUrl: string;
     }
@@ -147,7 +150,6 @@ This Ability's `precheck` function validates a UserOperation without actually si
     - **v0.7.0 Format**: This ability uses ERC-4337 v0.7.0 which has separate paymaster fields (not `paymasterAndData`)
     - **Hex Strings**: All numeric values must be hex strings (e.g., `"0x1"`), not bigints or numbers
     - **EntryPoint**: Must be a valid EntryPoint v0.7 address for your target network
-    - **RPC URL**: Should be an Alchemy RPC URL for simulation support (`alchemy_simulateUserOperationAssetChanges`)
     - The `callData` field must contain valid Aave protocol interactions
   </Tab>
 
@@ -285,6 +287,10 @@ This Ability's `precheck` function validates a UserOperation without actually si
   </Tab>
 </Tabs>
 
+<Warning>
+**Alchemy RPC Required**: This ability requires an Alchemy RPC URL. It uses Alchemy's proprietary `alchemy_simulateUserOperationAssetChanges` method for on-chain simulation. Execution will fail if a non-Alchemy RPC URL is provided.
+</Warning>
+
 ### Executing the `execute` Function
 
 This Ability's `execute` function performs the same validation as precheck, then signs the UserOperation with the Agent Wallet.
@@ -324,7 +330,7 @@ This Ability's `execute` function performs the same validation as precheck, then
        */
       entryPointAddress: string;
       /**
-       * RPC URL for on-chain simulation and validation
+       * The Alchemy RPC URL for on-chain simulation and validation
        */
       rpcUrl: string;
       /**
@@ -459,7 +465,7 @@ This ability supports Aave V3 operations on networks where ERC-4337 infrastructu
 | **Testnets** | `sepolia`, `basesepolia`, `arbitrumsepolia`, `optimismsepolia` |
 
 <Note>
-Additional networks may work if your Smart Account provider supports them and Aave V3 is deployed there, but the networks listed above have verified ERC-4337 infrastructure support.
+Network support is limited by Alchemy's `alchemy_simulateUserOperationAssetChanges` API. Only networks where Alchemy supports UserOperation simulation can be used with this ability.
 </Note>
 
 ## Important Considerations

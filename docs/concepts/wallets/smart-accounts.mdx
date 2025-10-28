@@ -29,28 +29,29 @@ Smart Accounts are programmable blockchain accounts that enable advanced transac
 
 ## Architecture Overview
 
+<div align="center">
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"primaryColor":"transparent","primaryTextColor":"#FF4205","primaryBorderColor":"#FF4205","lineColor":"#FF4205"}}}%%
+graph TD
+    A["<b>Your EOA Wallet</b>"]
+    B["<b>Smart Account</b>"]
+    C["<b>Vincent Agent Wallet</b>"]
+    D["<b>Vincent Ability</b><br/><i>(Validates & Signs)</i>"]
+
+    A -->|User Controls| B
+    B -->|Grants session key to| C
+    C -->|Signs via| D
+
+    style A fill:transparent,stroke:#FF4205,stroke-width:2px,color:#FF4205
+    style B fill:transparent,stroke:#FF4205,stroke-width:2px,color:#FF4205
+    style C fill:transparent,stroke:#FF4205,stroke-width:2px,color:#FF4205
+    style D fill:transparent,stroke:#FF4205,stroke-width:2px,color:#FF4205
+
+    linkStyle 0,1,2 stroke:#FF4205,stroke-width:2px
 ```
-┌─────────────────────┐
-│   Your EOA Wallet   │ (You control)
-└──────────┬──────────┘
-           │ Creates & Controls
-           ▼
-┌─────────────────────┐
-│   Smart Account     │ (Your programmable wallet)
-└──────────┬──────────┘
-           │ Grants Session Key To
-           ▼
-┌─────────────────────┐
-│   Agent Wallet      │ (Vincent PKP)
-│    (Session Key)    │
-└──────────┬──────────┘
-           │ Signs Transactions Via
-           ▼
-┌─────────────────────┐
-│  Vincent Ability    │ (Validates & Signs)
-│   (Aave, Swap...)   │
-└─────────────────────┘
-```
+
+</div>
 
 ## Security Model
 
@@ -66,6 +67,7 @@ Smart Accounts with Vincent work on any network where:
 - ERC-4337 infrastructure is deployed (bundlers, entry points)
 - Your Smart Account provider supports the network
 - Vincent abilities are available for your desired operations
+- Alchemy's `alchemy_simulateUserOperationAssetChanges` API supports the network (required for transaction simulation)
 
 Currently supported networks include Ethereum, Base, Arbitrum, Optimism, Polygon, Avalanche, and their testnets.
 
