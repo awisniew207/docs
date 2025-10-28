@@ -13,43 +13,19 @@ Smart Accounts are programmable blockchain accounts that enable advanced transac
 - **Advanced Recovery:** Implement flexible account recovery mechanisms beyond traditional seed phrases
 - **Policy Enforcement:** All operations validated through Vincent abilities before execution
 
-## What Are Smart Accounts?
-
-Smart Accounts (also known as Account Abstraction or ERC-4337 accounts) are smart contracts that act as your wallet. Unlike traditional Externally Owned Accounts (EOAs) controlled by a single private key, Smart Accounts can implement custom logic for transaction validation, execution, and security.
-
-With Vincent, Smart Accounts become even more powerful by integrating with Agent Wallets to enable secure, automated operations. Your Agent Wallet can sign transactions on behalf of your Smart Account, but only after validating that operations meet strict safety criteria defined in Vincent abilities.
-
 ## How Smart Accounts Work with Vincent
 
-1. **You create a Smart Account** using a provider like ZeroDev, Biconomy, or Safe, with your EOA wallet as the owner, establishing programmable control over your on-chain assets.
+1. **You create a Smart Account** using a provider like [ZeroDev](https://zerodev.app/), [Biconomy](https://biconomy.io/), or [Safe](https://safe.global/), with your EOA wallet as the owner, establishing programmable control over your on-chain assets.
 
 2. **You grant session key permissions** to your Agent Wallet, allowing it to sign specific types of transactions on behalf of your Smart Account within defined boundaries and time limits.
 
-3. **Your backend service constructs operations** that your Smart Account should perform, such as DeFi interactions, token swaps, or cross-chain transfers, formatted as ERC-4337 UserOperations.
+3. **Your backend service constructs operations** that your Smart Account should perform, such as DeFi interactions, token swaps, or cross-chain transfers, formatted as [ERC-4337](https://eips.ethereum.org/EIPS/eip-4337) UserOperations.
 
 4. **Vincent abilities validate operations** by decoding the transactions, simulating them on-chain, and verifying they only interact with authorized contracts and benefit you as the user.
 
 5. **Agent Wallet signs validated operations** using the session key permission, creating a signed UserOperation that can be broadcast to the network through a bundler.
 
 6. **The Smart Account executes the operation** on-chain, with all validation logic enforced at both the Vincent ability level and the Smart Account contract level.
-
-## Smart Accounts vs. Traditional Wallets
-
-**Traditional EOA Wallets (Externally Owned Accounts):**
-- Controlled by a single private key
-- Limited to basic send/receive operations
-- No built-in programmability
-- Simpler but less flexible
-
-**Smart Accounts:**
-- Controlled by smart contract logic
-- Support complex transaction patterns
-- Can implement custom security rules
-- Enable gasless and batch transactions
-- More powerful but require additional setup
-
-**Vincent Integration:**
-Both wallet types work with Vincent, but Smart Accounts unlock additional capabilities through session keys and programmable validation.
 
 ## Architecture Overview
 
@@ -76,35 +52,6 @@ Both wallet types work with Vincent, but Smart Accounts unlock additional capabi
 └─────────────────────┘
 ```
 
-## Use Cases for Smart Accounts
-
-<Columns cols={2}>
-  <Card title="DeFi Automation" icon="coins" color="#FF4205">
-    Automate lending, borrowing, and yield optimization with built-in safety checks
-  </Card>
-  <Card title="Trading Bots" icon="robot" color="#FF4205">
-    Execute trades automatically while ensuring all operations benefit you
-  </Card>
-</Columns>
-
-<Columns cols={2}>
-  <Card title="Portfolio Management" icon="chart-line" color="#FF4205">
-    Rebalance positions based on market conditions within strict policy limits
-  </Card>
-  <Card title="Subscription Services" icon="credit-card" color="#FF4205">
-    Enable recurring payments with spending limits and contract restrictions
-  </Card>
-</Columns>
-
-<Columns cols={2}>
-  <Card title="Cross-Chain Operations" icon="shuffle" color="#FF4205">
-    Coordinate complex operations across multiple blockchains seamlessly
-  </Card>
-  <Card title="Social Recovery" icon="users" color="#FF4205">
-    Implement guardian-based account recovery without seed phrases
-  </Card>
-</Columns>
-
 ## Security Model
 
 Traditional automation approaches require backend services to hold your private keys, creating custody risk and regulatory complexity. Smart Accounts with Vincent eliminate this risk:
@@ -112,6 +59,15 @@ Traditional automation approaches require backend services to hold your private 
 - **No Key Custody:** Your keys never leave your control—Vincent uses session key delegation instead of taking custody
 - **Transparent Validation:** All validation logic is auditable in Vincent abilities running in Lit's Trusted Execution Environment (TEE)
 - **Pre-Signing Verification:** Transactions are simulated on-chain before signing to ensure expected behavior and prevent malicious operations
+
+## Supported Networks
+
+Smart Accounts with Vincent work on any network where:
+- ERC-4337 infrastructure is deployed (bundlers, entry points)
+- Your Smart Account provider supports the network
+- Vincent abilities are available for your desired operations
+
+Currently supported networks include Ethereum, Base, Arbitrum, Optimism, Polygon, Avalanche, and their testnets.
 
 ## Popular Smart Account Providers
 
@@ -126,15 +82,6 @@ Traditional automation approaches require backend services to hold your private 
     Complete account abstraction infrastructure with SDK and gas sponsorship
   </Card>
 </Columns>
-
-## Supported Networks
-
-Smart Accounts with Vincent work on any network where:
-- ERC-4337 infrastructure is deployed (bundlers, entry points)
-- Your Smart Account provider supports the network
-- Vincent abilities are available for your desired operations
-
-Currently supported networks include Ethereum, Base, Arbitrum, Optimism, Polygon, Avalanche, and their testnets.
 
 ## Learn More
 
